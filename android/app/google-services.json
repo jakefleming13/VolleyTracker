@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "858542682341",
+    "firebase_url": "https://volleytracker-4d887-default-rtdb.firebaseio.com",
+    "project_id": "volleytracker-4d887",
+    "storage_bucket": "volleytracker-4d887.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:858542682341:android:50399c91e7043639e2640c",
+        "android_client_info": {
+          "package_name": "com.cmpt496.volleytracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBMQfQUJ2qn2pumyYBB7W0THc7p5BoaJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
