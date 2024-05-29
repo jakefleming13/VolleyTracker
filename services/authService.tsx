@@ -26,7 +26,7 @@ export const signUp = async (email: string, password: string): Promise<void> => 
 };
 
 // reset password 
-export const passwordReset = async(email:string): Promise<void> => {
+export const passwordReset = async(email: string): Promise<void> => {
     try {
         await auth().sendPasswordResetEmail(email);
         Alert.alert('Password Reset', 'Check your email to reset your password.');
