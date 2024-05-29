@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Image, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, TextInput, Button, Image, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
 import { SafeView } from '../components/SafeView';
-
-// bring in sign in and signup functionality from services folder
 import { signIn, signUp } from '../services/authService';
 import auth from '@react-native-firebase/auth';
 
 export function LoginScreen(): JSX.Element {
-
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [isPasswordVisible, setPasswordVisible] = useState<boolean>(false);
@@ -46,41 +43,48 @@ export function LoginScreen(): JSX.Element {
     setPasswordVisible(!isPasswordVisible);
   };
 
+
+  
   return (
     <SafeView style={styles.container}>
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
+      {/* Stops keyboard from taking up too much room when entering fields */}
+      <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <Image
-            style={styles.logo}
-            source={require('../assets/images/react-logo.png')}
-          />
-          <TextInput
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="email-address"
-            onChangeText={setEmail}
-            placeholder="Email"
-            textContentType="emailAddress"
-            style={[styles.input, styles.pad]}
-          />
-          <TextInput
-            autoCapitalize="none"
-            autoCorrect={false}
-            onChangeText={setPassword}
-            placeholder="Password"
-            secureTextEntry={!isPasswordVisible}
-            textContentType="password"
-            style={[styles.input, styles.pad]}
-          />
+          <Image style={styles.logo} source={require('../assets/images/react-logo.png')} />
+          <View style={styles.inputContainer}>
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="email-address"
+              onChangeText={setEmail}
+              placeholder="Email"
+              textContentType="emailAddress"
+              style={styles.input}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={setPassword}
+              placeholder="Password"
+              secureTextEntry={!isPasswordVisible}
+              textContentType="password"
+              style={styles.input}
+            />
+            <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconContainer}>
+              <Image
+                style={styles.icon}
+                // show different icons based on password visbility state 
+                source={isPasswordVisible ? require('../assets/icons/hide-password.png') : require('../assets/icons/show-password.png')}
+              />
+            </TouchableOpacity>
+          </View>
           <View style={styles.buttonContainer}>
             <Button title="Login" onPress={handleLogin} />
             <Button title="Sign Up" onPress={handleSignUp} />
             <Button title="Reset Password" onPress={handlePasswordReset} />
           </View>
-          <Button title={isPasswordVisible ? "Hide Password" : "Show Password"} onPress={togglePasswordVisibility} />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeView>
@@ -103,16 +107,26 @@ const styles = StyleSheet.create({
     height: 100,
     marginBottom: 20,
   },
-  pad: {
-    padding: 10,
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 10,
     width: '80%',
   },
   input: {
+    flex: 1, 
+    padding: 10,
     backgroundColor: 'white',
     borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 5,
+  },
+  iconContainer: {
+    padding: 10,
+  },
+  icon: {
+    width: 30,
+    height: 30,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -121,4 +135,3 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
-
