@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Image, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
 import { SafeView } from '../components/SafeView';
-import { signIn, signUp } from '../services/authService';
+// Abstract signin and signup functions to different file
+import { signIn, signUp, passwordReset } from '../services/authService';
 import auth from '@react-native-firebase/auth';
+
 
 export function LoginScreen(): JSX.Element {
   const [email, setEmail] = useState<string>('');
@@ -30,13 +32,8 @@ export function LoginScreen(): JSX.Element {
       Alert.alert('Error', 'Please enter your email address.');
       return;
     }
-    try {
-      await auth().sendPasswordResetEmail(email);
-      Alert.alert('Password Reset', 'Check your email to reset your password.');
-    } catch (error: any) {
-      console.error(error);
-      Alert.alert('Error', 'There was an error sending the password reset email.');
-    }
+    passwordReset(email);
+   
   };
 
   const togglePasswordVisibility = () => {

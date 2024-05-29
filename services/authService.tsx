@@ -1,35 +1,38 @@
-
+import { Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
-
+// Custom error codes 
+import { getFirebaseErrorMessage, FirebaseErrorCode } from '../services/firebaseErrorHandling';
 
 // Sign in the user
 export const signIn = async (email: string, password: string): Promise<void> => {
-  try {
-    await auth().signInWithEmailAndPassword(email, password);
-    console.log('User signed in!');
-  } catch (error: any) {
-    if (error.code === 'auth/user-not-found') {
-      console.log('No user corresponding to this email.');
-    } else if (error.code === 'auth/wrong-password') {
-      console.log('Incorrect password.');
-    } else {
-      console.error(error);
-    }
-  }
+    try {
+        await auth().signInWithEmailAndPassword(email, password);
+      } catch (error: any) {
+        const message = getFirebaseErrorMessage(error.code as FirebaseErrorCode);
+        Alert.alert('Login Failed', message);
+      }
 };
 
 // register new user
 export const signUp = async (email: string, password: string): Promise<void> => {
   try {
     await auth().createUserWithEmailAndPassword(email, password);
-    console.log('User account created & signed in!');
+    Alert.alert('Success', 'You are successfully registered!');
+   
   } catch (error: any) {
-    if (error.code === 'auth/email-already-in-use') {
-      console.log('That email address is already in use!');
-    } else if (error.code === 'auth/invalid-email') {
-      console.log('That email address is invalid!');
-    } else {
-      console.error(error);
-    }
+    const message = getFirebaseErrorMessage(error.code as FirebaseErrorCode);
+    Alert.alert('Signup Failed', message);
   }
 };
+
+// reset password 
+export const passwordReset = async(email:string): Promise<void> => {
+    try {
+        await auth().sendPasswordResetEmail(email);
+        Alert.alert('Password Reset', 'Check your email to reset your password.');
+      } catch (error: any) {
+        
+        const message = getFirebaseErrorMessage(error.code as FirebaseErrorCode);
+        Alert.alert('Password Reset Failed', message);
+      }
+}
