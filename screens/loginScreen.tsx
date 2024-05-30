@@ -1,5 +1,4 @@
 import { Image, TextInput, Button, StyleSheet } from "react-native";
-import React from "react";
 import { useState } from "react";
 import { SafeView } from "@/components/SafeView";
 
