@@ -1,12 +1,8 @@
 import Constants from "expo-constants";
 import { StyleSheet, SafeAreaView, ViewStyle } from "react-native";
 
-interface Props {
-  children: any;
-  style: ViewStyle | ViewStyle[];
-}
 
-export function SafeView({ children, style }: Props) {
+export function SafeView({ children, style }) {
   return <SafeAreaView style={[styles.screen, style]}>{children}</SafeAreaView>;
 }
 

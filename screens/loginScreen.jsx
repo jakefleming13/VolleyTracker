@@ -12,14 +12,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeView } from "../components/SafeView";
-// Abstract signin and signup functions to different file
 import { signIn, signUp, passwordReset } from "../services/authService";
 import auth from "@react-native-firebase/auth";
 
-export function LoginScreen(): JSX.Element {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [isPasswordVisible, setPasswordVisible] = useState<boolean>(false);
+export function LoginScreen() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
 
   const handleLogin = () => {
     if (!email || !password) {
@@ -51,7 +50,6 @@ export function LoginScreen(): JSX.Element {
 
   return (
     <SafeView style={styles.container}>
-      {/* Stops keyboard from taking up too much room when entering fields */}
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -88,7 +86,6 @@ export function LoginScreen(): JSX.Element {
             >
               <Image
                 style={styles.icon}
-                // show different icons based on password visbility state
                 source={
                   isPasswordVisible
                     ? require("../assets/icons/hide-password.png")
