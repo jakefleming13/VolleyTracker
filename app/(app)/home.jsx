@@ -7,13 +7,12 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 const Home = () => {
 
   const router = useRouter()
-  const {logout} = useAuth()
+  const {logout, user} = useAuth()
 
+  console.log('User Data:', user)
   const handleLogout = async () => {
 
     await logout()
-    
-
     router.push("signIn")
   
   }

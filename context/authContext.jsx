@@ -12,12 +12,16 @@ export const AuthContextProvider = ({children}) => {
     const [initializing, setInitializing] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(undefined)
 
-        // Handle user state changes
-    function onAuthStateChanged(newUser) {
+    const onAuthStateChanged = async (newUser) => {
         setUser(newUser);
-        setIsAuthenticated(!!newUser)
-        if (initializing) setInitializing(false);
-    }
+        setIsAuthenticated(!!newUser);
+        if (newUser) {
+            await updateUserData(newUser.uid);
+        }
+        if (initializing) {
+            setInitializing(false);
+        }
+    };
 
 
      useEffect(() => {
@@ -25,6 +29,15 @@ export const AuthContextProvider = ({children}) => {
 
         return subscriber
   }, []);
+
+
+    const updateUserData = async (userID) => {
+        const doc = await firestore().collection('users').doc(userID).get();
+        if (doc.exists) {
+            const userData = doc.data();
+            setUser(current => ({...userData }));
+        }
+    };
 
     const login = async (email, password) => {
         try {
