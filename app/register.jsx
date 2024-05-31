@@ -1,3 +1,8 @@
+
+
+/*
+Need to merge changes with signUp.jsx
+
 import { useState } from "react";
 import {
   View,
@@ -11,8 +16,9 @@ import {
   Platform,
 } from "react-native";
 import { SafeView } from "../components/SafeView";
-import { signUp } from "../services/authService";
-import auth from "@react-native-firebase/auth";
+
+
+
 
 export default function register() {
   const [email, setEmail] = useState("");
@@ -121,3 +127,5 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
+
+*/

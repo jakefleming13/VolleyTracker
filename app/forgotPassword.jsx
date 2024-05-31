@@ -11,19 +11,24 @@ import {
   Platform,
 } from "react-native";
 import { SafeView } from "../components/SafeView";
-import { passwordReset } from "../services/authService";
-import auth from "@react-native-firebase/auth";
+
+
+
 
 export default function forgotPassword() {
   const [email, setEmail] = useState("");
 
-  const handlePasswordReset = async () => {
-    if (!email) {
-      Alert.alert("Error", "Please enter your email address.");
-      return;
+   // Reset password
+   const passwordReset = async (email) => {
+    try {
+        await auth().sendPasswordResetEmail(email);
+        Alert.alert('Password Reset', 'Check your email to reset your password.');
+    } catch (error) {
+        const message = getFirebaseErrorMessage(error.code);
+        Alert.alert('Password Reset Failed', message);
     }
-    passwordReset(email);
-  };
+}
+
 
   return (
     <SafeView style={styles.container}>
@@ -48,7 +53,7 @@ export default function forgotPassword() {
             />
           </View>
           <View style={styles.buttonContainer}>
-            <Button title="Reset Password" onPress={handlePasswordReset} />
+            <Button title="Reset Password" onPress={passwordReset} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

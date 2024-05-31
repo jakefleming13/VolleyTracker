@@ -47,16 +47,7 @@ export const AuthContextProvider = ({children}) => {
     };
 
 
-    // Reset password
-    const passwordReset = async (email) => {
-        try {
-            await auth().sendPasswordResetEmail(email);
-            Alert.alert('Password Reset', 'Check your email to reset your password.');
-        } catch (error) {
-            const message = getFirebaseErrorMessage(error.code);
-            Alert.alert('Password Reset Failed', message);
-        }
-    }
+   
 
 
     const logout = async () => {
