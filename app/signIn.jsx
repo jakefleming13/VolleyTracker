@@ -37,7 +37,9 @@ export default function SignIn(){
       Alert.alert("Error", "Please fill in both email and password.");
       return;
     }
+    setLoading(true)
     await login(emailRef.current, passwordRef.current)
+    setLoading(false)
   };
 
  

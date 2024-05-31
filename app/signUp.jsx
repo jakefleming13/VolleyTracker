@@ -29,19 +29,21 @@ export default function SignUp(){
   const {register} = useAuth()
   const emailRef = useRef("")
   const passwordRef = useRef("")
+  const coachNameRef = useRef("")
+  const teamNameRef = useRef("")
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
 
 
   const handleSignUp = async () => {
-    if (!emailRef.current || !passwordRef.current) {
+    if (!emailRef.current || !passwordRef.current || !coachNameRef.current || !teamNameRef.current) {
       Alert.alert("Error", "Please fill in both email and password.");
       return;
     }
 
     setLoading(true)
 
-    await register(emailRef.current, passwordRef.current)
+    await register(emailRef.current, passwordRef.current, coachNameRef.current, teamNameRef.current)
     setLoading(false)
    
 
@@ -94,6 +96,29 @@ export default function SignUp(){
                 }
               />
             </TouchableOpacity>
+          </View>
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              autoCapitalize="words"
+              autoCorrect={false}
+              keyboardType="email-address"
+              onChangeText={value => coachNameRef.current = value}
+              placeholder="Coach Name"
+              textContentType="none"
+              style={styles.input}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              autoCapitalize="words"
+              autoCorrect={false}
+              keyboardType="email-address"
+              onChangeText={value => teamNameRef.current = value}
+              placeholder="Team Name"
+              textContentType="none"
+              style={styles.input}
+            />
           </View>
           
           <View style = {styles.buttonContainer}>

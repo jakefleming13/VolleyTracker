@@ -3,7 +3,7 @@ import { useState, useEffect, useContext } from "react";
 import auth from "@react-native-firebase/auth";
 import { Alert } from "react-native";
 import { getFirebaseErrorMessage } from "../services/firebaseErrorHandling";
-
+import firestore from '@react-native-firebase/firestore';
 
 export const AuthContext = createContext();
 
@@ -36,14 +36,30 @@ export const AuthContextProvider = ({children}) => {
     };
 
     // Register new user
-    const register = async (email, password) => {
+    const register = async (email, password, coachName, teamName) => {
         try {
-        await auth().createUserWithEmailAndPassword(email, password);
+        // add user to auth
+        const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+        const userID = userCredential.user.uid
+
+        // Create document for user profile 
+        await firestore()
+        .collection('users')
+        .doc(userID) // set collection ID to user ID
+        .set({
+            userID: userID,
+            coachName: coachName,
+            teamName: teamName
+          
+        });
         Alert.alert('Success', 'You are successfully registered!');
         } catch (error) {
         const message = getFirebaseErrorMessage(error.code);
+        
         Alert.alert('Signup Failed', message);
         }
+
+        
     };
 
 
