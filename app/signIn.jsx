@@ -17,6 +17,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeView } from "../components/SafeView";
+
 import { useRouter } from 'expo-router';
 import {useAuth} from '../context/authContext'
 
@@ -36,7 +37,7 @@ export default function SignIn(){
       Alert.alert("Error", "Please fill in both email and password.");
       return;
     }
-    await login()
+    await login(emailRef.current, passwordRef.current)
   };
 
  

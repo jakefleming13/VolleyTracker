@@ -1,7 +1,8 @@
 import { createContext } from "react";
 import { useState, useEffect, useContext } from "react";
 import auth from "@react-native-firebase/auth";
-
+import { Alert } from "react-native";
+import { getFirebaseErrorMessage } from "../services/firebaseErrorHandling";
 
 
 export const AuthContext = createContext();
