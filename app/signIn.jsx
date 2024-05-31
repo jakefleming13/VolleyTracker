@@ -1,4 +1,9 @@
+import {Pressable, Text } from 'react-native'
+import React from 'react'
+import { useRef } from 'react';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { useState } from "react";
+import Loading from '../components/Loading'
 import {
   View,
   TextInput,
@@ -12,36 +17,35 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeView } from "../components/SafeView";
-import { signIn, signUp, passwordReset } from "../services/authService";
+import { useRouter } from 'expo-router';
+import {useAuth} from '../context/authContext'
 
+export default function SignIn(){
+  const router = useRouter()
+  // All auth related events should come from custom hook
+  const {login} = useAuth()
+  const [loading, setLoading] = useState(false)
 
-export function LoginScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+// useRef instead of useState because everryime state changes in useState, whole component re-renders
+  const emailRef = useRef("")
+  const passwordRef = useRef("")
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
-  const handleLogin = () => {
-    if (!email || !password) {
+  const handleLogin = async () => {
+    if (!emailRef.current || !passwordRef.current) {
       Alert.alert("Error", "Please fill in both email and password.");
       return;
     }
-    signIn(email, password);
+    await login()
   };
 
-  const handleSignUp = () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please fill in both email and password.");
-      return;
-    }
-    signUp(email, password);
-  };
-
+ 
   const handlePasswordReset = async () => {
     if (!email) {
       Alert.alert("Error", "Please enter your email address.");
       return;
     }
-    passwordReset(email);
+    passwordReset(emailRef.current);
   };
 
   const togglePasswordVisibility = () => {
@@ -64,7 +68,7 @@ export function LoginScreen() {
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType="email-address"
-              onChangeText={setEmail}
+              onChangeText={value => emailRef.current = value}
               placeholder="Email"
               textContentType="emailAddress"
               style={styles.input}
@@ -74,7 +78,7 @@ export function LoginScreen() {
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
-              onChangeText={setPassword}
+              onChangeText={value => passwordRef.current = value}
               placeholder="Password"
               secureTextEntry={!isPasswordVisible}
               textContentType="password"
@@ -94,11 +98,43 @@ export function LoginScreen() {
               />
             </TouchableOpacity>
           </View>
+          
+        
           <View style={styles.buttonContainer}>
             <Button title="Login" onPress={handleLogin} />
-            <Button title="Sign Up" onPress={handleSignUp} />
+            <View>
+
+            {
+                loading? (
+                    <View>
+                        <Loading size = {hp(7)} />
+                    </View>
+                ): (
+                    <Button title="Login" onPress={handleLogin} />
+                )
+
+
+            }
+            </View>
+
+            <View>
+
             <Button title="Reset Password" onPress={handlePasswordReset} />
-          </View>
+
+            </View>
+
+            </View>
+
+
+            <View>
+                <Text style = {{fontSize: hp(1.8)}}>Don't have an account?</Text>
+
+                <Pressable onPress = { () => router.push("signUp")}>
+                <Text style = {{fontSize: hp(1.8), color: 'blue'}}>Sign Up</Text>
+                </Pressable>
+            </View>
+            
+
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeView>
