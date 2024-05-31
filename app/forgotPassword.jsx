@@ -9,25 +9,13 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  TouchableOpacity,
 } from "react-native";
 import { SafeView } from "../components/SafeView";
-import { signIn, passwordReset } from "../services/authService";
+import { passwordReset } from "../services/authService";
 import auth from "@react-native-firebase/auth";
-import { Link, router } from "expo-router";
 
-export function LoginScreen() {
+export default function forgotPassword() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isPasswordVisible, setPasswordVisible] = useState(false);
-
-  const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please fill in both email and password.");
-      return;
-    }
-    signIn(email, password);
-  };
 
   const handlePasswordReset = async () => {
     if (!email) {
@@ -35,10 +23,6 @@ export function LoginScreen() {
       return;
     }
     passwordReset(email);
-  };
-
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(!isPasswordVisible);
   };
 
   return (
@@ -63,34 +47,8 @@ export function LoginScreen() {
               style={styles.input}
             />
           </View>
-          <View style={styles.inputContainer}>
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              onChangeText={setPassword}
-              placeholder="Password"
-              secureTextEntry={!isPasswordVisible}
-              textContentType="password"
-              style={styles.input}
-            />
-            <TouchableOpacity
-              onPress={togglePasswordVisibility}
-              style={styles.iconContainer}
-            >
-              <Image
-                style={styles.icon}
-                source={
-                  isPasswordVisible
-                    ? require("../assets/icons/hide-password.png")
-                    : require("../assets/icons/show-password.png")
-                }
-              />
-            </TouchableOpacity>
-          </View>
           <View style={styles.buttonContainer}>
-            <Button title="Login" onPress={handleLogin} />
-            <Link href={"/register"}>Register</Link>
-            <Link href={"/forgotPassword"}>Forgot Password?</Link>
+            <Button title="Reset Password" onPress={handlePasswordReset} />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -127,13 +85,6 @@ const styles = StyleSheet.create({
     borderColor: "gray",
     borderWidth: 1,
     borderRadius: 5,
-  },
-  iconContainer: {
-    padding: 10,
-  },
-  icon: {
-    width: 30,
-    height: 30,
   },
   buttonContainer: {
     flexDirection: "row",
