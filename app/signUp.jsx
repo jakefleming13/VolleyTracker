@@ -41,16 +41,12 @@ export default function SignUp(){
 
     setLoading(true)
 
-    let response = await register(emailRef.current, passwordRef.current)
+    await register(emailRef.current, passwordRef.current)
     setLoading(false)
-    console.log(response)
-
-
-
+   
 
   };
 
-  
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!isPasswordVisible);

@@ -102,7 +102,7 @@ export default function SignIn(){
           
         
           <View style={styles.buttonContainer}>
-            <Button title="Login" onPress={handleLogin} />
+
             <View>
 
             {
