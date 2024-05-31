@@ -11,16 +11,19 @@ export const AuthContextProvider = ({children}) => {
     const [user, setUser] = useState(null)
     const [initializing, setInitializing] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(undefined)
+    const [loading, setLoading] = useState(false);
 
     const onAuthStateChanged = async (newUser) => {
-        setUser(newUser);
-        setIsAuthenticated(!!newUser);
+        setLoading(true);
         if (newUser) {
             await updateUserData(newUser.uid);
+            setIsAuthenticated(true);
+        } else {
+            setUser(null);
+            setIsAuthenticated(false);
         }
-        if (initializing) {
-            setInitializing(false);
-        }
+        setLoading(false);
+        if (initializing) setInitializing(false);
     };
 
 
@@ -31,13 +34,22 @@ export const AuthContextProvider = ({children}) => {
   }, []);
 
 
-    const updateUserData = async (userID) => {
+  const updateUserData = async (userID) => {
+    try {
         const doc = await firestore().collection('users').doc(userID).get();
         if (doc.exists) {
-            const userData = doc.data();
-            setUser(current => ({...userData }));
+            const firestoreData = doc.data();
+            setUser(prevUser => ({
+                ...prevUser,
+                ...firestoreData // Merge Firestore data with existing auth data
+            }));
+        } else {
+            console.log("No additional user data found in Firestore.");
         }
-    };
+    } catch (error) {
+        console.error("Failed to fetch user data from Firestore:", error);
+    }
+};
 
     const login = async (email, password) => {
         try {
@@ -65,6 +77,8 @@ export const AuthContextProvider = ({children}) => {
             teamName: teamName
           
         });
+
+        await updateUserData(userID);
         Alert.alert('Success', 'You are successfully registered!');
         } catch (error) {
         const message = getFirebaseErrorMessage(error.code);
