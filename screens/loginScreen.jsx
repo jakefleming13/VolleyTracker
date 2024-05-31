@@ -12,8 +12,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeView } from "../components/SafeView";
-import { signIn, signUp, passwordReset } from "../services/authService";
+import { signIn, passwordReset } from "../services/authService";
 import auth from "@react-native-firebase/auth";
+import { Link, router } from "expo-router";
 
 export function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -26,14 +27,6 @@ export function LoginScreen() {
       return;
     }
     signIn(email, password);
-  };
-
-  const handleSignUp = () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please fill in both email and password.");
-      return;
-    }
-    signUp(email, password);
   };
 
   const handlePasswordReset = async () => {
@@ -96,8 +89,8 @@ export function LoginScreen() {
           </View>
           <View style={styles.buttonContainer}>
             <Button title="Login" onPress={handleLogin} />
-            <Button title="Sign Up" onPress={handleSignUp} />
-            <Button title="Reset Password" onPress={handlePasswordReset} />
+            <Link href={"/register"}>Register</Link>
+            <Link href={"/forgotPassword"}>Forgot Password?</Link>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
