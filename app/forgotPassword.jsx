@@ -16,10 +16,15 @@ import { SafeView } from "../components/SafeView";
 
 
 export default function forgotPassword() {
-  const [email, setEmail] = useState("");
-
+  
+  const emailRef = useRef("")
+ 
    // Reset password
-   const passwordReset = async (email) => {
+   const passwordReset = async () => {
+    if (!emailRef.current) {
+      Alert.alert("Error", "Please Fill in email.");
+      return;
+    }
     try {
         await auth().sendPasswordResetEmail(email);
         Alert.alert('Password Reset', 'Check your email to reset your password.');
@@ -46,7 +51,7 @@ export default function forgotPassword() {
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType="email-address"
-              onChangeText={setEmail}
+              onChangeText={value => emailRef.current = value}
               placeholder="Email"
               textContentType="emailAddress"
               style={styles.input}

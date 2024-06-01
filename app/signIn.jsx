@@ -44,7 +44,7 @@ export default function SignIn(){
 
  
   const handlePasswordReset = async () => {
-    if (!email) {
+    if (!emailRef.current) {
       Alert.alert("Error", "Please enter your email address.");
       return;
     }
