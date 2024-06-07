@@ -18,7 +18,7 @@
       "bundleIdentifier": "com.cmpt496.VolleyTracker"
     },
     "android": {
-      "googleServicesFile": "google-services.json",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/react-logo.png",
         "backgroundColor": "#ffffff"
@@ -28,7 +28,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/react-logo.png.png"
+      "favicon": "./assets/images/react-logo.png"
     },
     "plugins": [
       "expo-router",
@@ -40,7 +40,9 @@
           }
         }
       ],
-      "@react-native-firebase/app"
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      "@react-native-firebase/crashlytics"
     ],
     "experiments": {
       "typedRoutes": true
