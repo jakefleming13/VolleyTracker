@@ -1,35 +1,34 @@
-import {Pressable, Text } from 'react-native'
-import React from 'react'
-import { useRef } from 'react';
-import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import { Pressable, Text } from "react-native";
+import React from "react";
+import { useRef } from "react";
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from "react-native-responsive-screen";
 import { useState } from "react";
-import Loading from '../components/Loading'
+import Loading from "../components/Loading";
 import {
   View,
   TextInput,
-  Button,
   Image,
   StyleSheet,
   Alert,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
   TouchableOpacity,
 } from "react-native";
 import { SafeView } from "../components/SafeView";
+import { useRouter } from "expo-router";
+import { useAuth } from "../context/authContext";
+import { RFValue } from "react-native-responsive-fontsize";
 
-import { useRouter } from 'expo-router';
-import {useAuth} from '../context/authContext'
-
-export default function SignIn(){
-  const router = useRouter()
+export default function SignIn() {
+  const router = useRouter();
   // All auth related events should come from custom hook
-  const {login} = useAuth()
-  const [loading, setLoading] = useState(false)
+  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
 
-// useRef instead of useState because everryime state changes in useState, whole component re-renders
-  const emailRef = useRef("")
-  const passwordRef = useRef("")
+  // useRef instead of useState because everryime state changes in useState, whole component re-renders
+  const emailRef = useRef("");
+  const passwordRef = useRef("");
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
   const handleLogin = async () => {
@@ -37,109 +36,62 @@ export default function SignIn(){
       Alert.alert("Error", "Please fill in both email and password.");
       return;
     }
-    setLoading(true)
-    await login(emailRef.current, passwordRef.current)
-    setLoading(false)
-  };
-
- 
-  const handlePasswordReset = async () => {
-    if (!emailRef.current) {
-      Alert.alert("Error", "Please enter your email address.");
-      return;
-    }
-    passwordReset(emailRef.current);
-  };
-
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(!isPasswordVisible);
+    setLoading(true);
+    await login(emailRef.current, passwordRef.current);
+    setLoading(false);
   };
 
   return (
     <SafeView style={styles.container}>
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <Image
-            style={styles.logo}
-            source={require("../assets/images/react-logo.png")}
-          />
-          <View style={styles.inputContainer}>
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="email-address"
-              onChangeText={value => emailRef.current = value}
-              placeholder="Email"
-              textContentType="emailAddress"
-              style={styles.input}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              onChangeText={value => passwordRef.current = value}
-              placeholder="Password"
-              secureTextEntry={!isPasswordVisible}
-              textContentType="password"
-              style={styles.input}
-            />
-            <TouchableOpacity
-              onPress={togglePasswordVisibility}
-              style={styles.iconContainer}
-            >
-              <Image
-                style={styles.icon}
-                source={
-                  isPasswordVisible
-                    ? require("../assets/icons/hide-password.png")
-                    : require("../assets/icons/show-password.png")
-                }
-              />
-            </TouchableOpacity>
-          </View>
-          
-        
-          <View style={styles.buttonContainer}>
+      <Image
+        style={styles.logo}
+        source={require("../assets/images/VolleyTracker_logo.png")}
+      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="email-address"
+          onChangeText={(value) => (emailRef.current = value)}
+          placeholder="Email..."
+          textContentType="emailAddress"
+          style={styles.input}
+        />
+      </View>
+      <View style={styles.inputContainer}>
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={(value) => (passwordRef.current = value)}
+          placeholder="Password..."
+          secureTextEntry={!isPasswordVisible}
+          textContentType="password"
+          style={styles.input}
+        />
+      </View>
+      <View>
+        <Pressable onPress={() => router.push("forgotPassword")}>
+          <Text style={styles.forgotText}>Forgot Password?</Text>
+        </Pressable>
+      </View>
 
+      <TouchableOpacity style={styles.buttonContainer} onPress={handleLogin}>
+        <View>
+          {loading ? (
             <View>
-
-            {
-                loading? (
-                    <View>
-                        <Loading size = {hp(7)} />
-                    </View>
-                ): (
-                    <Button title="Login" onPress={handleLogin} />
-                )
-
-
-            }
+              <Loading size={hp(7)} />
             </View>
+          ) : (
+            <Text style={styles.loginText}>LOGIN</Text>
+          )}
+        </View>
+      </TouchableOpacity>
 
-            <View>
-
-            <Button title="Reset Password" onPress={handlePasswordReset} />
-
-            </View>
-
-            </View>
-
-
-            <View>
-                <Text style = {{fontSize: hp(1.8)}}>Don't have an account?</Text>
-
-                <Pressable onPress = { () => router.push("signUp")}>
-                <Text style = {{fontSize: hp(1.8), color: 'blue'}}>Sign Up</Text>
-                </Pressable>
-            </View>
-            
-
-        </ScrollView>
-      </KeyboardAvoidingView>
+      <View>
+        <Pressable onPress={() => router.push("signUp")}>
+          <Text style={styles.signUpText}>Sign Up</Text>
+        </Pressable>
+      </View>
     </SafeView>
   );
 }
@@ -147,44 +99,45 @@ export default function SignIn(){
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
-  },
-  scrollContainer: {
-    flexGrow: 1,
     justifyContent: "center",
-    alignItems: "center",
   },
   logo: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
+    width: wp(30),
+    height: hp(30),
+    marginBottom: 70,
   },
   inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-    width: "80%",
+    width: "70%",
+    backgroundColor: "#A6CAD6",
+    borderRadius: 25,
+    height: 55,
+    marginBottom: 20,
+    justifyContent: "center",
+    padding: 15,
   },
   input: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: "white",
-    borderColor: "gray",
-    borderWidth: 1,
-    borderRadius: 5,
-  },
-  iconContainer: {
-    padding: 10,
-  },
-  icon: {
-    width: 30,
-    height: 30,
+    fontSize: RFValue(10),
   },
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "80%",
-    marginBottom: 10,
+    width: "70%",
+    backgroundColor: "#26819E",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 50,
+    marginBottom: 15,
+  },
+  signUpText: {
+    fontSize: RFValue(15),
+    color: "#26819E",
+  },
+  forgotText: {
+    fontSize: RFValue(10),
+    color: "#26819E",
+  },
+  loginText: {
+    fontSize: RFValue(10),
   },
 });
