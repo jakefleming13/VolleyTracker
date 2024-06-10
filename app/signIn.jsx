@@ -1,4 +1,4 @@
-import { Pressable, Text } from "react-native";
+import { Pressable, Text, ScrollView } from "react-native";
 import React from "react";
 import { useRef } from "react";
 import {
@@ -19,6 +19,8 @@ import { SafeView } from "../components/SafeView";
 import { useRouter } from "expo-router";
 import { useAuth } from "../context/authContext";
 import { RFValue } from "react-native-responsive-fontsize";
+import { Dimensions } from "react-native";
+import { COLORS } from "../constants/Colors";
 
 export default function SignIn() {
   const router = useRouter();
@@ -30,6 +32,14 @@ export default function SignIn() {
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const [isPasswordVisible, setPasswordVisible] = useState(false);
+
+  const windowWidth = Dimensions.get("window").width;
+  const windowHeight = Dimensions.get("window").height;
+
+  const tabletLogo = require("../assets/images/VolleyTracker_logo.png");
+  const phoneLogo = require("../assets/icons/VolleyTracker_icon.png");
+  const loginLogo =
+    windowWidth < 500 || windowHeight < 500 ? phoneLogo : tabletLogo;
 
   const handleLogin = async () => {
     if (!emailRef.current || !passwordRef.current) {
@@ -43,10 +53,9 @@ export default function SignIn() {
 
   return (
     <SafeView style={styles.container}>
-      <Image
-        style={styles.logo}
-        source={require("../assets/images/VolleyTracker_logo.png")}
-      />
+      {/* TODO: get Scrolling working for phones, tablet works great */}
+      {/* <ScrollView contentContainerStyle={styles.scrollContainer}> */}
+      <Image style={styles.logo} source={loginLogo} resizeMode="contain" />
       <View style={styles.inputContainer}>
         <TextInput
           autoCapitalize="none"
@@ -56,6 +65,7 @@ export default function SignIn() {
           placeholder="Email..."
           textContentType="emailAddress"
           style={styles.input}
+          maxLength={30}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -67,6 +77,7 @@ export default function SignIn() {
           secureTextEntry={!isPasswordVisible}
           textContentType="password"
           style={styles.input}
+          maxLength={30}
         />
       </View>
       <View>
@@ -74,7 +85,6 @@ export default function SignIn() {
           <Text style={styles.forgotText}>Forgot Password?</Text>
         </Pressable>
       </View>
-
       <TouchableOpacity style={styles.buttonContainer} onPress={handleLogin}>
         <View>
           {loading ? (
@@ -86,12 +96,12 @@ export default function SignIn() {
           )}
         </View>
       </TouchableOpacity>
-
       <View>
         <Pressable onPress={() => router.push("signUp")}>
           <Text style={styles.signUpText}>Sign Up</Text>
         </Pressable>
       </View>
+      {/* </ScrollView> */}
     </SafeView>
   );
 }
@@ -99,17 +109,23 @@ export default function SignIn() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
+  },
+  scrollContainer: {
+    flex: 1,
+    width: Dimensions.get("window").width,
+    justifyContent: "center",
+    alignItems: "center",
   },
   logo: {
-    width: wp(30),
+    width: wp(40),
     height: hp(30),
-    marginBottom: 70,
+    marginBottom: 40,
   },
   inputContainer: {
     width: "70%",
-    backgroundColor: "#A6CAD6",
+    backgroundColor: COLORS.secondary,
     borderRadius: 25,
     height: 55,
     marginBottom: 20,
@@ -121,7 +137,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "70%",
-    backgroundColor: "#26819E",
+    backgroundColor: COLORS.primary,
     borderRadius: 25,
     height: 50,
     alignItems: "center",
@@ -131,11 +147,11 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     fontSize: RFValue(15),
-    color: "#26819E",
+    color: COLORS.primary,
   },
   forgotText: {
     fontSize: RFValue(10),
-    color: "#26819E",
+    color: COLORS.primary,
   },
   loginText: {
     fontSize: RFValue(10),
