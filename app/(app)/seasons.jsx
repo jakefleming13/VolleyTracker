@@ -2,7 +2,7 @@ import { View, Text } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../context/authContext";
 import { SafeView } from "../../components/SafeView";
-import { Pressable } from "react-native";
+import { TouchableOpacity } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -36,16 +36,16 @@ const seasons = () => {
   return (
     <SafeView style={styles.container}>
       <View style={styles.logoutContainer}>
-        <Pressable onPress={handleLogout}>
+        <TouchableOpacity onPress={handleLogout}>
           <View style={styles.headerBtn}>
             <Text style={styles.headerBtnText}>LOG OUT</Text>
           </View>
-        </Pressable>
-        <Pressable onPress={() => router.push("addSeason")}>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("addSeason")}>
           <View style={styles.headerBtn}>
             <Text style={styles.headerBtnText}>ADD SEASON</Text>
           </View>
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>Seasons</Text>

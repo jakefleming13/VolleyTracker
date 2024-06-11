@@ -53,7 +53,7 @@ export default function SignIn() {
 
   return (
     <SafeView style={styles.container}>
-      {/* TODO: get Scrolling working for phones, tablet works great */}
+      {/* TODO: get Scrolling working for phones in landscape mode, tablet works great */}
       {/* <ScrollView contentContainerStyle={styles.scrollContainer}> */}
       <Image style={styles.logo} source={loginLogo} resizeMode="contain" />
       <View style={styles.inputContainer}>
@@ -81,9 +81,9 @@ export default function SignIn() {
         />
       </View>
       <View>
-        <Pressable onPress={() => router.push("forgotPassword")}>
+        <TouchableOpacity onPress={() => router.push("forgotPassword")}>
           <Text style={styles.forgotText}>Forgot Password?</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <TouchableOpacity style={styles.buttonContainer} onPress={handleLogin}>
         <View>
@@ -97,9 +97,9 @@ export default function SignIn() {
         </View>
       </TouchableOpacity>
       <View>
-        <Pressable onPress={() => router.push("signUp")}>
+        <TouchableOpacity onPress={() => router.push("signUp")}>
           <Text style={styles.signUpText}>Sign Up</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
       {/* </ScrollView> */}
     </SafeView>

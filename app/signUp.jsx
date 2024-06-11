@@ -93,7 +93,7 @@ export default function SignUp() {
       </TouchableOpacity>
 
       <View>
-        <Pressable
+        <TouchableOpacity
           onPress={() => router.push("signIn")}
           style={styles.signInText}
         >
@@ -101,7 +101,7 @@ export default function SignUp() {
             Already have an account?
           </Text>
           <Text style={styles.signInText}>Sign In</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </SafeView>
   );
