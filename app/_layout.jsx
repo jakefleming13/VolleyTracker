@@ -18,7 +18,7 @@ const MainLayout = () => {
     const inApp = segments[0] == "(app)";
     if (isAuthenticated && !inApp) {
       // redirect to home
-      router.replace("home");
+      router.replace("seasons");
     } else if (isAuthenticated == false) {
       // redirect to sign in
       router.replace("signIn");
