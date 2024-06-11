@@ -61,9 +61,9 @@ export default function forgotPassword() {
         </View>
       </TouchableOpacity>
       <View>
-        <Pressable onPress={() => router.push("signIn")}>
+        <TouchableOpacity onPress={() => router.push("signIn")}>
           <Text style={styles.toLoginText}>Back To Login</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </SafeView>
   );
