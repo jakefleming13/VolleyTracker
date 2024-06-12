@@ -1,4 +1,4 @@
-import { View, Text, TextInput, ScrollView } from "react-native";
+import { View, Text, TextInput, ScrollView, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../context/authContext";
 import { SafeView } from "../../components/SafeView";
@@ -13,6 +13,37 @@ import { useState } from "react";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 export default function addSeason() {
+  const router = useRouter();
+
+  const cancelAlert = () => {
+    Alert.alert("Are you sure?", "New season data will be lost.", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Ok",
+        onPress: () => router.push("seasons"),
+      },
+    ]);
+  };
+
+  const removeAlert = () => {
+    Alert.alert("Warning", "Teams must have at least 7 players.", [
+      {
+        text: "Ok",
+      },
+    ]);
+  };
+
+  const addAlert = () => {
+    Alert.alert("Warning", "Teams can have a maximum of 24 players.", [
+      {
+        text: "Ok",
+      },
+    ]);
+  };
+
   const [teamName, setTeamName] = useState("");
 
   var [teamSize, setTeamSize] = useState(8);
@@ -68,13 +99,17 @@ export default function addSeason() {
     setTeamSize((teamSize += 1));
   };
 
-  const router = useRouter();
+  const removePlayer = () => {
+    players.shift();
+    setTeamSize((teamSize -= 1));
+  };
+
   return (
     <SafeView style={styles.container}>
       <View style={styles.cancelContainer}>
-        <TouchableOpacity onPress={() => router.push("seasons")}>
+        <TouchableOpacity onPress={cancelAlert}>
           <View style={styles.headerBtn}>
-            <Text style={styles.headerBtnText}>CANCEL</Text>
+            <Text style={styles.headerBtnText}>BACK</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -90,7 +125,7 @@ export default function addSeason() {
               keyboardType="default"
               maxLength={18}
               onChangeText={(value) => setTeamName(value)}
-              placeholder="Team Name...              "
+              placeholder="Team Name... "
               style={styles.input}
               onFocus={this.onFocus}
             />
@@ -103,7 +138,7 @@ export default function addSeason() {
               inputMode="numeric"
               maxLength={12}
               onChangeText={(value) => setTeamName(value)}
-              placeholder="Year...                 "
+              placeholder="Year..."
               style={styles.input}
             />
           </View>
@@ -113,9 +148,14 @@ export default function addSeason() {
           <Text style={styles.rosterTitleText}>Roster</Text>
         </View>
         <View style={styles.rosterTitleContainer}>
-          <TouchableOpacity onPress={addPlayer}>
-            <View style={styles.addBtn}>
-              <Text style={styles.addBtnText}>ADD PLAYER</Text>
+          <TouchableOpacity onPress={teamSize < 24 ? addPlayer : addAlert}>
+            <View style={styles.rosterBtn}>
+              <Text style={styles.rosterBtnText}>ADD PLAYER</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={teamSize > 7 ? removePlayer : removeAlert}>
+            <View style={styles.rosterBtn}>
+              <Text style={styles.rosterBtnText}>REMOVE PLAYER</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -202,7 +242,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: hp(11),
   },
-  addBtn: {
+  rosterBtn: {
     width: "80%",
     height: hp(7),
     backgroundColor: COLORS.primary,
@@ -212,7 +252,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  addBtnText: {
+  rosterBtnText: {
     fontSize: RFValue(9),
     padding: 7,
     fontWeight: "bold",
