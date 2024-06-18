@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, FlatList } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../context/authContext";
 import { SafeView } from "../../components/SafeView";
@@ -11,22 +11,36 @@ import { COLORS } from "../../constants/Colors";
 import { StyleSheet } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { AntDesign } from "@expo/vector-icons";
+import firestore from "@react-native-firebase/firestore";
+import { useState, useEffect } from "react";
+import Loading from "../../components/Loading";
 
 const seasons = () => {
-  //Temp Testing variable
-  const tempSeasons = [
-    {
-      teamName: "NAIT",
-      year: "23/24",
-    },
-    {
-      teamName: "BU",
-      year: "23/24",
-    },
-  ];
-
   const router = useRouter();
   const { logout, user } = useAuth();
+
+  const [userSeasons, setUserSeasons] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const seasonArray = firestore()
+      .collection("users")
+      .doc(user.userID)
+      .onSnapshot((querySnapshot) => {
+        setLoading(true);
+        const userSeasons = [];
+
+        userSeasons.push(querySnapshot.get("seasons"));
+
+        setUserSeasons(userSeasons);
+        setLoading(false);
+      });
+
+    return () => seasonArray();
+  }, []);
+
+  const flatArray = userSeasons.flat();
 
   const handleLogout = async () => {
     await logout();
@@ -52,10 +66,17 @@ const seasons = () => {
       </View>
       <View style={styles.seperator} />
       <View>
-        {/* Temp Variable: TODO -> change tempSeasons */}
-        {tempSeasons.map((season) => {
-          return <SeasonList name={season.teamName} year={season.year} />;
-        })}
+        <FlatList
+          data={flatArray}
+          renderItem={({ item }) => (
+            <SeasonList
+              name={item.teamName}
+              year={item.year}
+              seasonID={item.seasonID}
+            />
+          )}
+          keyExtractor={(item) => item.seasonID}
+        />
       </View>
     </SafeView>
   );
@@ -122,7 +143,9 @@ const styles = StyleSheet.create({
   },
 });
 
-const SeasonList = ({ name, year }) => {
+const SeasonList = ({ name, year, seasonID }) => {
+  //TODO: Prop Drill seasonID into seasonHome Screen ny adding a touchableOpacity with onPress to 
+  //route to the seasonHome Screen
   return (
     <View style={styles.seasonListContainer}>
       <Text style={styles.seasonListText}>

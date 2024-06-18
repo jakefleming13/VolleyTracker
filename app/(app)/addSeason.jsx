@@ -2,7 +2,7 @@ import { View, Text, TextInput, ScrollView, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../context/authContext";
 import { SafeView } from "../../components/SafeView";
-import { Pressable, TouchableOpacity, StyleSheet } from "react-native";
+import { TouchableOpacity, StyleSheet } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -11,9 +11,12 @@ import { COLORS } from "../../constants/Colors";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useState } from "react";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import firestore from "@react-native-firebase/firestore";
+import { FieldValue } from "@react-native-firebase/firestore";
 
 export default function addSeason() {
   const router = useRouter();
+  const { logout, user } = useAuth();
 
   const cancelAlert = () => {
     Alert.alert("Are you sure?", "New season data will be lost.", [
@@ -44,7 +47,16 @@ export default function addSeason() {
     ]);
   };
 
+  const confirmAlert = () => {
+    Alert.alert("Warning", "All Fields must be filled out.", [
+      {
+        text: "Ok",
+      },
+    ]);
+  };
+
   const [teamName, setTeamName] = useState("");
+  const [year, setYear] = useState("");
 
   var [teamSize, setTeamSize] = useState(8);
   var [players, setPlayers] = useState([
@@ -104,6 +116,28 @@ export default function addSeason() {
     setTeamSize((teamSize -= 1));
   };
 
+  const handleConfirm = () => {
+    //TODO: Add a firestore write to the seasons collection
+    //TODO: Add input validation on all players ensuring all fields are filled in
+
+    if (teamName && year) {
+      firestore()
+        .collection("users")
+        .doc(user.userID)
+        .update({
+          seasons: firestore.FieldValue.arrayUnion({
+            //TODO: Allow firestore to create random ID instead
+            seasonID: Math.floor(Math.random() * 100000000) + 10000,
+            teamName: teamName,
+            year: year,
+          }),
+        });
+      router.push("seasons");
+    } else {
+      confirmAlert;
+    }
+  };
+
   return (
     <SafeView style={styles.container}>
       <View style={styles.cancelContainer}>
@@ -137,7 +171,7 @@ export default function addSeason() {
               keyboardType="default"
               inputMode="numeric"
               maxLength={12}
-              onChangeText={(value) => setTeamName(value)}
+              onChangeText={(value) => setYear(value)}
               placeholder="Year..."
               style={styles.input}
             />
@@ -164,7 +198,7 @@ export default function addSeason() {
           return <RosterPlayer playerID={player.playerID} />;
         })}
         <View style={styles.confirmContainer}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleConfirm}>
             <View style={styles.confirmBtn}>
               <Text style={styles.confirmBtnText}>CONFRIM</Text>
             </View>
