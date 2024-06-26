@@ -581,7 +581,7 @@ export default function addSeason() {
             onPress={checkInputFields() == false ? confirmAlert : handleConfirm}
           >
             <View style={styles.confirmBtn}>
-              <Text style={styles.confirmBtnText}>CONFRIM</Text>
+              <Text style={styles.confirmBtnText}>CONFIRM</Text>
             </View>
           </TouchableOpacity>
         </View>
