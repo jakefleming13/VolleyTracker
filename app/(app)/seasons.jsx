@@ -144,20 +144,23 @@ const styles = StyleSheet.create({
 });
 
 const SeasonList = ({ name, year, seasonID }) => {
-  //TODO: Prop Drill seasonID into seasonHome Screen ny adding a touchableOpacity with onPress to 
+  const router = useRouter();
+  //TODO: Prop Drill seasonID into seasonHome Screen ny adding a touchableOpacity with onPress to
   //route to the seasonHome Screen
   return (
-    <View style={styles.seasonListContainer}>
-      <Text style={styles.seasonListText}>
-        {name}, {year}
-      </Text>
-      <AntDesign
-        style={styles.seasonListIcon}
-        name="right"
-        size={hp(3.7)}
-        color={COLORS.black}
-      />
-    </View>
+    <TouchableOpacity onPress={() => router.push("seasonHome")}>
+      <View style={styles.seasonListContainer}>
+        <Text style={styles.seasonListText}>
+          {name}, {year}
+        </Text>
+        <AntDesign
+          style={styles.seasonListIcon}
+          name="right"
+          size={hp(3.7)}
+          color={COLORS.black}
+        />
+      </View>
+    </TouchableOpacity>
   );
 };
 
