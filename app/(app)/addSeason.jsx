@@ -12,7 +12,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { useState } from "react";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import firestore from "@react-native-firebase/firestore";
-import { FieldValue } from "@react-native-firebase/firestore";
+import { automatedID } from "../../services/automatedID";
 
 export default function addSeason() {
   const router = useRouter();
@@ -64,78 +64,394 @@ export default function addSeason() {
       playerName: "",
       playerNumber: "",
       playerID: 8,
+      setsWon: 0,
+      setsLost: 0,
+      matchesPlayed: 0,
+      setsPlayed: 0,
+      attempts: 0,
+      kills: 0,
+      attackErrors: 0,
+      assists: 0,
+      assistsPerSet: 0.0,
+      digs: 0,
+      digErrors: 0,
+      digsPerSet: 0,
+      totalBlocks: 0,
+      blockSolos: 0,
+      blockAssists: 0,
+      aces: 0,
+      serveAttempts: 0,
+      missedServes: 0,
+      passingAttempts: 0,
+      handPassingAttempts: 0,
+      forearmPassingAttempts: 0,
+      totalPassingAverage: 0.0,
+      handPassingAverage: 0.0,
+      forearmPassingAverage: 0.0,
+      pts: 0,
+      ptsPerSet: 0.0,
     },
     {
       playerName: "",
       playerNumber: "",
       playerID: 7,
+      setsWon: 0,
+      setsLost: 0,
+      matchesPlayed: 0,
+      setsPlayed: 0,
+      attempts: 0,
+      kills: 0,
+      attackErrors: 0,
+      assists: 0,
+      assistsPerSet: 0.0,
+      digs: 0,
+      digErrors: 0,
+      digsPerSet: 0,
+      totalBlocks: 0,
+      blockSolos: 0,
+      blockAssists: 0,
+      aces: 0,
+      serveAttempts: 0,
+      missedServes: 0,
+      passingAttempts: 0,
+      handPassingAttempts: 0,
+      forearmPassingAttempts: 0,
+      totalPassingAverage: 0.0,
+      handPassingAverage: 0.0,
+      forearmPassingAverage: 0.0,
+      pts: 0,
+      ptsPerSet: 0.0,
     },
     {
       playerName: "",
       playerNumber: "",
       playerID: 6,
+      setsWon: 0,
+      setsLost: 0,
+      matchesPlayed: 0,
+      setsPlayed: 0,
+      attempts: 0,
+      kills: 0,
+      attackErrors: 0,
+      assists: 0,
+      assistsPerSet: 0.0,
+      digs: 0,
+      digErrors: 0,
+      digsPerSet: 0,
+      totalBlocks: 0,
+      blockSolos: 0,
+      blockAssists: 0,
+      aces: 0,
+      serveAttempts: 0,
+      missedServes: 0,
+      passingAttempts: 0,
+      handPassingAttempts: 0,
+      forearmPassingAttempts: 0,
+      totalPassingAverage: 0.0,
+      handPassingAverage: 0.0,
+      forearmPassingAverage: 0.0,
+      pts: 0,
+      ptsPerSet: 0.0,
     },
     {
       playerName: "",
       playerNumber: "",
       playerID: 5,
+      setsWon: 0,
+      setsLost: 0,
+      matchesPlayed: 0,
+      setsPlayed: 0,
+      attempts: 0,
+      kills: 0,
+      attackErrors: 0,
+      assists: 0,
+      assistsPerSet: 0.0,
+      digs: 0,
+      digErrors: 0,
+      digsPerSet: 0,
+      totalBlocks: 0,
+      blockSolos: 0,
+      blockAssists: 0,
+      aces: 0,
+      serveAttempts: 0,
+      missedServes: 0,
+      passingAttempts: 0,
+      handPassingAttempts: 0,
+      forearmPassingAttempts: 0,
+      totalPassingAverage: 0.0,
+      handPassingAverage: 0.0,
+      forearmPassingAverage: 0.0,
+      pts: 0,
+      ptsPerSet: 0.0,
     },
     {
       playerName: "",
       playerNumber: "",
       playerID: 4,
+      setsWon: 0,
+      setsLost: 0,
+      matchesPlayed: 0,
+      setsPlayed: 0,
+      attempts: 0,
+      kills: 0,
+      attackErrors: 0,
+      assists: 0,
+      assistsPerSet: 0.0,
+      digs: 0,
+      digErrors: 0,
+      digsPerSet: 0,
+      totalBlocks: 0,
+      blockSolos: 0,
+      blockAssists: 0,
+      aces: 0,
+      serveAttempts: 0,
+      missedServes: 0,
+      passingAttempts: 0,
+      handPassingAttempts: 0,
+      forearmPassingAttempts: 0,
+      totalPassingAverage: 0.0,
+      handPassingAverage: 0.0,
+      forearmPassingAverage: 0.0,
+      pts: 0,
+      ptsPerSet: 0.0,
     },
     {
       playerName: "",
       playerNumber: "",
       playerID: 3,
+      setsWon: 0,
+      setsLost: 0,
+      matchesPlayed: 0,
+      setsPlayed: 0,
+      attempts: 0,
+      kills: 0,
+      attackErrors: 0,
+      assists: 0,
+      assistsPerSet: 0.0,
+      digs: 0,
+      digErrors: 0,
+      digsPerSet: 0,
+      totalBlocks: 0,
+      blockSolos: 0,
+      blockAssists: 0,
+      aces: 0,
+      serveAttempts: 0,
+      missedServes: 0,
+      passingAttempts: 0,
+      handPassingAttempts: 0,
+      forearmPassingAttempts: 0,
+      totalPassingAverage: 0.0,
+      handPassingAverage: 0.0,
+      forearmPassingAverage: 0.0,
+      pts: 0,
+      ptsPerSet: 0.0,
     },
     {
       playerName: "",
       playerNumber: "",
       playerID: 2,
+      setsWon: 0,
+      setsLost: 0,
+      matchesPlayed: 0,
+      setsPlayed: 0,
+      attempts: 0,
+      kills: 0,
+      attackErrors: 0,
+      assists: 0,
+      assistsPerSet: 0.0,
+      digs: 0,
+      digErrors: 0,
+      digsPerSet: 0,
+      totalBlocks: 0,
+      blockSolos: 0,
+      blockAssists: 0,
+      aces: 0,
+      serveAttempts: 0,
+      missedServes: 0,
+      passingAttempts: 0,
+      handPassingAttempts: 0,
+      forearmPassingAttempts: 0,
+      totalPassingAverage: 0.0,
+      handPassingAverage: 0.0,
+      forearmPassingAverage: 0.0,
+      pts: 0,
+      ptsPerSet: 0.0,
     },
     {
       playerName: "",
       playerNumber: "",
       playerID: 1,
+      setsWon: 0,
+      setsLost: 0,
+      matchesPlayed: 0,
+      setsPlayed: 0,
+      attempts: 0,
+      kills: 0,
+      attackErrors: 0,
+      assists: 0,
+      assistsPerSet: 0.0,
+      digs: 0,
+      digErrors: 0,
+      digsPerSet: 0,
+      totalBlocks: 0,
+      blockSolos: 0,
+      blockAssists: 0,
+      aces: 0,
+      serveAttempts: 0,
+      missedServes: 0,
+      passingAttempts: 0,
+      handPassingAttempts: 0,
+      forearmPassingAttempts: 0,
+      totalPassingAverage: 0.0,
+      handPassingAverage: 0.0,
+      forearmPassingAverage: 0.0,
+      pts: 0,
+      ptsPerSet: 0.0,
     },
   ]);
 
+  function handlePlayerNameUpdate(ID, value) {
+    const newPlayerList = [...players];
+    const update = newPlayerList.find((p) => p.playerID == ID);
+    update.playerName = value;
+    setPlayers(newPlayerList);
+  }
+
+  function handlePlayerNumberUpdate(ID, value) {
+    const newPlayerList = [...players];
+    const update = newPlayerList.find((p) => p.playerID == ID);
+    update.playerNumber = value;
+    setPlayers(newPlayerList);
+  }
+
+  //Allows users to add players to roster
   const addPlayer = () => {
     players.unshift({
       playerName: "",
       playerNumber: "",
       playerID: teamSize + 1,
+      setsWon: 0,
+      setsLost: 0,
+      matchesPlayed: 0,
+      setsPlayed: 0,
+      attempts: 0,
+      kills: 0,
+      attackErrors: 0,
+      assists: 0,
+      assistsPerSet: 0.0,
+      digs: 0,
+      digErrors: 0,
+      digsPerSet: 0,
+      totalBlocks: 0,
+      blockSolos: 0,
+      blockAssists: 0,
+      aces: 0,
+      serveAttempts: 0,
+      missedServes: 0,
+      passingAttempts: 0,
+      handPassingAttempts: 0,
+      forearmPassingAttempts: 0,
+      totalPassingAverage: 0.0,
+      handPassingAverage: 0.0,
+      forearmPassingAverage: 0.0,
+      pts: 0,
+      ptsPerSet: 0.0,
     });
     setTeamSize((teamSize += 1));
   };
 
+  //Allows users to remove players from roster
   const removePlayer = () => {
     players.shift();
     setTeamSize((teamSize -= 1));
   };
 
-  const handleConfirm = () => {
-    //TODO: Add a firestore write to the seasons collection
-    //TODO: Add input validation on all players ensuring all fields are filled in
+  //Check if all input fields are filled
+  const checkInputFields = () => {
+    val = allFieldsFilledOut = true;
 
-    if (teamName && year) {
-      firestore()
-        .collection("users")
-        .doc(user.userID)
-        .update({
-          seasons: firestore.FieldValue.arrayUnion({
-            //TODO: Allow firestore to create random ID instead
-            seasonID: Math.floor(Math.random() * 100000000) + 10000,
-            teamName: teamName,
-            year: year,
-          }),
-        });
-      router.push("seasons");
-    } else {
-      confirmAlert;
+    if (teamName == "" || year == "") {
+      allPlayersFilledOut = false;
     }
+
+    //Check if all player fields are filled in
+    for (let i = 0; i < players.length; i++) {
+      if (players[i].playerName == "" || players[i].playerNumber == "") {
+        allFieldsFilledOut = false;
+      }
+    }
+
+    return allFieldsFilledOut;
+  };
+
+  const handleConfirm = () => {
+    //Generate new season ID
+    newID = automatedID();
+
+    //add new season info in "users" collection for fast access
+    firestore()
+      .collection("users")
+      .doc(user.userID)
+      .update({
+        seasons: firestore.FieldValue.arrayUnion({
+          seasonID: newID,
+          teamName: teamName,
+          year: year,
+        }),
+      });
+
+    //Create new season in "seasons" collcetion
+    firestore()
+      .collection("seasons")
+      .doc(newID)
+      .set({
+        access: {
+          owner: user.userID,
+        },
+        seasonID: newID,
+        teamName: teamName,
+        year: year,
+      });
+
+    //Create sub-collection "seasonStats"
+    firestore().collection("seasons").doc(newID).collection("seasonStats").add({
+      setsWon: 0,
+      setsLost: 0,
+      matchesPlayed: 0,
+      matchesWon: 0,
+      matchesLost: 0,
+      setsPlayed: 0,
+      attempts: 0,
+      kills: 0,
+      attackErrors: 0,
+      assists: 0,
+      assistsPerSet: 0.0,
+      digs: 0,
+      digErrors: 0,
+      digsPerSet: 0,
+      totalBlocks: 0,
+      blockSolos: 0,
+      blockAssists: 0,
+      aces: 0,
+      serveAttempts: 0,
+      missedServes: 0,
+      passingAttempts: 0,
+      handPassingAttempts: 0,
+      forearmPassingAttempts: 0,
+      totalPassingAverage: 0.0,
+      handPassingAverage: 0.0,
+      forearmPassingAverage: 0.0,
+      pts: 0,
+      ptsPerSet: 0.0,
+    });
+
+    //Create sub-collection "playerStats"
+    firestore().collection("seasons").doc(newID).collection("playerStats").add({
+      roster: players,
+    });
+
+    //Navigate to seasons screen
+    router.push("seasons");
   };
 
   return (
@@ -195,10 +511,67 @@ export default function addSeason() {
         </View>
 
         {players.map((player) => {
-          return <RosterPlayer playerID={player.playerID} />;
+          return (
+            <View style={styles.rosterPlayerContainer}>
+              <Text style={styles.playerIDText}>
+                {player.playerID < 10
+                  ? player.playerID + "  "
+                  : player.playerID}
+              </Text>
+              <FontAwesome5
+                name="user-alt"
+                style={styles.rosterIcon}
+                size={hp(6)}
+                color="black"
+              />
+              <View style={styles.playerInputContainer}>
+                <View
+                  style={{
+                    flexDirection: "column",
+                    flex: 1,
+                  }}
+                >
+                  <Text style={styles.rosterText}>Player Name</Text>
+                  <TextInput
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    inputMode="default"
+                    maxLength={20}
+                    placeholder="Name..."
+                    style={styles.playerNameTextInput}
+                    onChangeText={(value) =>
+                      handlePlayerNameUpdate(player.playerID, value)
+                    }
+                  />
+                </View>
+                <View
+                  style={{
+                    flexDirection: "column",
+                    flex: 1,
+                    marginLeft: 20,
+                  }}
+                >
+                  <Text style={styles.rosterText}>Number</Text>
+                  <TextInput
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    inputMode="numeric"
+                    maxLength={2}
+                    placeholder="Number..."
+                    style={styles.playerNumberTextInput}
+                    onChangeText={(value) =>
+                      handlePlayerNumberUpdate(player.playerID, value)
+                    }
+                  />
+                </View>
+              </View>
+            </View>
+          );
         })}
         <View style={styles.confirmContainer}>
-          <TouchableOpacity onPress={handleConfirm}>
+          <TouchableOpacity
+            onPress={checkInputFields() == false ? confirmAlert : handleConfirm}
+          >
             <View style={styles.confirmBtn}>
               <Text style={styles.confirmBtnText}>CONFRIM</Text>
             </View>
@@ -392,6 +765,7 @@ const RosterPlayer = ({ playerID }) => {
             maxLength={20}
             placeholder="Name..."
             style={styles.playerNameTextInput}
+            onChangeText={handlePlayerNameUpdate}
           />
         </View>
         <View
@@ -409,6 +783,7 @@ const RosterPlayer = ({ playerID }) => {
             maxLength={2}
             placeholder="Number..."
             style={styles.playerNumberTextInput}
+            onChangeText={handlePlayerNumberUpdate}
           />
         </View>
       </View>
