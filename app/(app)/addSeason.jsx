@@ -15,7 +15,10 @@ import firestore from "@react-native-firebase/firestore";
 import { automatedID } from "../../services/automatedID";
 
 export default function addSeason() {
+  //get router
   const router = useRouter();
+
+  //get user
   const { logout, user } = useAuth();
 
   const cancelAlert = () => {
@@ -58,7 +61,10 @@ export default function addSeason() {
   const [teamName, setTeamName] = useState("");
   const [year, setYear] = useState("");
 
+  //Keeps track of current team size(updates when the user hits add or remove buttons)
   var [teamSize, setTeamSize] = useState(8);
+
+  //players var, uploads to the db once the user hits confrim
   var [players, setPlayers] = useState([
     {
       playerName: "",
@@ -310,6 +316,7 @@ export default function addSeason() {
     },
   ]);
 
+  //handles when a user updates a specific player name
   function handlePlayerNameUpdate(ID, value) {
     const newPlayerList = [...players];
     const update = newPlayerList.find((p) => p.playerID == ID);
@@ -317,6 +324,7 @@ export default function addSeason() {
     setPlayers(newPlayerList);
   }
 
+  //Handles when a user updates a specific player number
   function handlePlayerNumberUpdate(ID, value) {
     const newPlayerList = [...players];
     const update = newPlayerList.find((p) => p.playerID == ID);
@@ -737,56 +745,3 @@ const styles = StyleSheet.create({
     height: hp(13),
   },
 });
-
-const RosterPlayer = ({ playerID }) => {
-  return (
-    <View style={styles.rosterPlayerContainer}>
-      <Text style={styles.playerIDText}>
-        {playerID < 10 ? playerID + "  " : playerID}
-      </Text>
-      <FontAwesome5
-        name="user-alt"
-        style={styles.rosterIcon}
-        size={hp(6)}
-        color="black"
-      />
-      <View style={styles.playerInputContainer}>
-        <View
-          style={{
-            flexDirection: "column",
-            flex: 1,
-          }}
-        >
-          <Text style={styles.rosterText}>Player Name</Text>
-          <TextInput
-            autoCapitalize="none"
-            autoCorrect={false}
-            inputMode="default"
-            maxLength={20}
-            placeholder="Name..."
-            style={styles.playerNameTextInput}
-            onChangeText={handlePlayerNameUpdate}
-          />
-        </View>
-        <View
-          style={{
-            flexDirection: "column",
-            flex: 1,
-            marginLeft: 20,
-          }}
-        >
-          <Text style={styles.rosterText}>Number</Text>
-          <TextInput
-            autoCapitalize="none"
-            autoCorrect={false}
-            inputMode="numeric"
-            maxLength={2}
-            placeholder="Number..."
-            style={styles.playerNumberTextInput}
-            onChangeText={handlePlayerNumberUpdate}
-          />
-        </View>
-      </View>
-    </View>
-  );
-};
