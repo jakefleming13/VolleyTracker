@@ -376,10 +376,10 @@ export default function addSeason() {
 
   //Check if all input fields are filled
   const checkInputFields = () => {
-    val = allFieldsFilledOut = true;
+    var allFieldsFilledOut = true;
 
     if (teamName == "" || year == "") {
-      allPlayersFilledOut = false;
+      allFieldsFilledOut = false;
     }
 
     //Check if all player fields are filled in
