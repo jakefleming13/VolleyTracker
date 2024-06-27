@@ -15,30 +15,45 @@ import firestore from "@react-native-firebase/firestore";
 import { useState, useEffect } from "react";
 import Loading from "../../components/Loading";
 
+
 const seasons = () => {
   const router = useRouter();
-  const { logout, user } = useAuth();
-
+  const { user, isAuthenticated, initializing, logout } = useAuth(); 
   const [userSeasons, setUserSeasons] = useState([]);
-
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const seasonArray = firestore()
-      .collection("users")
+    if (initializing) {
+      return; // Wait for the auth initialization to complete
+    }
+    
+    // Add additional checks to ensure that app runs even if we get null user values 
+    if (!user || !user.userID) {
+      console.log('User object or userID not available', user);
+      setLoading(false);
+      return;
+    }
+    
+    const unsubscribe = firestore()
+      .collection('users')
       .doc(user.userID)
-      .onSnapshot((querySnapshot) => {
-        setLoading(true);
-        const userSeasons = [];
-
-        userSeasons.push(querySnapshot.get("seasons"));
-
-        setUserSeasons(userSeasons);
+      .onSnapshot((doc) => {
+        if (doc.exists) {
+          // Use empty array as default seasons value
+          const seasons = doc.get('seasons') || [];
+          setUserSeasons(seasons);
+        } else {
+          console.log('No additional user data found in Firestore.');
+        }
         setLoading(false);
       });
 
-    return () => seasonArray();
-  }, []);
+    return () => unsubscribe();
+  }, [user, isAuthenticated, initializing, router]);
+
+  if (initializing || loading) {
+    return <Text>Loading...</Text>; // Should have some sort of loading icon here
+  }
 
   const flatArray = userSeasons.flat();
 
