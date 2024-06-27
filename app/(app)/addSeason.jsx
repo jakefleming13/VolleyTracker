@@ -50,13 +50,6 @@ export default function addSeason() {
     ]);
   };
 
-  const confirmAlert = () => {
-    Alert.alert("Warning", "All Fields must be filled out.", [
-      {
-        text: "Ok",
-      },
-    ]);
-  };
 
   const [teamName, setTeamName] = useState("");
   const [year, setYear] = useState("");
@@ -376,21 +369,45 @@ export default function addSeason() {
 
   //Check if all input fields are filled
   const checkInputFields = () => {
-    var allFieldsFilledOut = true;
-
-    if (teamName == "" || year == "") {
-      allFieldsFilledOut = false;
-    }
-
-    //Check if all player fields are filled in
-    for (let i = 0; i < players.length; i++) {
-      if (players[i].playerName == "" || players[i].playerNumber == "") {
-        allFieldsFilledOut = false;
+    if (teamName === "") {
+      Alert.alert("Error", "Team Name must be filled out.", [
+        {
+          text: "Ok",
+        },
+      ]);
+      return false;
+    } else if (year === "") {
+      Alert.alert("Error", "Season year must be filled out.", [
+        {
+          text: "Ok",
+        },
+      ]);
+      return false;
+    } 
+    else {
+      let allFieldsFilledOut = true;
+  
+      // Check if all player fields are filled in
+      for (let i = 0; i < players.length; i++) {
+        if (players[i].playerName === "" || players[i].playerNumber === "") {
+          allFieldsFilledOut = false;
+          break;
+        }
+      }
+  
+      if (!allFieldsFilledOut) {
+        Alert.alert("Error", "All player fields must be filled out.", [
+          {
+            text: "Ok",
+          },
+        ]);
+        return false;
       }
     }
-
-    return allFieldsFilledOut;
+  
+    return true;
   };
+  
 
   const handleConfirm = () => {
     //Generate new season ID
@@ -578,7 +595,11 @@ export default function addSeason() {
         })}
         <View style={styles.confirmContainer}>
           <TouchableOpacity
-            onPress={checkInputFields() == false ? confirmAlert : handleConfirm}
+            onPress={() => {
+              if (checkInputFields()) {
+                handleConfirm();
+              }
+            }}
           >
             <View style={styles.confirmBtn}>
               <Text style={styles.confirmBtnText}>CONFIRM</Text>
