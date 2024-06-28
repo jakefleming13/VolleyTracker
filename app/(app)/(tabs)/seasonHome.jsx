@@ -50,7 +50,7 @@ const SeasonHome = () => {
   return (
     <SafeView style={styles.container}>
       <View style={styles.backContainer}>
-      <TouchableOpacity onPress={() => {
+        <TouchableOpacity onPress={() => {
           setActiveSeason(null);  // Set seasonID to null
           router.push("seasons");
         }}>
@@ -112,7 +112,10 @@ const SeasonHome = () => {
         <View style={styles.titleContainer}>
           <Text style={styles.tertiaryTitleText}>Season Stats</Text>
         </View>
-        <TouchableOpacity onPress={() => router.push("gameLog")}>
+        <TouchableOpacity onPress={() => router.push({
+          pathname: "gameLog",
+          params: { teamName: seasonData.teamName, year: seasonData.year, seasonID }
+        })}>
           <View style={styles.featureListContainer}>
             <Text style={styles.featureListText}>Game Log</Text>
             <AntDesign
@@ -123,7 +126,10 @@ const SeasonHome = () => {
             />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("playerStats")}>
+        <TouchableOpacity onPress={() => router.push({
+          pathname: "playerStats",
+          params: { teamName: seasonData.teamName, year: seasonData.year, seasonID }
+        })}>
           <View style={styles.featureListContainer}>
             <Text style={styles.featureListText}>Player Stats</Text>
             <AntDesign
@@ -134,7 +140,10 @@ const SeasonHome = () => {
             />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push("teamStats")}>
+        <TouchableOpacity onPress={() => router.push({
+          pathname: "teamStats",
+          params: { teamName: seasonData.teamName, year: seasonData.year, seasonID }
+        })}>
           <View style={styles.featureListContainer}>
             <Text style={styles.featureListText}>Team Stats</Text>
             <AntDesign
