@@ -10,11 +10,13 @@ import { COLORS } from "../../../constants/Colors";
 import { StyleSheet } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { AntDesign } from "@expo/vector-icons";
+import { useAuth } from "../../../context/authContext";
 
 const seasonHome = () => {
   const router = useRouter();
   const params = useLocalSearchParams();
   const { teamName, year, seasonID } = params;
+  const { season } = useAuth();
 
   return (
     <SafeView style={styles.container}>

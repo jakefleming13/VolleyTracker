@@ -15,15 +15,21 @@ import firestore from "@react-native-firebase/firestore";
 import { useState, useEffect } from "react";
 import Loading from "../../components/Loading";
 
-const seasons = () => {
+const Seasons = () => {
   const router = useRouter();
-  const { user, isAuthenticated, initializing, logout } = useAuth();
+  const { user, isAuthenticated, initializing, logout, season, setActiveSeason } = useAuth();
   const [userSeasons, setUserSeasons] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (initializing) {
       return; // Wait for the auth initialization to complete
+    }
+
+    // Check if there is already an active season
+    if (season) {
+      router.push("seasonHome");
+      return;
     }
 
     // Add additional checks to ensure that app runs even if we get null user values
@@ -48,7 +54,7 @@ const seasons = () => {
       });
 
     return () => unsubscribe();
-  }, [user, isAuthenticated, initializing, router]);
+  }, [user, isAuthenticated, initializing, season, router]);
 
   if (initializing || loading) {
     return <Text>Loading...</Text>; // Should have some sort of loading icon here
@@ -59,6 +65,11 @@ const seasons = () => {
   const handleLogout = async () => {
     await logout();
     router.push("signIn");
+  };
+
+  const handleSeasonSelect = async (seasonID) => {
+    await setActiveSeason(seasonID);
+    router.push("seasonHome");
   };
 
   return (
@@ -87,6 +98,7 @@ const seasons = () => {
               name={item.teamName}
               year={item.year}
               seasonID={item.seasonID}
+              onSelect={handleSeasonSelect}
             />
           )}
           keyExtractor={(item) => item.seasonID}
@@ -157,17 +169,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const SeasonList = ({ name, year, seasonID }) => {
-  const router = useRouter();
-  //TODO: Prop Drill seasonID into seasonHome Screen
+const SeasonList = ({ name, year, seasonID, onSelect }) => {
   return (
     <TouchableOpacity
-      onPress={() =>
-        router.push({
-          pathname: "seasonHome",
-          params: { teamName: name, year: year, seasonID: seasonID },
-        })
-      }
+      onPress={() => onSelect(seasonID)}
     >
       <View style={styles.seasonListContainer}>
         <Text style={styles.seasonListText}>
@@ -184,4 +189,4 @@ const SeasonList = ({ name, year, seasonID }) => {
   );
 };
 
-export default seasons;
+export default Seasons;

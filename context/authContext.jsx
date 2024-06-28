@@ -4,6 +4,7 @@ import auth from "@react-native-firebase/auth";
 import { Alert } from "react-native";
 import { getFirebaseErrorMessage } from "../services/firebaseErrorHandling";
 import firestore from "@react-native-firebase/firestore";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const AuthContext = createContext();
 
@@ -12,6 +13,7 @@ export const AuthContextProvider = ({ children }) => {
   const [initializing, setInitializing] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(undefined);
   const [loading, setLoading] = useState(false);
+  const [season, setSeason] = useState(null);
 
   const onAuthStateChanged = async (newUser) => {
     setLoading(true);
@@ -29,6 +31,15 @@ export const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
 
+    // Load season from local storage
+    const loadSeason = async () => {
+      const storedSeason = await AsyncStorage.getItem('activeSeason');
+      if (storedSeason) {
+        setSeason(JSON.parse(storedSeason));
+      }
+    };
+
+    loadSeason();
     return subscriber;
   }, []);
 
@@ -58,17 +69,14 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
-  // Register new user
   const register = async (email, password, coachName) => {
     try {
-      // add user to auth
       const userCredential = await auth().createUserWithEmailAndPassword(
         email,
         password
       );
       const userID = userCredential.user.uid;
 
-      // Create document for user profile
       await firestore()
         .collection("users")
         .doc(userID) // set collection ID to user ID
@@ -90,17 +98,25 @@ export const AuthContextProvider = ({ children }) => {
   const logout = async () => {
     try {
       await auth().signOut();
+      setSeason(null);
+      await AsyncStorage.removeItem('activeSeason');
     } catch (error) {
       const message = getFirebaseErrorMessage(error.code);
-      Alert.alert("Login Failed", message);
+      Alert.alert("Logout Failed", message);
     }
+  };
+
+  const setActiveSeason = async (seasonID) => {
+    // Set's the currently active season to local storage
+    setSeason(seasonID);
+    await AsyncStorage.setItem('activeSeason', JSON.stringify(seasonID));
   };
 
   if (initializing) return null;
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated, login, register, logout }}
+      value={{ user, isAuthenticated, login, register, logout, season, setActiveSeason }}
     >
       {children}
     </AuthContext.Provider>
