@@ -17,7 +17,7 @@ import Loading from "../../components/Loading";
 
 const Seasons = () => {
   const router = useRouter();
-  const { user, isAuthenticated, initializing, logout, season, setActiveSeason } = useAuth();
+  const { user, isAuthenticated, initializing, logout, seasonID, setActiveSeason } = useAuth();
   const [userSeasons, setUserSeasons] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +27,7 @@ const Seasons = () => {
     }
 
     // Check if there is already an active season
-    if (season) {
+    if (seasonID) {
       router.push("seasonHome");
       return;
     }
@@ -54,7 +54,7 @@ const Seasons = () => {
       });
 
     return () => unsubscribe();
-  }, [user, isAuthenticated, initializing, season, router]);
+  }, [user, isAuthenticated, initializing, seasonID, router]);
 
   if (initializing || loading) {
     return <Text>Loading...</Text>; // Should have some sort of loading icon here

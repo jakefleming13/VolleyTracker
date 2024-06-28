@@ -11,19 +11,49 @@ import { StyleSheet } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { AntDesign } from "@expo/vector-icons";
 import { useAuth } from "../../../context/authContext";
+import firestore from "@react-native-firebase/firestore";
+import { useState, useEffect } from "react";
 
 const SeasonHome = () => {
   const router = useRouter();
-  const { season } = useAuth();
+  const { seasonID, user, setActiveSeason } = useAuth();
+  const [seasonData, setSeasonData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!season) {
-    return <Text>Loading...</Text>;
+  useEffect(() => {
+    if (seasonID && user) {
+      const fetchSeasonData = async () => {
+        try {
+          const seasonDoc = await firestore()
+            .collection("seasons")
+            .doc(seasonID)
+            .get();
+          if (seasonDoc.exists) {
+            setSeasonData(seasonDoc.data());
+          } else {
+            console.log("No season data found.");
+          }
+        } catch (error) {
+          console.error("Failed to fetch season data:", error);
+        }
+        setLoading(false);
+      };
+
+      fetchSeasonData();
+    }
+  }, [seasonID, user]);
+
+  if (loading || !seasonData) {
+    return <Text>Loading...</Text>; // Show a loading state if the season data is not available
   }
 
   return (
     <SafeView style={styles.container}>
       <View style={styles.backContainer}>
-        <TouchableOpacity onPress={() => router.push("seasons")}>
+      <TouchableOpacity onPress={() => {
+          setActiveSeason(null);  // Set seasonID to null
+          router.push("seasons");
+        }}>
           <View style={styles.headerBtn}>
             <AntDesign
               style={styles.backIcon}
@@ -37,7 +67,7 @@ const SeasonHome = () => {
       </View>
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>
-          {season.teamName}, {season.year}
+          {seasonData.teamName}, {seasonData.year}
         </Text>
       </View>
       <ScrollView>
@@ -82,13 +112,7 @@ const SeasonHome = () => {
         <View style={styles.titleContainer}>
           <Text style={styles.tertiaryTitleText}>Season Stats</Text>
         </View>
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "gameLog",
-            })
-          }
-        >
+        <TouchableOpacity onPress={() => router.push("gameLog")}>
           <View style={styles.featureListContainer}>
             <Text style={styles.featureListText}>Game Log</Text>
             <AntDesign
@@ -99,13 +123,7 @@ const SeasonHome = () => {
             />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "playerStats",
-            })
-          }
-        >
+        <TouchableOpacity onPress={() => router.push("playerStats")}>
           <View style={styles.featureListContainer}>
             <Text style={styles.featureListText}>Player Stats</Text>
             <AntDesign
@@ -116,13 +134,7 @@ const SeasonHome = () => {
             />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "teamStats",
-            })
-          }
-        >
+        <TouchableOpacity onPress={() => router.push("teamStats")}>
           <View style={styles.featureListContainer}>
             <Text style={styles.featureListText}>Team Stats</Text>
             <AntDesign
