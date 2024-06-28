@@ -1,6 +1,5 @@
-import { View, Text, FlatList } from "react-native";
+import { View, Text } from "react-native";
 import { useRouter } from "expo-router";
-import { useAuth } from "../../../context/authContext";
 import { SafeView } from "../../../components/SafeView";
 import { TouchableOpacity } from "react-native";
 import {
@@ -11,8 +10,6 @@ import { COLORS } from "../../../constants/Colors";
 import { StyleSheet } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { AntDesign } from "@expo/vector-icons";
-import firestore from "@react-native-firebase/firestore";
-import { useState, useEffect } from "react";
 
 export default function settings() {
   const router = useRouter();
@@ -20,7 +17,7 @@ export default function settings() {
   return (
     <SafeView style={styles.container}>
       <View style={styles.backContainer}>
-        <TouchableOpacity onPress={() => router.replace("seasons")}>
+        <TouchableOpacity onPress={() => router.push("seasons")}>
           <View style={styles.headerBtn}>
             <AntDesign
               style={styles.seasonListIcon}
@@ -52,7 +49,7 @@ const styles = StyleSheet.create({
   },
   headerBtn: {
     flexDirection: "row",
-    width: "40%",
+    width: "42%",
     height: hp(7),
     backgroundColor: COLORS.primary,
     borderRadius: 20,
@@ -63,7 +60,7 @@ const styles = StyleSheet.create({
   },
   headerBtnText: {
     fontSize: RFValue(9),
-    padding: 3,
+    paddingRight: 3,
     fontWeight: "bold",
     textAlign: "center",
     color: COLORS.white,
