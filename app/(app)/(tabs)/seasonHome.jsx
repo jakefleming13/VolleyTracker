@@ -1,5 +1,5 @@
 import { View, Text, ScrollView } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter } from "expo-router";
 import { SafeView } from "../../../components/SafeView";
 import { TouchableOpacity } from "react-native";
 import {
@@ -12,11 +12,13 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { AntDesign } from "@expo/vector-icons";
 import { useAuth } from "../../../context/authContext";
 
-const seasonHome = () => {
+const SeasonHome = () => {
   const router = useRouter();
-  const params = useLocalSearchParams();
-  const { teamName, year, seasonID } = params;
   const { season } = useAuth();
+
+  if (!season) {
+    return <Text>Loading...</Text>;
+  }
 
   return (
     <SafeView style={styles.container}>
@@ -35,7 +37,7 @@ const seasonHome = () => {
       </View>
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>
-          {teamName}, {year}
+          {season.teamName}, {season.year}
         </Text>
       </View>
       <ScrollView>
@@ -84,7 +86,6 @@ const seasonHome = () => {
           onPress={() =>
             router.push({
               pathname: "gameLog",
-              params: { teamName: teamName, year: year, seasonID: seasonID },
             })
           }
         >
@@ -102,7 +103,6 @@ const seasonHome = () => {
           onPress={() =>
             router.push({
               pathname: "playerStats",
-              params: { teamName: teamName, year: year, seasonID: seasonID },
             })
           }
         >
@@ -120,7 +120,6 @@ const seasonHome = () => {
           onPress={() =>
             router.push({
               pathname: "teamStats",
-              params: { teamName: teamName, year: year, seasonID: seasonID },
             })
           }
         >
@@ -223,4 +222,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default seasonHome;
+export default SeasonHome;

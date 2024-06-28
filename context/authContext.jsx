@@ -13,16 +13,18 @@ export const AuthContextProvider = ({ children }) => {
   const [initializing, setInitializing] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(undefined);
   const [loading, setLoading] = useState(false);
-  const [season, setSeason] = useState(null);
+  const [seasonID, setSeasonID] = useState(null);
 
   const onAuthStateChanged = async (newUser) => {
     setLoading(true);
     if (newUser) {
       await updateUserData(newUser.uid);
       setIsAuthenticated(true);
+      await loadSeasonID(); // Load seasonID on login
     } else {
       setUser(null);
       setIsAuthenticated(false);
+      setSeasonID(null);
     }
     setLoading(false);
     if (initializing) setInitializing(false);
@@ -30,16 +32,6 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-
-    // Load season from local storage
-    const loadSeason = async () => {
-      const storedSeason = await AsyncStorage.getItem('activeSeason');
-      if (storedSeason) {
-        setSeason(JSON.parse(storedSeason));
-      }
-    };
-
-    loadSeason();
     return subscriber;
   }, []);
 
@@ -98,8 +90,8 @@ export const AuthContextProvider = ({ children }) => {
   const logout = async () => {
     try {
       await auth().signOut();
-      setSeason(null);
-      await AsyncStorage.removeItem('activeSeason');
+      setSeasonID(null);
+      await AsyncStorage.removeItem('activeSeasonID'); // Clear local storage on logout
     } catch (error) {
       const message = getFirebaseErrorMessage(error.code);
       Alert.alert("Logout Failed", message);
@@ -107,16 +99,22 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   const setActiveSeason = async (seasonID) => {
-    // Set's the currently active season to local storage
-    setSeason(seasonID);
-    await AsyncStorage.setItem('activeSeason', JSON.stringify(seasonID));
+    setSeasonID(seasonID);
+    await AsyncStorage.setItem('activeSeasonID', seasonID);
+  };
+
+  const loadSeasonID = async () => {
+    const storedSeasonID = await AsyncStorage.getItem('activeSeasonID');
+    if (storedSeasonID) {
+      setSeasonID(storedSeasonID);
+    }
   };
 
   if (initializing) return null;
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated, login, register, logout, season, setActiveSeason }}
+      value={{ user, isAuthenticated, login, register, logout, seasonID, setActiveSeason }}
     >
       {children}
     </AuthContext.Provider>
