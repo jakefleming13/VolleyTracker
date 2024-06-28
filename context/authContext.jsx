@@ -99,9 +99,15 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   const setActiveSeason = async (seasonID) => {
-    setSeasonID(seasonID);
-    await AsyncStorage.setItem('activeSeasonID', seasonID);
+    if (seasonID) {
+      setSeasonID(seasonID);
+      await AsyncStorage.setItem('activeSeasonID', seasonID);
+    } else {
+      setSeasonID(null);
+      await AsyncStorage.removeItem('activeSeasonID'); // Use removeItem for null value
+    }
   };
+  
 
   const loadSeasonID = async () => {
     const storedSeasonID = await AsyncStorage.getItem('activeSeasonID');
