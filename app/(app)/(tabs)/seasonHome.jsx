@@ -21,6 +21,8 @@ const SeasonHome = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+
+    // Grab season by season ID from firebase, then setSeasonData
     if (seasonID && user) {
       const fetchSeasonData = async () => {
         try {
@@ -44,7 +46,7 @@ const SeasonHome = () => {
   }, [seasonID, user]);
 
   if (loading || !seasonData) {
-    return <Text>Loading...</Text>; // Show a loading state if the season data is not available
+    return <Text>Loading...</Text>;
   }
 
   return (
