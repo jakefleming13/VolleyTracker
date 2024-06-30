@@ -14,19 +14,13 @@ import { AntDesign } from "@expo/vector-icons";
 export default function gameLog() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const { teamName, year, seasonID } = params;
+  const { currentLocalTeamName, currentLocalYear, currentLocalSeasonID } =
+    params;
 
   return (
     <SafeView style={styles.container}>
       <View style={styles.backContainer}>
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "seasonHome",
-              params: { teamName: teamName, year: year, seasonID: seasonID },
-            })
-          }
-        >
+        <TouchableOpacity onPress={() => router.push("seasonHome")}>
           <View style={styles.headerBtn}>
             <AntDesign
               style={styles.backIcon}
@@ -40,7 +34,7 @@ export default function gameLog() {
       </View>
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>
-          {teamName}, {year}
+          {currentLocalTeamName}, {currentLocalYear}
         </Text>
       </View>
       <ScrollView>
