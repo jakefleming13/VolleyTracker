@@ -2,7 +2,6 @@ import { View, Text, ScrollView } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeView } from "../../components/SafeView";
 import { TouchableOpacity } from "react-native";
-import { useAuth } from "../../context/authContext";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -11,11 +10,8 @@ import { COLORS } from "../../constants/Colors";
 import { StyleSheet } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { AntDesign } from "@expo/vector-icons";
-import { useState, useEffect } from "react";
-import firestore from "@react-native-firebase/firestore";
-import Loading from "../../components/Loading";
 
-export default function teamStats() {
+export default function statGamePrep() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const { currentLocalTeamName, currentLocalYear, currentLocalSeasonID } =
@@ -32,23 +28,39 @@ export default function teamStats() {
               size={hp(3.7)}
               color={COLORS.white}
             />
-            <Text style={styles.headerBtnText}>HOME</Text>
+            <Text style={styles.headerBtnText}>CANCEL</Text>
           </View>
         </TouchableOpacity>
       </View>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>
-          {currentLocalTeamName}, {currentLocalYear}
-        </Text>
+        <Text style={styles.titleText}>New Game</Text>
       </View>
       <ScrollView>
         <View style={styles.seperator} />
 
-        <View style={styles.titleContainer}>
-          <Text style={styles.secondaryTitleText}>Team Stats</Text>
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>View</Text>
         </View>
-        <View style={styles.titleContainer}>
-          <Text style={styles.spacerText}></Text>
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>Game Type</Text>
+        </View>
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>Sets</Text>
+        </View>
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>Opponent</Text>
+        </View>
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>Location</Text>
+        </View>
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>First Serve</Text>
+        </View>
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>Rotation</Text>
+        </View>
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>Libero(s)</Text>
         </View>
       </ScrollView>
     </SafeView>
@@ -67,7 +79,7 @@ const styles = StyleSheet.create({
   },
   headerBtn: {
     flexDirection: "row",
-    width: "40%",
+    width: "42%",
     height: hp(7),
     backgroundColor: COLORS.primary,
     borderRadius: 20,
@@ -75,11 +87,6 @@ const styles = StyleSheet.create({
     marginTop: 18,
     alignItems: "center",
     justifyContent: "center",
-  },
-  loading: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
   },
   headerBtnText: {
     fontSize: RFValue(9),
@@ -96,16 +103,14 @@ const styles = StyleSheet.create({
   titleContainer: {
     alignItems: "center",
   },
+  secondaryTitleContainer: {
+    alignItems: "left",
+    marginHorizontal: wp(12.5),
+  },
   secondaryTitleText: {
     fontSize: RFValue(18),
     color: COLORS.primary,
     marginBottom: 15,
-  },
-  tertiaryTitleText: {
-    fontSize: RFValue(18),
-    color: COLORS.primary,
-    marginBottom: 15,
-    marginTop: 35,
   },
   spacerText: {
     fontSize: RFValue(18),
@@ -120,6 +125,15 @@ const styles = StyleSheet.create({
     marginBottom: 35,
   },
   backIcon: {
-    paddingRight: 5,
+    paddingRight: 1,
+  },
+  featureListContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: COLORS.white,
+    height: hp(9),
+    alignItems: "center",
+    borderWidth: 0.5,
+    borderColor: COLORS.primary,
   },
 });

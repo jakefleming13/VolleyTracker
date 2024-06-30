@@ -17,7 +17,14 @@ import Loading from "../../components/Loading";
 
 const Seasons = () => {
   const router = useRouter();
-  const { user, isAuthenticated, initializing, logout, seasonID, setActiveSeason } = useAuth();
+  const {
+    user,
+    isAuthenticated,
+    initializing,
+    logout,
+    seasonID,
+    setActiveSeason,
+  } = useAuth();
   const [userSeasons, setUserSeasons] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -56,10 +63,6 @@ const Seasons = () => {
     return () => unsubscribe();
   }, [user, isAuthenticated, initializing, seasonID, router]);
 
-  if (initializing || loading) {
-    return <Text>Loading...</Text>; // Should have some sort of loading icon here
-  }
-
   const flatArray = userSeasons.flat();
 
   const handleLogout = async () => {
@@ -71,6 +74,14 @@ const Seasons = () => {
     await setActiveSeason(seasonID);
     router.push("seasonHome");
   };
+
+  if (initializing || loading) {
+    return (
+      <View style={styles.loading}>
+        <Loading size={hp(10)} />
+      </View>
+    );
+  }
 
   return (
     <SafeView style={styles.container}>
@@ -117,6 +128,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     height: hp(11),
+  },
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerBtn: {
     width: "80%",
@@ -171,9 +187,7 @@ const styles = StyleSheet.create({
 
 const SeasonList = ({ name, year, seasonID, onSelect }) => {
   return (
-    <TouchableOpacity
-      onPress={() => onSelect(seasonID)}
-    >
+    <TouchableOpacity onPress={() => onSelect(seasonID)}>
       <View style={styles.seasonListContainer}>
         <Text style={styles.seasonListText}>
           {name}, {year}

@@ -1,5 +1,5 @@
 import { View, Text, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeView } from "../../../components/SafeView";
 import { TouchableOpacity } from "react-native";
 import {
@@ -13,15 +13,18 @@ import { AntDesign } from "@expo/vector-icons";
 import { useAuth } from "../../../context/authContext";
 import firestore from "@react-native-firebase/firestore";
 import { useState, useEffect } from "react";
+import Loading from "../../../components/Loading";
 
 const SeasonHome = () => {
   const router = useRouter();
+
   const { seasonID, user, setActiveSeason } = useAuth();
+
   const [seasonData, setSeasonData] = useState(null);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     // Grab season by season ID from firebase, then setSeasonData
     if (seasonID && user) {
       const fetchSeasonData = async () => {
@@ -46,16 +49,24 @@ const SeasonHome = () => {
   }, [seasonID, user]);
 
   if (loading || !seasonData) {
-    return <Text>Loading...</Text>;
+    if (loading) {
+      return (
+        <View style={styles.loading}>
+          <Loading size={hp(10)} />
+        </View>
+      );
+    }
   }
 
   return (
     <SafeView style={styles.container}>
       <View style={styles.backContainer}>
-        <TouchableOpacity onPress={() => {
-          setActiveSeason(null);  // Set seasonID to null
-          router.push("seasons");
-        }}>
+        <TouchableOpacity
+          onPress={() => {
+            setActiveSeason(null); // Set seasonID to null
+            router.push("seasons");
+          }}
+        >
           <View style={styles.headerBtn}>
             <AntDesign
               style={styles.backIcon}
@@ -78,7 +89,18 @@ const SeasonHome = () => {
         <View style={styles.titleContainer}>
           <Text style={styles.secondaryTitleText}>Record Stats</Text>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: "statGamePrep",
+              params: {
+                currentLocalTeamName: seasonData.teamName,
+                currentLocalYear: seasonData.year,
+                currentLocalSeasonID: seasonData.seasonID,
+              },
+            })
+          }
+        >
           <View style={styles.featureListContainer}>
             <Text style={styles.featureListText}>Stat Game</Text>
             <AntDesign
@@ -114,10 +136,18 @@ const SeasonHome = () => {
         <View style={styles.titleContainer}>
           <Text style={styles.tertiaryTitleText}>Season Stats</Text>
         </View>
-        <TouchableOpacity onPress={() => router.push({
-          pathname: "gameLog",
-          params: { teamName: seasonData.teamName, year: seasonData.year, seasonID }
-        })}>
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: "gameLog",
+              params: {
+                currentLocalTeamName: seasonData.teamName,
+                currentLocalYear: seasonData.year,
+                currentLocalSeasonID: seasonData.seasonID,
+              },
+            })
+          }
+        >
           <View style={styles.featureListContainer}>
             <Text style={styles.featureListText}>Game Log</Text>
             <AntDesign
@@ -128,10 +158,18 @@ const SeasonHome = () => {
             />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push({
-          pathname: "playerStats",
-          params: { teamName: seasonData.teamName, year: seasonData.year, seasonID }
-        })}>
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: "playerStats",
+              params: {
+                currentLocalTeamName: seasonData.teamName,
+                currentLocalYear: seasonData.year,
+                currentLocalSeasonID: seasonData.seasonID,
+              },
+            })
+          }
+        >
           <View style={styles.featureListContainer}>
             <Text style={styles.featureListText}>Player Stats</Text>
             <AntDesign
@@ -142,10 +180,18 @@ const SeasonHome = () => {
             />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push({
-          pathname: "teamStats",
-          params: { teamName: seasonData.teamName, year: seasonData.year, seasonID }
-        })}>
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: "teamStats",
+              params: {
+                currentLocalTeamName: seasonData.teamName,
+                currentLocalYear: seasonData.year,
+                currentLocalSeasonID: seasonData.seasonID,
+              },
+            })
+          }
+        >
           <View style={styles.featureListContainer}>
             <Text style={styles.featureListText}>Team Stats</Text>
             <AntDesign
@@ -168,6 +214,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
+  },
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   backContainer: {
     flexDirection: "row",
