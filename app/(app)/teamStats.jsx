@@ -2,6 +2,7 @@ import { View, Text, ScrollView } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeView } from "../../components/SafeView";
 import { TouchableOpacity } from "react-native";
+import { useAuth } from "../../context/authContext";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -10,23 +11,20 @@ import { COLORS } from "../../constants/Colors";
 import { StyleSheet } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { AntDesign } from "@expo/vector-icons";
+import { useState, useEffect } from "react";
+import firestore from "@react-native-firebase/firestore";
+import Loading from "../../components/Loading";
 
 export default function teamStats() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const { teamName, year, seasonID } = params;
+  const { currentLocalTeamName, currentLocalYear, currentLocalSeasonID } =
+    params;
 
   return (
     <SafeView style={styles.container}>
       <View style={styles.backContainer}>
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "seasonHome",
-              params: { teamName: teamName, year: year, seasonID: seasonID },
-            })
-          }
-        >
+        <TouchableOpacity onPress={() => router.push("seasonHome")}>
           <View style={styles.headerBtn}>
             <AntDesign
               style={styles.backIcon}
@@ -40,7 +38,7 @@ export default function teamStats() {
       </View>
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>
-          {teamName}, {year}
+          {currentLocalTeamName}, {currentLocalYear}
         </Text>
       </View>
       <ScrollView>
@@ -77,6 +75,11 @@ const styles = StyleSheet.create({
     marginTop: 18,
     alignItems: "center",
     justifyContent: "center",
+  },
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerBtnText: {
     fontSize: RFValue(9),
