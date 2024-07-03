@@ -96,7 +96,7 @@ const SeasonHome = () => {
               params: {
                 currentLocalTeamName: seasonData.teamName,
                 currentLocalYear: seasonData.year,
-                currentLocalSeasonID: seasonData.seasonID,
+                currentLocalRoster: JSON.stringify(seasonData.roster),
               },
             })
           }

@@ -15,10 +15,12 @@ import { RadioButton } from "react-native-paper";
 import { SelectList } from "react-native-dropdown-select-list";
 
 export default function statGamePrep() {
+  //Get props that are being drilled
   const router = useRouter();
   const params = useLocalSearchParams();
-  const { currentLocalTeamName, currentLocalYear, currentLocalSeasonID } =
-    params;
+  const { currentLocalTeamName, currentLocalYear } = params;
+  //JSON.parse to deal with an array that is being prop drilled
+  const roster = JSON.parse(params.currentLocalRoster);
 
   const [selectedView, setSelectedView] = useState("List View");
   const [selectedGameType, setSelectedGameType] = useState("Game");
@@ -28,27 +30,24 @@ export default function statGamePrep() {
   const [selectedOpponent, setSelectedOpponent] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
 
-  const dummyRoster = [
-    "2 Riley",
-    "12 Paycen",
-    "3 Tom",
-    "6 Rylan",
-    "1 JJ",
-    "10 Max",
-    "4 Seth",
-  ];
-
+  //Get the users Lineup
   const [positionOne, setPositionOne] = useState("");
+  const [positionTwo, setPositionTwo] = useState("");
+  const [positionThree, setPositionThree] = useState("");
+  const [positionFour, setPositionFour] = useState("");
+  const [positionFive, setPositionFive] = useState("");
+  const [positionSix, setPositionSix] = useState("");
+  const [firstLibero, setFirstLibero] = useState("");
+  const [secondLibero, setSecondLibero] = useState("");
 
-  const testingData = [
-    { key: "1", value: "5 - Riley" },
-    { key: "2", value: "4 - Paycen" },
-    { key: "3", value: "12 - Tom Friesen" },
-    { key: "4", value: "11 - Rylan" },
-    { key: "5", value: "10 - JJ" },
-    { key: "6", value: "1 - Max" },
-    { key: "7", value: "7 - Seth" },
-  ];
+  //Get the roster being prop drilled and format it to match specifications of dropdown library
+  const localRoster = [];
+  for (let index = 0; index < roster.length; index++) {
+    localRoster.push({
+      key: index.toString(),
+      value: roster[index].playerNumber + " - " + roster[index].playerName,
+    });
+  }
 
   const cancelAlert = () => {
     Alert.alert("Are you sure?", "All data will be lost.", [
@@ -300,29 +299,129 @@ export default function statGamePrep() {
           <View style={styles.courtRow}>
             <TouchableOpacity>
               <View style={styles.courtPosition}>
-                <Text style={styles.courtPositionText}>4</Text>
+                <SelectList
+                  boxStyles={styles.dropdown}
+                  inputStyles={styles.dropdownText}
+                  dropdownStyles={styles.dropdownActive}
+                  dropdownTextStyles={styles.dropdownText}
+                  setSelected={(val) => setPositionFour(val)}
+                  data={localRoster}
+                  save="value"
+                  placeholder={
+                    <Text style={styles.placeholderDropDown}>Position 4</Text>
+                  }
+                  arrowicon={
+                    <AntDesign
+                      name="down"
+                      size={RFValue(15)}
+                      color={COLORS.black}
+                    />
+                  }
+                  search={false}
+                  maxHeight={500}
+                />
               </View>
             </TouchableOpacity>
             <TouchableOpacity>
               <View style={styles.courtPosition}>
-                <Text style={styles.courtPositionText}>3</Text>
+                <SelectList
+                  boxStyles={styles.dropdown}
+                  inputStyles={styles.dropdownText}
+                  dropdownStyles={styles.dropdownActive}
+                  dropdownTextStyles={styles.dropdownText}
+                  setSelected={(val) => setPositionThree(val)}
+                  data={localRoster}
+                  save="value"
+                  placeholder={
+                    <Text style={styles.placeholderDropDown}>Position 3</Text>
+                  }
+                  arrowicon={
+                    <AntDesign
+                      name="down"
+                      size={RFValue(15)}
+                      color={COLORS.black}
+                    />
+                  }
+                  search={false}
+                  maxHeight={500}
+                />
               </View>
             </TouchableOpacity>
             <TouchableOpacity>
               <View style={styles.courtPosition}>
-                <Text style={styles.courtPositionText}>2</Text>
+                <SelectList
+                  boxStyles={styles.dropdown}
+                  inputStyles={styles.dropdownText}
+                  dropdownStyles={styles.dropdownActive}
+                  dropdownTextStyles={styles.dropdownText}
+                  setSelected={(val) => setPositionTwo(val)}
+                  data={localRoster}
+                  save="value"
+                  placeholder={
+                    <Text style={styles.placeholderDropDown}>Position 2</Text>
+                  }
+                  arrowicon={
+                    <AntDesign
+                      name="down"
+                      size={RFValue(15)}
+                      color={COLORS.black}
+                    />
+                  }
+                  search={false}
+                  maxHeight={500}
+                />
               </View>
             </TouchableOpacity>
           </View>
           <View style={styles.courtRow}>
             <TouchableOpacity>
               <View style={styles.courtPosition}>
-                <Text style={styles.courtPositionText}>5</Text>
+                <SelectList
+                  boxStyles={styles.dropdown}
+                  inputStyles={styles.dropdownText}
+                  dropdownStyles={styles.dropdownActive}
+                  dropdownTextStyles={styles.dropdownText}
+                  setSelected={(val) => setPositionFive(val)}
+                  data={localRoster}
+                  save="value"
+                  placeholder={
+                    <Text style={styles.placeholderDropDown}>Position 5</Text>
+                  }
+                  arrowicon={
+                    <AntDesign
+                      name="down"
+                      size={RFValue(15)}
+                      color={COLORS.black}
+                    />
+                  }
+                  search={false}
+                  maxHeight={500}
+                />
               </View>
             </TouchableOpacity>
             <TouchableOpacity>
               <View style={styles.courtPosition}>
-                <Text style={styles.courtPositionText}>6</Text>
+                <SelectList
+                  boxStyles={styles.dropdown}
+                  inputStyles={styles.dropdownText}
+                  dropdownStyles={styles.dropdownActive}
+                  dropdownTextStyles={styles.dropdownText}
+                  setSelected={(val) => setPositionSix(val)}
+                  data={localRoster}
+                  save="value"
+                  placeholder={
+                    <Text style={styles.placeholderDropDown}>Position 6</Text>
+                  }
+                  arrowicon={
+                    <AntDesign
+                      name="down"
+                      size={RFValue(15)}
+                      color={COLORS.black}
+                    />
+                  }
+                  search={false}
+                  maxHeight={500}
+                />
               </View>
             </TouchableOpacity>
             <View style={styles.courtPosition}>
@@ -332,7 +431,7 @@ export default function statGamePrep() {
                 dropdownStyles={styles.dropdownActive}
                 dropdownTextStyles={styles.dropdownText}
                 setSelected={(val) => setPositionOne(val)}
-                data={testingData}
+                data={localRoster}
                 save="value"
                 placeholder={
                   <Text style={styles.placeholderDropDown}>Position 1</Text>
@@ -364,17 +463,79 @@ export default function statGamePrep() {
         <View style={styles.liberoContainer}>
           <TouchableOpacity>
             <View style={styles.liberoSlot}>
-              <Text style={styles.liberoText}>Optional</Text>
+              <SelectList
+                boxStyles={styles.liberoDropDown}
+                inputStyles={styles.dropdownText}
+                dropdownStyles={styles.dropdownActive}
+                dropdownTextStyles={styles.dropdownText}
+                setSelected={(val) => setFirstLibero(val)}
+                data={localRoster}
+                save="value"
+                placeholder={
+                  <Text style={styles.placeholderDropDown}>Optional</Text>
+                }
+                arrowicon={
+                  <AntDesign
+                    name="down"
+                    size={RFValue(15)}
+                    color={COLORS.black}
+                  />
+                }
+                search={false}
+                maxHeight={500}
+              />
             </View>
           </TouchableOpacity>
           <TouchableOpacity>
             <View style={styles.liberoSlot}>
-              <Text style={styles.liberoText}>Optional</Text>
+              <SelectList
+                boxStyles={styles.liberoDropDown}
+                inputStyles={styles.dropdownText}
+                dropdownStyles={styles.dropdownActive}
+                dropdownTextStyles={styles.dropdownText}
+                setSelected={(val) => setSecondLibero(val)}
+                data={localRoster}
+                save="value"
+                placeholder={
+                  <Text style={styles.placeholderDropDown}>Optional</Text>
+                }
+                arrowicon={
+                  <AntDesign
+                    name="down"
+                    size={RFValue(15)}
+                    color={COLORS.black}
+                  />
+                }
+                search={false}
+                maxHeight={500}
+              />
             </View>
           </TouchableOpacity>
         </View>
         <View style={styles.confirmContainer}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "statGame",
+                params: {
+                  view: selectedView,
+                  gameType: selectedGameType,
+                  firstServe: selectedFirstServe,
+                  location: selectedLocation,
+                  opponent: selectedOpponent,
+                  setsBeingPlayed: selectedSets,
+                  positionOne: positionOne,
+                  positionTwo: positionTwo,
+                  positionThree: positionThree,
+                  positionFour: positionFour,
+                  positionFive: positionFive,
+                  positionSix: positionSix,
+                  firstLibero: firstLibero,
+                  secondLibero: secondLibero,
+                },
+              })
+            }
+          >
             <View style={styles.confirmBtn}>
               <Text style={styles.confirmBtnText}> START </Text>
             </View>
@@ -535,7 +696,7 @@ const styles = StyleSheet.create({
     width: wp(18),
     alignItems: "center",
     justifyContent: "center",
-    marginHorizontal: 15,
+    marginHorizontal: 45,
     borderRadius: 10,
   },
   liberoText: {
@@ -562,13 +723,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     height: hp(13),
-    marginBottom: 35,
+    marginBottom: 25,
   },
 
   //DropDown
   dropdown: {
     height: hp(14),
     width: wp(14),
+    borderColor: COLORS.darkGrey,
+    backgroundColor: COLORS.secondary,
+  },
+  liberoDropDown: {
+    height: hp(8),
+    width: wp(18),
     borderColor: COLORS.darkGrey,
     backgroundColor: COLORS.secondary,
   },
