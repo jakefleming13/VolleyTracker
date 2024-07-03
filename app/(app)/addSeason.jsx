@@ -50,7 +50,6 @@ export default function addSeason() {
     ]);
   };
 
-
   const [teamName, setTeamName] = useState("");
   const [year, setYear] = useState("");
 
@@ -383,10 +382,9 @@ export default function addSeason() {
         },
       ]);
       return false;
-    } 
-    else {
+    } else {
       let allFieldsFilledOut = true;
-  
+
       // Check if all player fields are filled in
       for (let i = 0; i < players.length; i++) {
         if (players[i].playerName === "" || players[i].playerNumber === "") {
@@ -394,7 +392,7 @@ export default function addSeason() {
           break;
         }
       }
-  
+
       if (!allFieldsFilledOut) {
         Alert.alert("Error", "All player fields must be filled out.", [
           {
@@ -404,14 +402,46 @@ export default function addSeason() {
         return false;
       }
     }
-  
+
     return true;
   };
-  
 
   const handleConfirm = () => {
     //Generate new season ID
     newID = automatedID();
+
+    //updateLocalPlayers();
+    const newLocal = [...players];
+    for (let index = 0; index < newLocal.length; index++) {
+      delete newLocal[index].missedServes;
+      delete newLocal[index].playerID;
+      delete newLocal[index].setsWon;
+      delete newLocal[index].setsLost;
+      delete newLocal[index].matchesPlayed;
+      delete newLocal[index].setsPlayed;
+      delete newLocal[index].attempts;
+      delete newLocal[index].kills;
+      delete newLocal[index].attackErrors;
+      delete newLocal[index].assists;
+      delete newLocal[index].assistsPerSet;
+      delete newLocal[index].digs;
+      delete newLocal[index].digErrors;
+      delete newLocal[index].digsPerSet;
+      delete newLocal[index].totalBlocks;
+      delete newLocal[index].blockSolos;
+      delete newLocal[index].blockAssists;
+      delete newLocal[index].aces;
+      delete newLocal[index].serveAttempts;
+      delete newLocal[index].missedServes;
+      delete newLocal[index].passingAttempts;
+      delete newLocal[index].handPassingAttempts;
+      delete newLocal[index].forearmPassingAttempts;
+      delete newLocal[index].totalPassingAverage;
+      delete newLocal[index].handPassingAverage;
+      delete newLocal[index].forearmPassingAverage;
+      delete newLocal[index].pts;
+      delete newLocal[index].ptsPerSet;
+    }
 
     //add new season info in "users" collection for fast access
     firestore()
@@ -436,6 +466,7 @@ export default function addSeason() {
         seasonID: newID,
         teamName: teamName,
         year: year,
+        roster: newLocal,
       });
 
     //Create sub-collection "seasonStats"
@@ -537,7 +568,7 @@ export default function addSeason() {
 
         {players.map((player) => {
           return (
-            <View style={styles.rosterPlayerContainer}>
+            <View style={styles.rosterPlayerContainer} key={player.playerID}>
               <Text style={styles.playerIDText}>
                 {player.playerID < 10
                   ? player.playerID + "  "
