@@ -5,26 +5,42 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-nat
 import { RFValue } from "react-native-responsive-fontsize";
 import { AntDesign } from "@expo/vector-icons";
 import { COLORS } from "../../constants/Colors";
+import { useRouter, useLocalSearchParams } from "expo-router";
 
-const IndividualPlayerStats = ({ route, navigation }) => {
-  const { player } = route.params;
+const IndividualPlayerStats = () => {
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const {
+    playerName,
+    matchesPlayed,
+    setsPlayed,
+    kills,
+    attackErrors,
+    blockAssists,
+    serveAttempts,
+    digs,
+    totalPassingAverage,
+    attempts,
+    assists,
+    missedServes,
+    receptionErrors,
+    blockSolos,
+    totalBlocks,
+    pts
+  } = params;
 
   return (
     <SafeView style={styles.container}>
       <View style={styles.backContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <View style={styles.headerBtn}>
-            <AntDesign
-              name="left"
-              size={hp(3.7)}
-              color={COLORS.white}
-            />
-            <Text style={styles.headerBtnText}>BACK</Text>
-          </View>
+        <TouchableOpacity onPress={() => router.push("Players")}>
+        <View style={styles.headerBtn}>
+            <AntDesign name="left" size={hp(3.7)} color={COLORS.white} />
+            <Text style={styles.headerBtnText}>HOME</Text>
+        </View>
         </TouchableOpacity>
       </View>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>{player.playerName}</Text>
+        <Text style={styles.titleText}>{playerName}</Text>
       </View>
       <ScrollView>
         <View style={styles.seperator} />
@@ -32,54 +48,54 @@ const IndividualPlayerStats = ({ route, navigation }) => {
           <Text style={styles.secondaryTitleText}>Player Stats</Text>
           <View style={styles.statsContainer}>
             <Text style={styles.statLabel}>M</Text>
-            <Text style={styles.statValue}>{player.matchesPlayed}</Text>
+            <Text style={styles.statValue}>{matchesPlayed}</Text>
             <Text style={styles.statLabel}>SP</Text>
-            <Text style={styles.statValue}>{player.setsPlayed}</Text>
+            <Text style={styles.statValue}>{setsPlayed}</Text>
             <Text style={styles.statLabel}>K/S</Text>
-            <Text style={styles.statValue}>{player.kills}</Text>
+            <Text style={styles.statValue}>{kills}</Text>
             <Text style={styles.statLabel}>PCT</Text>
-            <Text style={styles.statValue}>{player.attackErrors}</Text>
+            <Text style={styles.statValue}>{attackErrors}</Text>
             <Text style={styles.statLabel}>B/S</Text>
-            <Text style={styles.statValue}>{player.blockAssists}</Text>
+            <Text style={styles.statValue}>{blockAssists}</Text>
             <Text style={styles.statLabel}>SA/S</Text>
-            <Text style={styles.statValue}>{player.serveAttempts}</Text>
+            <Text style={styles.statValue}>{serveAttempts}</Text>
             <Text style={styles.statLabel}>DIG/S</Text>
-            <Text style={styles.statValue}>{player.digs}</Text>
+            <Text style={styles.statValue}>{digs}</Text>
             <Text style={styles.statLabel}>PASS AVG</Text>
-            <Text style={styles.statValue}>{player.totalPassingAverage}</Text>
+            <Text style={styles.statValue}>{totalPassingAverage}</Text>
           </View>
         </View>
         <View style={styles.sectionContainer}>
           <Text style={styles.secondaryTitleText}>Total</Text>
           <View style={styles.statsContainer}>
             <Text style={styles.statLabel}>K</Text>
-            <Text style={styles.statValue}>{player.kills}</Text>
+            <Text style={styles.statValue}>{kills}</Text>
             <Text style={styles.statLabel}>TA</Text>
-            <Text style={styles.statValue}>{player.attempts}</Text>
+            <Text style={styles.statValue}>{attempts}</Text>
             <Text style={styles.statLabel}>PCT</Text>
-            <Text style={styles.statValue}>{player.attackErrors}</Text>
+            <Text style={styles.statValue}>{attackErrors}</Text>
             <Text style={styles.statLabel}>A</Text>
-            <Text style={styles.statValue}>{player.assists}</Text>
+            <Text style={styles.statValue}>{assists}</Text>
             <Text style={styles.statLabel}>SA</Text>
-            <Text style={styles.statValue}>{player.serveAttempts}</Text>
+            <Text style={styles.statValue}>{serveAttempts}</Text>
             <Text style={styles.statLabel}>SE</Text>
-            <Text style={styles.statValue}>{player.missedServes}</Text>
+            <Text style={styles.statValue}>{missedServes}</Text>
             <Text style={styles.statLabel}>R</Text>
-            <Text style={styles.statValue}>{player.receptionErrors}</Text>
+            <Text style={styles.statValue}>{receptionErrors}</Text>
             <Text style={styles.statLabel}>RE</Text>
-            <Text style={styles.statValue}>{player.blockSolos}</Text>
+            <Text style={styles.statValue}>{blockSolos}</Text>
             <Text style={styles.statLabel}>PASS</Text>
-            <Text style={styles.statValue}>{player.totalPassingAverage}</Text>
+            <Text style={styles.statValue}>{totalPassingAverage}</Text>
             <Text style={styles.statLabel}>DIG</Text>
-            <Text style={styles.statValue}>{player.digs}</Text>
+            <Text style={styles.statValue}>{digs}</Text>
             <Text style={styles.statLabel}>BA</Text>
-            <Text style={styles.statValue}>{player.blockAssists}</Text>
+            <Text style={styles.statValue}>{blockAssists}</Text>
             <Text style={styles.statLabel}>BS</Text>
-            <Text style={styles.statValue}>{player.blockSolos}</Text>
+            <Text style={styles.statValue}>{blockSolos}</Text>
             <Text style={styles.statLabel}>TOT</Text>
-            <Text style={styles.statValue}>{player.totalBlocks}</Text>
+            <Text style={styles.statValue}>{totalBlocks}</Text>
             <Text style={styles.statLabel}>PTS</Text>
-            <Text style={styles.statValue}>{player.pts}</Text>
+            <Text style={styles.statValue}>{pts}</Text>
           </View>
         </View>
       </ScrollView>

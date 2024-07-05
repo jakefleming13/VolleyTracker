@@ -54,7 +54,33 @@ export default function playerStats() {
     <View style={styles.playerContainer}>
       <FontAwesome name="user-circle-o" size={hp(4)} color="black" style={styles.iconStyle} />
       <Text style={styles.playerText}>{item.playerName} - {item.playerNumber}</Text>
-      <TouchableOpacity style={styles.viewStatsBtn} onPress={() => { console.log('View Stats Pressed'); }}>
+      <TouchableOpacity
+        style={styles.viewStatsBtn}
+        onPress={() =>
+          router.push({
+            pathname: "individualPlayerStats",
+            params: {
+              playerName: item.playerName,
+              playerNumber: item.playerNumber,
+              matchesPlayed: item.matchesPlayed,
+              setsPlayed: item.setsPlayed,
+              kills: item.kills,
+              attackErrors: item.attackErrors,
+              blockAssists: item.blockAssists,
+              serveAttempts: item.serveAttempts,
+              digs: item.digs,
+              totalPassingAverage: item.totalPassingAverage,
+              attempts: item.attempts,
+              assists: item.assists,
+              missedServes: item.missedServes,
+              receptionErrors: item.receptionErrors,
+              blockSolos: item.blockSolos,
+              totalBlocks: item.totalBlocks,
+              pts: item.pts
+            },
+          })
+        }
+      >
         <Text style={styles.viewStatsText}>View Stats</Text>
       </TouchableOpacity>
     </View>
