@@ -1,21 +1,62 @@
-import { View, Text, ScrollView } from "react-native";
+
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeView } from "../../components/SafeView";
-import { TouchableOpacity } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { COLORS } from "../../constants/Colors";
-import { StyleSheet } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { AntDesign } from "@expo/vector-icons";
+import firestore from "@react-native-firebase/firestore";
+import { useState, useEffect } from "react";
+import { useAuth } from "../../context/authContext";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
+import { COLORS } from "../../constants/Colors";
+
 
 export default function playerStats() {
   const router = useRouter();
+  const {
+    user,
+    isAuthenticated,
+    initializing,
+    logout,
+    seasonID,
+    setActiveSeason,
+  } = useAuth();
   const params = useLocalSearchParams();
   const { currentLocalTeamName, currentLocalYear, currentLocalSeasonID } =
     params;
+  
+  const [playerStats, setPlayerStats] = useState([]);
+
+
+    useEffect(() => {
+      const fetchPlayerStats = async () => {
+        if (seasonID && user) {
+          try {
+            const playerStatsCollection = firestore()
+              .collection('seasons')
+              .doc(seasonID)
+              .collection('playerStats');
+    
+            const snapshot = await playerStatsCollection.get();
+            const stats = snapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+    
+            setPlayerStats(stats[0].roster)
+            console.log(stats[0].roster)
+          } catch (error) {
+            console.error('Failed to fetch player stats:', error);
+          }
+        }
+      };
+    
+      fetchPlayerStats();
+    }, [seasonID, user]);
 
   return (
     <SafeView style={styles.container}>
