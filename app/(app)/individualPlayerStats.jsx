@@ -12,6 +12,7 @@ const IndividualPlayerStats = () => {
   const params = useLocalSearchParams();
   const {
     playerName,
+    playerNumber,
     matchesPlayed,
     setsPlayed,
     kills,
@@ -45,7 +46,14 @@ const IndividualPlayerStats = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>{playerName}</Text>
+        <Text style={styles.titleText}>{playerName} #{playerNumber}</Text>
+      </View>
+      <View style={styles.exportContainer}>
+        <TouchableOpacity onPress={() => {}}>
+          <View style={styles.exportBtn}>
+            <Text style={styles.exportBtnText}>Export</Text>
+          </View>
+        </TouchableOpacity>
       </View>
       <ScrollView>
         <View style={styles.seperator} />
@@ -86,8 +94,132 @@ const IndividualPlayerStats = () => {
           </View>
         </View>
         <View style={[styles.sectionContainer, styles.totalStatsContainer]}>
-          <Text style={styles.centeredTitleText}>Total</Text>
+          <Text style={styles.sectionTitleText}>Total</Text>
           <View style={styles.statsContainer}>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>K</Text>
+              <Text style={styles.statValue}>{kills}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>TA</Text>
+              <Text style={styles.statValue}>{attempts}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>PCT</Text>
+              <Text style={styles.statValue}>{attackErrors}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>A</Text>
+              <Text style={styles.statValue}>{assists}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>SA</Text>
+              <Text style={styles.statValue}>{serveAttempts}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>SE</Text>
+              <Text style={styles.statValue}>{missedServes}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>R</Text>
+              <Text style={styles.statValue}>{receptionErrors}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>RE</Text>
+              <Text style={styles.statValue}>{blockSolos}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>PASS</Text>
+              <Text style={styles.statValue}>{totalPassingAverage}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>DIG</Text>
+              <Text style={styles.statValue}>{digs}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>BA</Text>
+              <Text style={styles.statValue}>{blockAssists}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>BS</Text>
+              <Text style={styles.statValue}>{blockSolos}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>TOT</Text>
+              <Text style={styles.statValue}>{totalBlocks}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>PTS</Text>
+              <Text style={styles.statValue}>{pts}</Text>
+            </View>
+          </View>
+        </View>
+        <View style={[styles.sectionContainer, styles.totalStatsContainer]}>
+          <Text style={styles.sectionTitleText}>Last 5 Games</Text>
+          <View style={styles.statsContainer}>
+            {/* Replace the data here with actual data for the last 5 games */}
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>K</Text>
+              <Text style={styles.statValue}>{kills}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>TA</Text>
+              <Text style={styles.statValue}>{attempts}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>PCT</Text>
+              <Text style={styles.statValue}>{attackErrors}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>A</Text>
+              <Text style={styles.statValue}>{assists}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>SA</Text>
+              <Text style={styles.statValue}>{serveAttempts}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>SE</Text>
+              <Text style={styles.statValue}>{missedServes}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>R</Text>
+              <Text style={styles.statValue}>{receptionErrors}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>RE</Text>
+              <Text style={styles.statValue}>{blockSolos}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>PASS</Text>
+              <Text style={styles.statValue}>{totalPassingAverage}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>DIG</Text>
+              <Text style={styles.statValue}>{digs}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>BA</Text>
+              <Text style={styles.statValue}>{blockAssists}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>BS</Text>
+              <Text style={styles.statValue}>{blockSolos}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>TOT</Text>
+              <Text style={styles.statValue}>{totalBlocks}</Text>
+            </View>
+            <View style={styles.statGroup}>
+              <Text style={styles.statLabel}>PTS</Text>
+              <Text style={styles.statValue}>{pts}</Text>
+            </View>
+          </View>
+        </View>
+        <View style={[styles.sectionContainer, styles.totalStatsContainer]}>
+          <Text style={styles.sectionTitleText}>Last 10 Games</Text>
+          <View style={styles.statsContainer}>
+            {/* Replace the data here with actual data for the last 10 games */}
             <View style={styles.statGroup}>
               <Text style={styles.statLabel}>K</Text>
               <Text style={styles.statValue}>{kills}</Text>
@@ -188,12 +320,27 @@ const styles = StyleSheet.create({
     titleContainer: {
       alignItems: "center",
     },
+    exportContainer: {
+      alignItems: 'flex-end',
+      paddingRight: 20,
+    },
+    exportBtn: {
+      backgroundColor: COLORS.primary,
+      borderRadius: 20,
+      paddingVertical: 5,
+      paddingHorizontal: 15,
+    },
+    exportBtnText: {
+      fontSize: RFValue(12),
+      fontWeight: "bold",
+      color: COLORS.white,
+    },
     sectionContainer: {
       marginHorizontal: 20,
       marginVertical: 10,
     },
-    centeredTitleText: {
-      fontSize: RFValue(18),
+    sectionTitleText: {
+      fontSize: RFValue(10), // Smaller title text for sections
       color: COLORS.primary,
       marginBottom: 15,
       textAlign: "center",
@@ -201,9 +348,9 @@ const styles = StyleSheet.create({
     statsContainer: {
       flexDirection: "row",
       flexWrap: "wrap",
-      justifyContent: "center", // Center the content horizontally
-      width: "100%", // Use full width but center within the container
-      alignSelf: "center", // Center the container itself
+      justifyContent: "center",
+      width: "100%",
+      alignSelf: "center",
     },
     playerStatsContainer: {
       backgroundColor: "#e0f7fa", // Light blue background for player stats
@@ -212,22 +359,23 @@ const styles = StyleSheet.create({
       marginBottom: 20,
     },
     totalStatsContainer: {
-      
+      backgroundColor: "#ffffff", // White background for total stats
       borderRadius: 10,
       padding: 10,
+      marginBottom: 20,
     },
     statGroup: {
-      width: "6%", // Further reduced width to fit more labels on one line
+      width: "6%", // make everything fit on one line
       alignItems: "center",
-      marginVertical: 1, // Further reduced vertical margin
-      marginHorizontal: 1, // Further reduced horizontal margin
+      marginVertical: 1, 
+      marginHorizontal: 1, 
     },
     statLabel: {
-      fontSize: RFValue(8), // Reduced text size
+      fontSize: RFValue(8), 
       color: COLORS.primary,
     },
     statValue: {
-      fontSize: RFValue(8), // Reduced text size
+      fontSize: RFValue(8), 
       color: COLORS.black,
     },
     seperator: {
