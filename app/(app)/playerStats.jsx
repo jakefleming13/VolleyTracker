@@ -76,7 +76,9 @@ export default function playerStats() {
               receptionErrors: item.receptionErrors,
               blockSolos: item.blockSolos,
               totalBlocks: item.totalBlocks,
-              pts: item.pts
+              pts: item.pts,
+              currentLocalTeamName,
+              currentLocalYear
             },
           })
         }

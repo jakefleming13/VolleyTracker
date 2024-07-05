@@ -26,17 +26,22 @@ const IndividualPlayerStats = () => {
     receptionErrors,
     blockSolos,
     totalBlocks,
-    pts
+    pts,
+    currentLocalTeamName,
+    currentLocalYear
   } = params;
 
   return (
     <SafeView style={styles.container}>
-      <View style={styles.backContainer}>
-        <TouchableOpacity onPress={() => router.push("Players")}>
-        <View style={styles.headerBtn}>
+        <View style={styles.backContainer}>
+        <TouchableOpacity onPress={() => router.push({
+          pathname: "playerStats",
+          params: { currentLocalTeamName, currentLocalYear }
+        })}>
+          <View style={styles.headerBtn}>
             <AntDesign name="left" size={hp(3.7)} color={COLORS.white} />
-            <Text style={styles.headerBtnText}>HOME</Text>
-        </View>
+            <Text style={styles.headerBtnText}>Players</Text>
+          </View>
         </TouchableOpacity>
       </View>
       <View style={styles.titleContainer}>
