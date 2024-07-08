@@ -39,7 +39,7 @@ export default function playerStats() {
             ...doc.data(),
           }));
 
-          setPlayerStats(stats[0].roster);
+          setPlayerStats(stats[0]?.roster || []);
         } catch (error) {
           console.error('Failed to fetch player stats:', error);
         }
@@ -104,7 +104,7 @@ export default function playerStats() {
       <FlatList
         data={playerStats}
         renderItem={renderPlayerElement}
-        keyExtractor={item => item.playerID.toString()}
+        keyExtractor={item => item.playerID?.toString() || item.id}
         contentContainerStyle={styles.listContainer}
       />
     </SafeView>
