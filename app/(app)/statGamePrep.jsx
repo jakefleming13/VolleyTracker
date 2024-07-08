@@ -108,6 +108,8 @@ export default function statGamePrep() {
 
             <View style={styles.radioButton}>
               <RadioButton
+                //Disabled until feature can be developed
+                disabled={true}
                 value="Rotation View"
                 status={
                   selectedView === "Rotation View" ? "checked" : "unchecked"
@@ -518,6 +520,7 @@ export default function statGamePrep() {
               router.push({
                 pathname: "statGame",
                 params: {
+                  currentLocalRoster: JSON.stringify(roster),
                   view: selectedView,
                   gameType: selectedGameType,
                   firstServe: selectedFirstServe,
