@@ -1,11 +1,9 @@
 import { Text } from "react-native";
-import React from "react";
-import { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { useState } from "react";
 import Loading from "../components/Loading";
 import {
   View,
@@ -27,12 +25,18 @@ export default function SignUp() {
   const { register } = useAuth();
   const emailRef = useRef("");
   const passwordRef = useRef("");
+  const confirmPasswordRef = useRef("");
   const coachNameRef = useRef("");
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
   const handleSignUp = async () => {
-    if (!emailRef.current || !passwordRef.current || !coachNameRef.current) {
-      Alert.alert("Error", "Please fill in both email and password.");
+    if (!emailRef.current || !passwordRef.current || !coachNameRef.current || !confirmPasswordRef.current) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+
+    if (passwordRef.current !== confirmPasswordRef.current) {
+      Alert.alert("Error", "Passwords do not match.");
       return;
     }
 
@@ -67,19 +71,28 @@ export default function SignUp() {
           style={styles.input}
         />
       </View>
-
+      <View style={styles.inputContainer}>
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          onChangeText={(value) => (confirmPasswordRef.current = value)}
+          placeholder="Confirm Password..."
+          secureTextEntry={!isPasswordVisible}
+          textContentType="password"
+          style={styles.input}
+        />
+      </View>
       <View style={styles.inputContainer}>
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
-          keyboardType="email-address"
+          keyboardType="default"
           onChangeText={(value) => (coachNameRef.current = value)}
           placeholder="Name..."
-          textContentType="none"
+          textContentType="name"
           style={styles.input}
         />
       </View>
-
       <TouchableOpacity style={styles.buttonContainer} onPress={handleSignUp}>
         <View>
           {loading ? (
@@ -91,7 +104,6 @@ export default function SignUp() {
           )}
         </View>
       </TouchableOpacity>
-
       <View>
         <TouchableOpacity
           onPress={() => router.push("signIn")}
