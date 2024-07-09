@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Alert, TextInput } from "react-native";
+import { View, Text, ScrollView, Alert, TextInput, Button } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeView } from "../../components/SafeView";
 import { TouchableOpacity } from "react-native";
@@ -14,9 +14,9 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useState } from "react";
+import Modal from "react-native-modal";
 
 export default function statGame() {
-
   //Get game settings
   const router = useRouter();
 
@@ -40,7 +40,22 @@ export default function statGame() {
   } = params;
 
   //JSON.parse to deal with an array that is being prop drilled
-  const roster = JSON.parse(params.currentLocalRoster);
+
+  /////////////////////////////////////
+  //When testing is done uncomment
+  //const roster = JSON.parse(params.currentLocalRoster);
+
+  /////////////////////////////////////
+  // Temp variable
+  const testingRoster = [
+    { playerName: "Ben", playerNumber: "10" },
+    { playerName: "Gorski", playerNumber: "5" },
+    { playerName: "Jace", playerNumber: "2" },
+    { playerName: "Watty", playerNumber: "8" },
+    { playerName: "Aiden", playerNumber: "9" },
+    { playerName: "Finn", playerNumber: "15" },
+    { playerName: "Chris", playerNumber: "13" },
+  ];
 
   const [homeScore, setHomeScore] = useState(0);
   const [opponentScore, setOpponentScore] = useState(0);
@@ -49,10 +64,13 @@ export default function statGame() {
 
   //build the roster and local stats that can be incremented until the game is over
   const localRoster = [];
-  for (let index = 0; index < roster.length; index++) {
+
+  /////////////////////////////////////
+  //Change testingRoster -> roster
+  for (let index = 0; index < testingRoster.length; index++) {
     localRoster.push({
-      playerName: roster[index].playerName,
-      playerNumber: roster[index].playerNumber,
+      playerName: testingRoster[index].playerName,
+      playerNumber: testingRoster[index].playerNumber,
       setsWon: 0,
       setsLost: 0,
       matchesPlayed: 0,
@@ -124,6 +142,12 @@ export default function statGame() {
         onPress: () => router.push("seasonHome"),
       },
     ]);
+  };
+
+  const [isLiveStatsModalVisible, setLiveStatsModalVisible] = useState(false);
+
+  const toggleLiveStatsModal = () => {
+    setLiveStatsModalVisible(!isLiveStatsModalVisible);
   };
 
   const handleAttemptIncrement = (playerNumber) => {
@@ -280,8 +304,7 @@ export default function statGame() {
           </View>
         </TouchableOpacity>
         <View style={styles.scoreboardContainer}>
-          <TouchableOpacity>
-            {/* Add Live Stats pop-up */}
+          <TouchableOpacity onPress={toggleLiveStatsModal}>
             <View style={styles.liveStatsContainer}>
               <FontAwesome6
                 name="chart-bar"
@@ -291,6 +314,173 @@ export default function statGame() {
               <Text style={styles.liveStatsRotationText}>Live Stats</Text>
             </View>
           </TouchableOpacity>
+
+          <View style={{ flex: 1 }}>
+            <Modal
+              isVisible={isLiveStatsModalVisible}
+              onBackdropPress={toggleLiveStatsModal}
+            >
+              <ScrollView>
+                <View style={styles.liveStatsModalContainer}>
+                  <View style={styles.liveStatsModalHeader}>
+                    <TouchableOpacity onPress={toggleLiveStatsModal}>
+                      <AntDesign
+                        name="closesquareo"
+                        size={RFValue(20)}
+                        color={COLORS.black}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.liveStatsModalHeader2}>
+                    <Text style={styles.liveStatsModalHeaderText}>
+                      Live Stats
+                    </Text>
+                  </View>
+                  <View style={styles.liveStatsModalBody}>
+                    <View style={styles.liveStatsTitleRow}>
+                      <View style={styles.liveStatsStatHeader}>
+                        <Text style={styles.liveStatsPlayerHeader}>
+                          #{"  "}Player
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          SP
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          K{" "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          E{" "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          TA
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          {"    "}
+                          K%{"   "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          A{" "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          SA
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          SE
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          RE
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          P AVG.
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          D
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          BS
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          BA
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          BE
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryTextEnd}>
+                          PTS
+                        </Text>
+                      </View>
+                    </View>
+                    {rosterStats.map((player) => {
+                      return (
+                        <View style={styles.liveStatsTitleRow}>
+                          <View style={styles.liveStatsStatHeader}>
+                            <Text style={styles.liveStatsPlayerHeader}>
+                              {/* TODO: validation for length of players name */}
+                              {player.playerNumber}
+                              {"  "}
+                              {player.playerName}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.setsPlayed.toString().length > 1
+                                ? player.setsPlayed
+                                : player.setsPlayed + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.kills.toString().length > 1
+                                ? player.kills
+                                : player.kills + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.attackErrors.toString().length > 1
+                                ? player.attackErrors
+                                : player.attackErrors + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.attempts.toString().length > 1
+                                ? player.attempts
+                                : player.attempts + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              0.000
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.assists.toString().length > 1
+                                ? player.assists
+                                : player.assists + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.aces.toString().length > 1
+                                ? player.aces
+                                : player.aces + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.missedServes.toString().length > 1
+                                ? player.missedServes
+                                : player.missedServes + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              RE
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              1.00{"  "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.digs.toString().length > 1
+                                ? player.digs
+                                : player.digs + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.blockSolos.toString().length > 1
+                                ? player.blockSolos
+                                : player.blockSolos + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.blockAssists.toString().length > 1
+                                ? player.blockAssists
+                                : player.blockAssists + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.blockErrors.toString().length > 1
+                                ? player.blockErrors
+                                : player.blockErrors + " "}
+                            </Text>
+                            <Text
+                              style={styles.liveStatsModalSecondaryTextEnd2}
+                            >
+                              {player.pts.toString().length > 1
+                                ? player.pts + " "
+                                : player.pts + "  "}
+                            </Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+                  </View>
+                </View>
+              </ScrollView>
+            </Modal>
+          </View>
+
           <View style={styles.widthSpacer2} />
           <View style={styles.timeOutContainer}>
             <Text style={styles.timeOutText}>Timeouts:</Text>
@@ -784,6 +974,63 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.27,
     shadowRadius: 4.65,
     elevation: 6,
+  },
+  liveStatsModalContainer: {
+    backgroundColor: COLORS.secondary,
+    height: hp(80),
+    borderRadius: 15,
+  },
+  liveStatsModalHeader: {
+    height: hp(6),
+    justifyContent: "center",
+    alignItems: "flex-end",
+    paddingRight: wp(0.7),
+  },
+  liveStatsModalHeader2: {
+    height: hp(6),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  liveStatsModalBody: {
+    flex: 1,
+  },
+  liveStatsModalHeaderText: {
+    fontSize: RFValue(14),
+    fontWeight: "bold",
+  },
+  liveStatsModalSecondaryText: {
+    fontSize: RFValue(9),
+    fontWeight: "bold",
+  },
+  liveStatsModalSecondaryTextEnd: {
+    marginRight: wp(1),
+    fontSize: RFValue(9),
+    fontWeight: "bold",
+  },
+  liveStatsModalSecondaryText2: {
+    fontSize: RFValue(9),
+  },
+  liveStatsModalSecondaryTextEnd2: { marginRight: wp(1), fontSize: RFValue(9) },
+  liveStatsTitleRow: {
+    flexDirection: "row",
+    height: hp(6),
+    borderBlockColor: COLORS.black,
+    borderWidth: StyleSheet.hairlineWidth,
+    backgroundColor: COLORS.grey,
+    color: COLORS.white,
+  },
+  liveStatsPlayerHeader: {
+    fontSize: RFValue(9),
+    width: wp(10),
+    marginRight: wp(2),
+    marginLeft: wp(2),
+    fontWeight: "bold",
+  },
+  liveStatsStatHeader: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   liveStatsRotationText: {
     fontSize: RFValue(9),

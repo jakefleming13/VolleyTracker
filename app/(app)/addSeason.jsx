@@ -410,8 +410,8 @@ export default function addSeason() {
     //Generate new season ID
     newID = automatedID();
 
-    //updateLocalPlayers();
-    const newLocal = [...players];
+    //Create Deep copy of players (array of objects)
+    var newLocal = JSON.parse(JSON.stringify(players));
     for (let index = 0; index < newLocal.length; index++) {
       delete newLocal[index].missedServes;
       delete newLocal[index].playerID;

@@ -36,6 +36,7 @@ const Seasons = () => {
     // Check if there is already an active season
     if (seasonID) {
       router.push("seasonHome");
+
       return;
     }
 
