@@ -15,11 +15,11 @@ import { RadioButton } from "react-native-paper";
 import { SelectList } from "react-native-dropdown-select-list";
 
 export default function statGamePrep() {
-  //Get props that are being drilled
+  // Get props that are being drilled
   const router = useRouter();
   const params = useLocalSearchParams();
   const { currentLocalTeamName, currentLocalYear } = params;
-  //JSON.parse to deal with an array that is being prop drilled
+  // JSON.parse to deal with an array that is being prop drilled
   const roster = JSON.parse(params.currentLocalRoster);
 
   const [selectedView, setSelectedView] = useState("List View");
@@ -30,7 +30,7 @@ export default function statGamePrep() {
   const [selectedOpponent, setSelectedOpponent] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
 
-  //Get the users Lineup
+  // Get the users Lineup
   const [positionOne, setPositionOne] = useState("");
   const [positionTwo, setPositionTwo] = useState("");
   const [positionThree, setPositionThree] = useState("");
@@ -40,7 +40,22 @@ export default function statGamePrep() {
   const [firstLibero, setFirstLibero] = useState("");
   const [secondLibero, setSecondLibero] = useState("");
 
-  //Get the roster being prop drilled and format it to match specifications of dropdown library
+  // Track selected players
+  const [selectedPlayers, setSelectedPlayers] = useState([]);
+
+  // Function to handle player selection
+  const handlePlayerSelection = (position, setPosition, val) => {
+    // Remove the previously selected player for the current position from the selectedPlayers list
+    const updatedSelectedPlayers = selectedPlayers.filter(player => player !== position);
+    // Add the newly selected player
+    if (val) {
+      updatedSelectedPlayers.push(val);
+    }
+    setSelectedPlayers(updatedSelectedPlayers);
+    setPosition(val);
+  };
+
+  // Get the roster being prop drilled and format it to match specifications of dropdown library
   const dropDownRosterList = [];
   for (let index = 0; index < roster.length; index++) {
     dropDownRosterList.push({
@@ -93,6 +108,11 @@ export default function statGamePrep() {
     });
   }
   console.log(localRoster);
+
+  // Update localRoster to filter out selected players
+  const getFilteredRoster = () => {
+    return localRoster.filter(player => !selectedPlayers.includes(player.value));
+  };
 
   const cancelAlert = () => {
     Alert.alert("Are you sure?", "All data will be lost.", [
@@ -153,7 +173,7 @@ export default function statGamePrep() {
 
             <View style={styles.radioButton}>
               <RadioButton
-                //Disabled until feature can be developed
+                // Disabled until feature can be developed
                 disabled={true}
                 value="Rotation View"
                 status={
@@ -319,14 +339,14 @@ export default function statGamePrep() {
 
             <View style={styles.radioButton}>
               <RadioButton
-                value="Opponenet"
+                value="Opponent"
                 status={
-                  selectedFirstServe === "Opponenet" ? "checked" : "unchecked"
+                  selectedFirstServe === "Opponent" ? "checked" : "unchecked"
                 }
-                onPress={() => setSelectedFirstServe("Opponenet")}
+                onPress={() => setSelectedFirstServe("Opponent")}
                 color={COLORS.primary}
               />
-              <Text style={styles.radioLabel}>Opponenet</Text>
+              <Text style={styles.radioLabel}>Opponent</Text>
             </View>
           </View>
         </View>
@@ -351,8 +371,8 @@ export default function statGamePrep() {
                   inputStyles={styles.dropdownText}
                   dropdownStyles={styles.dropdownActive}
                   dropdownTextStyles={styles.dropdownText}
-                  setSelected={(val) => setPositionFour(val)}
-                  data={dropDownRosterList}
+                  setSelected={(val) => handlePlayerSelection(positionFour, setPositionFour, val)}
+                  data={getFilteredRoster()}
                   save="value"
                   placeholder={
                     <Text style={styles.placeholderDropDown}>Position 4</Text>
@@ -376,8 +396,8 @@ export default function statGamePrep() {
                   inputStyles={styles.dropdownText}
                   dropdownStyles={styles.dropdownActive}
                   dropdownTextStyles={styles.dropdownText}
-                  setSelected={(val) => setPositionThree(val)}
-                  data={dropDownRosterList}
+                  setSelected={(val) => handlePlayerSelection(positionThree, setPositionThree, val)}
+                  data={getFilteredRoster()}
                   save="value"
                   placeholder={
                     <Text style={styles.placeholderDropDown}>Position 3</Text>
@@ -401,8 +421,8 @@ export default function statGamePrep() {
                   inputStyles={styles.dropdownText}
                   dropdownStyles={styles.dropdownActive}
                   dropdownTextStyles={styles.dropdownText}
-                  setSelected={(val) => setPositionTwo(val)}
-                  data={dropDownRosterList}
+                  setSelected={(val) => handlePlayerSelection(positionTwo, setPositionTwo, val)}
+                  data={getFilteredRoster()}
                   save="value"
                   placeholder={
                     <Text style={styles.placeholderDropDown}>Position 2</Text>
@@ -428,8 +448,8 @@ export default function statGamePrep() {
                   inputStyles={styles.dropdownText}
                   dropdownStyles={styles.dropdownActive}
                   dropdownTextStyles={styles.dropdownText}
-                  setSelected={(val) => setPositionFive(val)}
-                  data={dropDownRosterList}
+                  setSelected={(val) => handlePlayerSelection(positionFive, setPositionFive, val)}
+                  data={getFilteredRoster()}
                   save="value"
                   placeholder={
                     <Text style={styles.placeholderDropDown}>Position 5</Text>
@@ -453,8 +473,8 @@ export default function statGamePrep() {
                   inputStyles={styles.dropdownText}
                   dropdownStyles={styles.dropdownActive}
                   dropdownTextStyles={styles.dropdownText}
-                  setSelected={(val) => setPositionSix(val)}
-                  data={dropDownRosterList}
+                  setSelected={(val) => handlePlayerSelection(positionSix, setPositionSix, val)}
+                  data={getFilteredRoster()}
                   save="value"
                   placeholder={
                     <Text style={styles.placeholderDropDown}>Position 6</Text>
@@ -477,8 +497,8 @@ export default function statGamePrep() {
                 inputStyles={styles.dropdownText}
                 dropdownStyles={styles.dropdownActive}
                 dropdownTextStyles={styles.dropdownText}
-                setSelected={(val) => setPositionOne(val)}
-                data={dropDownRosterList}
+                setSelected={(val) => handlePlayerSelection(positionOne, setPositionOne, val)}
+                data={getFilteredRoster()}
                 save="value"
                 placeholder={
                   <Text style={styles.placeholderDropDown}>Position 1</Text>
@@ -515,8 +535,8 @@ export default function statGamePrep() {
                 inputStyles={styles.dropdownText}
                 dropdownStyles={styles.dropdownActive}
                 dropdownTextStyles={styles.dropdownText}
-                setSelected={(val) => setFirstLibero(val)}
-                data={dropDownRosterList}
+                setSelected={(val) => handlePlayerSelection(firstLibero, setFirstLibero, val)}
+                data={getFilteredRoster()}
                 save="value"
                 placeholder={
                   <Text style={styles.placeholderDropDown}>Optional</Text>
@@ -540,8 +560,8 @@ export default function statGamePrep() {
                 inputStyles={styles.dropdownText}
                 dropdownStyles={styles.dropdownActive}
                 dropdownTextStyles={styles.dropdownText}
-                setSelected={(val) => setSecondLibero(val)}
-                data={dropDownRosterList}
+                setSelected={(val) => handlePlayerSelection(secondLibero, setSecondLibero, val)}
+                data={getFilteredRoster()}
                 save="value"
                 placeholder={
                   <Text style={styles.placeholderDropDown}>Optional</Text>
@@ -774,7 +794,7 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
 
-  //DropDown
+  // DropDown
   dropdown: {
     height: hp(14),
     width: wp(14),
