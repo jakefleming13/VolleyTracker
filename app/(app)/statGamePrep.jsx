@@ -41,13 +41,58 @@ export default function statGamePrep() {
   const [secondLibero, setSecondLibero] = useState("");
 
   //Get the roster being prop drilled and format it to match specifications of dropdown library
-  const localRoster = [];
+  const dropDownRosterList = [];
   for (let index = 0; index < roster.length; index++) {
-    localRoster.push({
+    dropDownRosterList.push({
       key: index.toString(),
       value: roster[index].playerNumber + " - " + roster[index].playerName,
     });
   }
+
+  //Build the roster that will be passed to the statGame screen
+  const localRoster = [];
+  for (let index = 0; index < roster.length; index++) {
+    localRoster.push({
+      playerName: roster[index].playerName,
+      playerNumber: roster[index].playerNumber,
+      setsWon: 0,
+      setsLost: 0,
+      matchesPlayed: 0,
+      setsPlayed: 0,
+      attempts: 0,
+      kills: 0,
+      attackErrors: 0,
+      hittingPercentage: 0,
+      assists: 0,
+      assistsPerSet: 0.0,
+      digs: 0,
+      digErrors: 0,
+      digsPerSet: 0,
+      totalBlocks: 0,
+      blockSolos: 0,
+      blockAssists: 0,
+      blockErrors: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
+      passingAttempts: 0,
+      handPassingAttempts: 0,
+      forearmPassingAttempts: 0,
+      totalPassingAverage: 0.0,
+      totalPassValue: 0,
+      handPassingAverage: 0.0,
+      totalHandPassValue: 0,
+      totalForearmPassValue: 0,
+      forearmPassingAverage: 0.0,
+      receptionErrors: 0,
+      onePasses: 0,
+      twoPasses: 0,
+      threePasses: 0,
+      pts: 0,
+      ptsPerSet: 0.0,
+    });
+  }
+  console.log(localRoster);
 
   const cancelAlert = () => {
     Alert.alert("Are you sure?", "All data will be lost.", [
@@ -307,7 +352,7 @@ export default function statGamePrep() {
                   dropdownStyles={styles.dropdownActive}
                   dropdownTextStyles={styles.dropdownText}
                   setSelected={(val) => setPositionFour(val)}
-                  data={localRoster}
+                  data={dropDownRosterList}
                   save="value"
                   placeholder={
                     <Text style={styles.placeholderDropDown}>Position 4</Text>
@@ -332,7 +377,7 @@ export default function statGamePrep() {
                   dropdownStyles={styles.dropdownActive}
                   dropdownTextStyles={styles.dropdownText}
                   setSelected={(val) => setPositionThree(val)}
-                  data={localRoster}
+                  data={dropDownRosterList}
                   save="value"
                   placeholder={
                     <Text style={styles.placeholderDropDown}>Position 3</Text>
@@ -357,7 +402,7 @@ export default function statGamePrep() {
                   dropdownStyles={styles.dropdownActive}
                   dropdownTextStyles={styles.dropdownText}
                   setSelected={(val) => setPositionTwo(val)}
-                  data={localRoster}
+                  data={dropDownRosterList}
                   save="value"
                   placeholder={
                     <Text style={styles.placeholderDropDown}>Position 2</Text>
@@ -384,7 +429,7 @@ export default function statGamePrep() {
                   dropdownStyles={styles.dropdownActive}
                   dropdownTextStyles={styles.dropdownText}
                   setSelected={(val) => setPositionFive(val)}
-                  data={localRoster}
+                  data={dropDownRosterList}
                   save="value"
                   placeholder={
                     <Text style={styles.placeholderDropDown}>Position 5</Text>
@@ -409,7 +454,7 @@ export default function statGamePrep() {
                   dropdownStyles={styles.dropdownActive}
                   dropdownTextStyles={styles.dropdownText}
                   setSelected={(val) => setPositionSix(val)}
-                  data={localRoster}
+                  data={dropDownRosterList}
                   save="value"
                   placeholder={
                     <Text style={styles.placeholderDropDown}>Position 6</Text>
@@ -433,7 +478,7 @@ export default function statGamePrep() {
                 dropdownStyles={styles.dropdownActive}
                 dropdownTextStyles={styles.dropdownText}
                 setSelected={(val) => setPositionOne(val)}
-                data={localRoster}
+                data={dropDownRosterList}
                 save="value"
                 placeholder={
                   <Text style={styles.placeholderDropDown}>Position 1</Text>
@@ -471,7 +516,7 @@ export default function statGamePrep() {
                 dropdownStyles={styles.dropdownActive}
                 dropdownTextStyles={styles.dropdownText}
                 setSelected={(val) => setFirstLibero(val)}
-                data={localRoster}
+                data={dropDownRosterList}
                 save="value"
                 placeholder={
                   <Text style={styles.placeholderDropDown}>Optional</Text>
@@ -496,7 +541,7 @@ export default function statGamePrep() {
                 dropdownStyles={styles.dropdownActive}
                 dropdownTextStyles={styles.dropdownText}
                 setSelected={(val) => setSecondLibero(val)}
-                data={localRoster}
+                data={dropDownRosterList}
                 save="value"
                 placeholder={
                   <Text style={styles.placeholderDropDown}>Optional</Text>
@@ -516,11 +561,11 @@ export default function statGamePrep() {
         </View>
         <View style={styles.confirmContainer}>
           <TouchableOpacity
-            onPress={() =>
+            onPress={() => {
               router.push({
                 pathname: "statGame",
                 params: {
-                  currentLocalRoster: JSON.stringify(roster),
+                  currentLocalRoster: JSON.stringify(localRoster),
                   view: selectedView,
                   gameType: selectedGameType,
                   firstServe: selectedFirstServe,
@@ -536,8 +581,8 @@ export default function statGamePrep() {
                   firstLibero: firstLibero,
                   secondLibero: secondLibero,
                 },
-              })
-            }
+              });
+            }}
           >
             <View style={styles.confirmBtn}>
               <Text style={styles.confirmBtnText}> START </Text>
