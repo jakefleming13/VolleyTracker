@@ -1,7 +1,19 @@
-import { View, Text, ScrollView, Alert, TextInput, Button } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Alert,
+  TextInput,
+  Button,
+  Pressable,
+} from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeView } from "../../components/SafeView";
-import { TouchableOpacity } from "react-native";
+import {
+  TouchableOpacity,
+  TouchableHighlight,
+  TouchableWithoutFeedback,
+} from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -40,95 +52,407 @@ export default function statGame() {
   } = params;
 
   //JSON.parse to deal with an array that is being prop drilled
-
   /////////////////////////////////////
   //When testing is done uncomment
   //const roster = JSON.parse(params.currentLocalRoster);
-
   /////////////////////////////////////
+
   // Temp variable
   const testingRoster = [
-    { playerName: "Ben", playerNumber: "10" },
-    { playerName: "Gorski", playerNumber: "5" },
-    { playerName: "Jace", playerNumber: "2" },
-    { playerName: "Watty", playerNumber: "8" },
-    { playerName: "Aiden", playerNumber: "9" },
-    { playerName: "Finn", playerNumber: "15" },
-    { playerName: "Chris", playerNumber: "13" },
+    {
+      assists: 0,
+      assistsPerSet: 0,
+      attackErrors: 0,
+      attempts: 0,
+      blockAssists: 0,
+      blockErrors: 0,
+      blockSolos: 0,
+      digErrors: 0,
+      digs: 0,
+      digsPerSet: 0,
+      forearmPassingAttempts: 0,
+      forearmPassingAverage: 0,
+      handPassingAttempts: 0,
+      handPassingAverage: 0,
+      hittingPercentage: 0,
+      kills: 0,
+      matchesPlayed: 0,
+      onePasses: 0,
+      passingAttempts: 0,
+      playerName: "Ben",
+      playerNumber: "10",
+      pts: 0,
+      ptsPerSet: 0,
+      receptionErrors: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
+      setsLost: 0,
+      setsPlayed: 0,
+      setsWon: 0,
+      threePasses: 0,
+      totalBlocks: 0,
+      totalForearmPassValue: 0,
+      totalHandPassValue: 0,
+      totalPassValue: 0,
+      totalPassingAverage: 0,
+      twoPasses: 0,
+    },
+    {
+      assists: 0,
+      assistsPerSet: 0,
+      attackErrors: 0,
+      attempts: 0,
+      blockAssists: 0,
+      blockErrors: 0,
+      blockSolos: 0,
+      digErrors: 0,
+      digs: 0,
+      digsPerSet: 0,
+      forearmPassingAttempts: 0,
+      forearmPassingAverage: 0,
+      handPassingAttempts: 0,
+      handPassingAverage: 0,
+      hittingPercentage: 0,
+      kills: 0,
+      matchesPlayed: 0,
+      onePasses: 0,
+      passingAttempts: 0,
+      playerName: "Gorski",
+      playerNumber: "5",
+      pts: 0,
+      ptsPerSet: 0,
+      receptionErrors: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
+      setsLost: 0,
+      setsPlayed: 0,
+      setsWon: 0,
+      threePasses: 0,
+      totalBlocks: 0,
+      totalForearmPassValue: 0,
+      totalHandPassValue: 0,
+      totalPassValue: 0,
+      totalPassingAverage: 0,
+      twoPasses: 0,
+    },
+    {
+      assists: 0,
+      assistsPerSet: 0,
+      attackErrors: 0,
+      attempts: 0,
+      blockAssists: 0,
+      blockErrors: 0,
+      blockSolos: 0,
+      digErrors: 0,
+      digs: 0,
+      digsPerSet: 0,
+      forearmPassingAttempts: 0,
+      forearmPassingAverage: 0,
+      handPassingAttempts: 0,
+      handPassingAverage: 0,
+      hittingPercentage: 0,
+      kills: 0,
+      matchesPlayed: 0,
+      onePasses: 0,
+      passingAttempts: 0,
+      playerName: "Jace",
+      playerNumber: "2",
+      pts: 0,
+      ptsPerSet: 0,
+      receptionErrors: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
+      setsLost: 0,
+      setsPlayed: 0,
+      setsWon: 0,
+      threePasses: 0,
+      totalBlocks: 0,
+      totalForearmPassValue: 0,
+      totalHandPassValue: 0,
+      totalPassValue: 0,
+      totalPassingAverage: 0,
+      twoPasses: 0,
+    },
+    {
+      assists: 0,
+      assistsPerSet: 0,
+      attackErrors: 0,
+      attempts: 0,
+      blockAssists: 0,
+      blockErrors: 0,
+      blockSolos: 0,
+      digErrors: 0,
+      digs: 0,
+      digsPerSet: 0,
+      forearmPassingAttempts: 0,
+      forearmPassingAverage: 0,
+      handPassingAttempts: 0,
+      handPassingAverage: 0,
+      hittingPercentage: 0,
+      kills: 0,
+      matchesPlayed: 0,
+      onePasses: 0,
+      passingAttempts: 0,
+      playerName: "Watty",
+      playerNumber: "8",
+      pts: 0,
+      ptsPerSet: 0,
+      receptionErrors: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
+      setsLost: 0,
+      setsPlayed: 0,
+      setsWon: 0,
+      threePasses: 0,
+      totalBlocks: 0,
+      totalForearmPassValue: 0,
+      totalHandPassValue: 0,
+      totalPassValue: 0,
+      totalPassingAverage: 0,
+      twoPasses: 0,
+    },
+    {
+      assists: 0,
+      assistsPerSet: 0,
+      attackErrors: 0,
+      attempts: 0,
+      blockAssists: 0,
+      blockErrors: 0,
+      blockSolos: 0,
+      digErrors: 0,
+      digs: 0,
+      digsPerSet: 0,
+      forearmPassingAttempts: 0,
+      forearmPassingAverage: 0,
+      handPassingAttempts: 0,
+      handPassingAverage: 0,
+      hittingPercentage: 0,
+      kills: 0,
+      matchesPlayed: 0,
+      onePasses: 0,
+      passingAttempts: 0,
+      playerName: "Aiden",
+      playerNumber: "9",
+      pts: 0,
+      ptsPerSet: 0,
+      receptionErrors: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
+      setsLost: 0,
+      setsPlayed: 0,
+      setsWon: 0,
+      threePasses: 0,
+      totalBlocks: 0,
+      totalForearmPassValue: 0,
+      totalHandPassValue: 0,
+      totalPassValue: 0,
+      totalPassingAverage: 0,
+      twoPasses: 0,
+    },
+    {
+      assists: 0,
+      assistsPerSet: 0,
+      attackErrors: 0,
+      attempts: 0,
+      blockAssists: 0,
+      blockErrors: 0,
+      blockSolos: 0,
+      digErrors: 0,
+      digs: 0,
+      digsPerSet: 0,
+      forearmPassingAttempts: 0,
+      forearmPassingAverage: 0,
+      handPassingAttempts: 0,
+      handPassingAverage: 0,
+      hittingPercentage: 0,
+      kills: 0,
+      matchesPlayed: 0,
+      onePasses: 0,
+      passingAttempts: 0,
+      playerName: "Finn",
+      playerNumber: "15",
+      pts: 0,
+      ptsPerSet: 0,
+      receptionErrors: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
+      setsLost: 0,
+      setsPlayed: 0,
+      setsWon: 0,
+      threePasses: 0,
+      totalBlocks: 0,
+      totalForearmPassValue: 0,
+      totalHandPassValue: 0,
+      totalPassValue: 0,
+      totalPassingAverage: 0,
+      twoPasses: 0,
+    },
+    {
+      assists: 0,
+      assistsPerSet: 0,
+      attackErrors: 0,
+      attempts: 0,
+      blockAssists: 0,
+      blockErrors: 0,
+      blockSolos: 0,
+      digErrors: 0,
+      digs: 0,
+      digsPerSet: 0,
+      forearmPassingAttempts: 0,
+      forearmPassingAverage: 0,
+      handPassingAttempts: 0,
+      handPassingAverage: 0,
+      hittingPercentage: 0,
+      kills: 0,
+      matchesPlayed: 0,
+      onePasses: 0,
+      passingAttempts: 0,
+      playerName: "Chris",
+      playerNumber: "13",
+      pts: 0,
+      ptsPerSet: 0,
+      receptionErrors: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
+      setsLost: 0,
+      setsPlayed: 0,
+      setsWon: 0,
+      threePasses: 0,
+      totalBlocks: 0,
+      totalForearmPassValue: 0,
+      totalHandPassValue: 0,
+      totalPassValue: 0,
+      totalPassingAverage: 0,
+      twoPasses: 0,
+    },
   ];
+
+  //rosterStats variable contains all of the player stats for the current game
+  const [rosterStats, setRosterStats] = useState(testingRoster);
 
   const [homeScore, setHomeScore] = useState(0);
   const [opponentScore, setOpponentScore] = useState(0);
 
   const [setScores, setSetScores] = useState([]);
 
-  //build the roster and local stats that can be incremented until the game is over
-  const localRoster = [];
+  const [homeTimeOuts, setHomeTimeOuts] = useState(2);
+  const [opponentTimeOuts, setOpponentTimeOuts] = useState(2);
 
-  /////////////////////////////////////
-  //Change testingRoster -> roster
-  for (let index = 0; index < testingRoster.length; index++) {
-    localRoster.push({
-      playerName: testingRoster[index].playerName,
-      playerNumber: testingRoster[index].playerNumber,
-      setsWon: 0,
-      setsLost: 0,
-      matchesPlayed: 0,
-      setsPlayed: 0,
-      attempts: 0,
-      kills: 0,
-      attackErrors: 0,
-      assists: 0,
-      assistsPerSet: 0.0,
-      digs: 0,
-      digErrors: 0,
-      digsPerSet: 0,
-      totalBlocks: 0,
-      blockSolos: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      aces: 0,
-      serveAttempts: 0,
-      missedServes: 0,
-      passingAttempts: 0,
-      handPassingAttempts: 0,
-      forearmPassingAttempts: 0,
-      totalPassingAverage: 0.0,
-      handPassingAverage: 0.0,
-      forearmPassingAverage: 0.0,
-      pts: 0,
-      ptsPerSet: 0.0,
-    });
-  }
+  //Function to allow user to decrement number of home timeouts
+  const HomeTimeOutsDisplay = () => {
+    let display;
+    if (homeTimeOuts == 2) {
+      display = (
+        <View style={styles.timeouts}>
+          <MaterialCommunityIcons
+            name="numeric-1-circle"
+            size={RFValue(22)}
+            color={COLORS.primary}
+          />
+          <View style={styles.widthSpacer1} />
+          <MaterialCommunityIcons
+            name="numeric-2-circle"
+            size={RFValue(22)}
+            color={COLORS.primary}
+          />
+        </View>
+      );
+    } else if (homeTimeOuts == 1) {
+      display = (
+        <View style={styles.timeouts}>
+          <MaterialCommunityIcons
+            name="numeric-1-circle"
+            size={RFValue(22)}
+            color={COLORS.primary}
+          />
+        </View>
+      );
+    } else {
+      display = <View style={styles.timeouts}></View>;
+    }
 
-  const [rosterStats, setRosterStats] = useState(localRoster);
+    return <View>{display}</View>;
+  };
 
+  //Function to allow user to decrement number of opponent timeouts
+  const OpponentTimeOutsDisplay = () => {
+    let display;
+    if (opponentTimeOuts == 2) {
+      display = (
+        <View style={styles.timeouts}>
+          <MaterialCommunityIcons
+            name="numeric-1-circle"
+            size={RFValue(22)}
+            color={COLORS.primary}
+          />
+          <View style={styles.widthSpacer1} />
+          <MaterialCommunityIcons
+            name="numeric-2-circle"
+            size={RFValue(22)}
+            color={COLORS.primary}
+          />
+        </View>
+      );
+    } else if (opponentTimeOuts == 1) {
+      display = (
+        <View style={styles.timeouts}>
+          <MaterialCommunityIcons
+            name="numeric-1-circle"
+            size={RFValue(22)}
+            color={COLORS.primary}
+          />
+        </View>
+      );
+    } else {
+      display = <View style={styles.timeouts}></View>;
+    }
+
+    return <View>{display}</View>;
+  };
+
+  //teamStats Variable to keep track of all team stats during the current game
   const [teamStats, setTeamStats] = useState({
-    setsWon: 0,
-    setsLost: 0,
-    setsPlayed: 0,
-    attempts: 0,
-    kills: 0,
-    attackErrors: 0,
-    assists: 0,
-    assistsPerSet: 0.0,
-    digs: 0,
-    digErrors: 0,
-    digsPerSet: 0,
-    totalBlocks: 0,
-    blockSolos: 0,
-    blockAssists: 0,
-    aces: 0,
-    serveAttempts: 0,
-    missedServes: 0,
-    passingAttempts: 0,
-    handPassingAttempts: 0,
-    forearmPassingAttempts: 0,
-    totalPassingAverage: 0.0,
-    handPassingAverage: 0.0,
-    forearmPassingAverage: 0.0,
-    pts: 0,
-    ptsPerSet: 0.0,
+    teamSetsWon: 0,
+    teamSetsLost: 0,
+    teamSetsPlayed: 0,
+    teamAttempts: 0,
+    teamKills: 0,
+    teamAttackErrors: 0,
+    teamHittingPercentage: 0,
+    teamAssists: 0,
+    teamAssistsPerSet: 0.0,
+    teamDigs: 0,
+    teamDigErrors: 0,
+    teamDigsPerSet: 0,
+    teamTotalBlocks: 0,
+    teamBlockSolos: 0,
+    teamBlockAssists: 0,
+    teamBlockErrors: 0,
+    teamServiceAces: 0,
+    teamServiceAttempts: 0,
+    teamServiceErrors: 0,
+    teamPassingAttempts: 0,
+    teamHandPassingAttempts: 0,
+    teamForearmPassingAttempts: 0,
+    teamTotalPassingAverage: 0.0,
+    teamTotalPassValue: 0,
+    teamHandPassingAverage: 0.0,
+    teamTotalHandPassValue: 0,
+    teamTotalForearmPassValue: 0,
+    teamForearmPassingAverage: 0.0,
+    teamReceptionErrors: 0,
+    teamOnePasses: 0,
+    teamTwoPasses: 0,
+    teamThreePasses: 0,
+    teamPts: 0,
+    teamPtsPerSet: 0.0,
   });
 
   const cancelAlert = () => {
@@ -155,7 +479,12 @@ export default function statGame() {
     const updatedRoster = rosterStats.map((player) => {
       if (player.playerNumber === playerNumber) {
         // Return a new object with incremented attempts
-        return { ...player, attempts: player.attempts + 1 };
+        return {
+          ...player,
+          attempts: player.attempts + 1,
+          hittingPercentage:
+            (player.kills - player.attackErrors) / player.attempts,
+        };
       }
       return player; // Return the player object unchanged
     });
@@ -169,6 +498,9 @@ export default function statGame() {
           ...player,
           kills: player.kills + 1,
           attempts: player.attempts + 1,
+          pts: player.pts + 1,
+          hittingPercentage:
+            (player.kills - player.attackErrors) / player.attempts,
         };
       }
       return player;
@@ -183,6 +515,8 @@ export default function statGame() {
           ...player,
           attackErrors: player.attackErrors + 1,
           attempts: player.attempts + 1,
+          hittingPercentage:
+            (player.kills - player.attackErrors) / player.attempts,
         };
       }
       return player;
@@ -200,13 +534,14 @@ export default function statGame() {
     setRosterStats(updatedRoster);
   };
 
-  const handleAcesIncrement = (playerNumber) => {
+  const handleserviceAcesIncrement = (playerNumber) => {
     const updatedRoster = rosterStats.map((player) => {
       if (player.playerNumber === playerNumber) {
         return {
           ...player,
-          aces: player.aces + 1,
-          serveAttempts: player.serveAttempts + 1,
+          serviceAces: player.serviceAces + 1,
+          serviceAttempts: player.serviceAttempts + 1,
+          pts: player.pts + 1,
         };
       }
       return player;
@@ -219,8 +554,8 @@ export default function statGame() {
       if (player.playerNumber === playerNumber) {
         return {
           ...player,
-          missedServes: player.missedServes + 1,
-          serveAttempts: player.serveAttempts + 1,
+          serviceErrors: player.serviceErrors + 1,
+          serviceAttempts: player.serviceAttempts + 1,
         };
       }
       return player;
@@ -255,6 +590,7 @@ export default function statGame() {
           ...player,
           blockSolos: player.blockSolos + 1,
           totalBlocks: player.totalBlocks + 1,
+          pts: player.pts + 1,
         };
       }
       return player;
@@ -269,6 +605,7 @@ export default function statGame() {
           ...player,
           blockAssists: player.blockAssists + 1,
           totalBlocks: player.totalBlocks + 1,
+          pts: player.pts + 0.5,
         };
       }
       return player;
@@ -283,6 +620,151 @@ export default function statGame() {
           ...player,
           blockErrors: player.blockErrors + 1,
         };
+      }
+      return player;
+    });
+    setRosterStats(updatedRoster);
+  };
+
+  const [forearmPassSelected, setForearmPassSelected] = useState(false);
+  const [forearmPassPlayer, setForearmPassPlayer] = useState(null);
+  const [handPassSelected, setHandPassSelected] = useState(false);
+  const [handPassPlayer, setHandPassPlayer] = useState(null);
+
+  const handleReceptionErrorIncrement = (playerNumber) => {
+    const updatedRoster = rosterStats.map((player) => {
+      if (player.playerNumber === playerNumber) {
+        if (handPassSelected === true) {
+          return {
+            ...player,
+            receptionErrors: player.receptionErrors + 1,
+            passingAttempts: player.passingAttempts + 1,
+            totalPassingAverage: player.totalPassValue / player.passingAttempts,
+
+            handPassingAttempts: player.handPassingAttempts + 1,
+            handPassingAverage:
+              player.totalHandPassValue / player.handPassingAttempts,
+          };
+        } else {
+          return {
+            ...player,
+            receptionErrors: player.receptionErrors + 1,
+            passingAttempts: player.passingAttempts + 1,
+            totalPassingAverage: player.totalPassValue / player.passingAttempts,
+
+            forearmPassingAttempts: player.forearmPassingAttempts + 1,
+            forearmPassingAverage:
+              player.totalForearmPassValue / player.forearmPassingAttempts,
+          };
+        }
+      }
+      return player;
+    });
+    setRosterStats(updatedRoster);
+  };
+
+  const handleOnePassIncrement = (playerNumber) => {
+    const updatedRoster = rosterStats.map((player) => {
+      if (player.playerNumber === playerNumber) {
+        if (handPassSelected === true) {
+          return {
+            ...player,
+            onePasses: player.onePasses + 1,
+            passingAttempts: player.passingAttempts + 1,
+            totalPassValue: player.totalPassValue + 1,
+            totalPassingAverage: player.totalPassValue / player.passingAttempts,
+
+            handPassingAttempts: player.handPassingAttempts + 1,
+            totalHandPassValue: player.totalHandPassValue + 1,
+            handPassingAverage:
+              player.totalHandPassValue / player.handPassingAttempts,
+          };
+        } else {
+          return {
+            ...player,
+            onePasses: player.onePasses + 1,
+            passingAttempts: player.passingAttempts + 1,
+            totalPassValue: player.totalPassValue + 1,
+            totalPassingAverage: player.totalPassValue / player.passingAttempts,
+
+            forearmPassingAttempts: player.forearmPassingAttempts + 1,
+            totalForearmPassValue: player.totalForearmPassValue + 1,
+            forearmPassingAverage:
+              player.totalForearmPassValue / player.forearmPassingAttempts,
+          };
+        }
+      }
+      return player;
+    });
+    setRosterStats(updatedRoster);
+  };
+
+  const handleTwoPassIncrement = (playerNumber) => {
+    const updatedRoster = rosterStats.map((player) => {
+      if (player.playerNumber === playerNumber) {
+        if (handPassSelected === true) {
+          return {
+            ...player,
+            twoPasses: player.twoPasses + 1,
+            passingAttempts: player.passingAttempts + 1,
+            totalPassValue: player.totalPassValue + 2,
+            totalPassingAverage: player.totalPassValue / player.passingAttempts,
+
+            handPassingAttempts: player.handPassingAttempts + 1,
+            totalHandPassValue: player.totalHandPassValue + 2,
+            handPassingAverage:
+              player.totalHandPassValue / player.handPassingAttempts,
+          };
+        } else {
+          return {
+            ...player,
+            twoPasses: player.twoPasses + 1,
+            passingAttempts: player.passingAttempts + 1,
+            totalPassValue: player.totalPassValue + 2,
+            totalPassingAverage: player.totalPassValue / player.passingAttempts,
+
+            forearmPassingAttempts: player.forearmPassingAttempts + 1,
+            totalForearmPassValue: player.totalForearmPassValue + 2,
+            forearmPassingAverage:
+              player.totalForearmPassValue / player.forearmPassingAttempts,
+          };
+        }
+      }
+      return player;
+    });
+    setRosterStats(updatedRoster);
+  };
+
+  const handleThreePassIncrement = (playerNumber) => {
+    const updatedRoster = rosterStats.map((player) => {
+      if (player.playerNumber === playerNumber) {
+        if (handPassSelected === true) {
+          return {
+            ...player,
+            threePasses: player.threePasses + 1,
+            passingAttempts: player.passingAttempts + 1,
+            totalPassValue: player.totalPassValue + 3,
+            totalPassingAverage: player.totalPassValue / player.passingAttempts,
+
+            handPassingAttempts: player.handPassingAttempts + 1,
+            totalHandPassValue: player.totalHandPassValue + 3,
+            handPassingAverage:
+              player.totalHandPassValue / player.handPassingAttempts,
+          };
+        } else {
+          return {
+            ...player,
+            threePasses: player.threePasses + 1,
+            passingAttempts: player.passingAttempts + 1,
+            totalPassValue: player.totalPassValue + 3,
+            totalPassingAverage: player.totalPassValue / player.passingAttempts,
+
+            forearmPassingAttempts: player.forearmPassingAttempts + 1,
+            totalForearmPassValue: player.totalForearmPassValue + 3,
+            forearmPassingAverage:
+              player.totalForearmPassValue / player.forearmPassingAttempts,
+          };
+        }
       }
       return player;
     });
@@ -421,7 +903,10 @@ export default function statGame() {
                                 : player.attempts + " "}
                             </Text>
                             <Text style={styles.liveStatsModalSecondaryText2}>
-                              0.000
+                              {(
+                                (player.kills - player.attackErrors) /
+                                player.attempts
+                              ).toFixed(3)}
                             </Text>
                             <Text style={styles.liveStatsModalSecondaryText2}>
                               {player.assists.toString().length > 1
@@ -429,20 +914,29 @@ export default function statGame() {
                                 : player.assists + " "}
                             </Text>
                             <Text style={styles.liveStatsModalSecondaryText2}>
-                              {player.aces.toString().length > 1
-                                ? player.aces
-                                : player.aces + " "}
+                              {player.serviceAces.toString().length > 1
+                                ? player.serviceAces
+                                : player.serviceAces + " "}
                             </Text>
                             <Text style={styles.liveStatsModalSecondaryText2}>
-                              {player.missedServes.toString().length > 1
-                                ? player.missedServes
-                                : player.missedServes + " "}
+                              {player.serviceErrors.toString().length > 1
+                                ? player.serviceErrors
+                                : player.serviceErrors + " "}
                             </Text>
                             <Text style={styles.liveStatsModalSecondaryText2}>
-                              RE
+                              {player.receptionErrors.toString().length > 1
+                                ? player.receptionErrors
+                                : player.receptionErrors + " "}
                             </Text>
                             <Text style={styles.liveStatsModalSecondaryText2}>
-                              1.00{"  "}
+                              {isNaN(
+                                player.totalPassValue / player.passingAttempts
+                              )
+                                ? "0.00"
+                                : (
+                                    player.totalPassValue /
+                                    player.passingAttempts
+                                  ).toFixed(2)}
                             </Text>
                             <Text style={styles.liveStatsModalSecondaryText2}>
                               {player.digs.toString().length > 1
@@ -468,13 +962,105 @@ export default function statGame() {
                               style={styles.liveStatsModalSecondaryTextEnd2}
                             >
                               {player.pts.toString().length > 1
-                                ? player.pts + " "
-                                : player.pts + "  "}
+                                ? player.pts.toFixed(1)
+                                : player.pts.toFixed(1)}
                             </Text>
                           </View>
                         </View>
                       );
                     })}
+
+                    <View style={styles.liveStatsTitleRow}>
+                      <View style={styles.liveStatsStatHeader}>
+                        <Text style={styles.liveStatsPlayerHeader}>
+                          Team
+                          {"  "}
+                          Total
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamSetsPlayed.toString().length > 1
+                            ? teamStats.teamSetsPlayed
+                            : teamStats.teamSetsPlayed + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamKills.toString().length > 1
+                            ? teamStats.teamKills
+                            : teamStats.teamKills + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamAttackErrors.toString().length > 1
+                            ? teamStats.teamAttackErrors
+                            : teamStats.teamAttackErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamAttempts.toString().length > 1
+                            ? teamStats.teamAttempts
+                            : teamStats.teamAttempts + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {(
+                            (teamStats.teamKills - teamStats.teamAttackErrors) /
+                            teamStats.teamAttempts
+                          ).toFixed(3)}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamAssists.toString().length > 1
+                            ? teamStats.teamAssists
+                            : teamStats.teamAssists + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamServiceAces.toString().length > 1
+                            ? teamStats.teamServiceAces
+                            : teamStats.teamServiceAces + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamServiceErrors.toString().length > 1
+                            ? teamStats.teamServiceErrors
+                            : teamStats.teamServiceErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamReceptionErrors.toString().length > 1
+                            ? teamStats.teamReceptionErrors
+                            : teamStats.teamReceptionErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {isNaN(
+                            teamStats.teamTotalPassValue /
+                              teamStats.teamPassingAttempts
+                          )
+                            ? "0.00"
+                            : (
+                                teamStats.teamTotalPassValue /
+                                teamStats.teamPassingAttempts
+                              ).toFixed(2)}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamDigs.toString().length > 1
+                            ? teamStats.teamDigs
+                            : teamStats.teamDigs + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamBlockSolos.toString().length > 1
+                            ? teamStats.teamBlockSolos
+                            : teamStats.teamBlockSolos + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamBlockAssists.toString().length > 1
+                            ? teamStats.teamBlockAssists
+                            : teamStats.teamBlockAssists + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamBlockErrors.toString().length > 1
+                            ? teamStats.teamBlockErrors
+                            : teamStats.teamBlockErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryTextEnd2}>
+                          {teamStats.teamPts.toString().length > 1
+                            ? teamStats.teamPts.toFixed(1)
+                            : teamStats.teamPts.toFixed(1)}
+                        </Text>
+                      </View>
+                    </View>
                   </View>
                 </View>
               </ScrollView>
@@ -484,20 +1070,13 @@ export default function statGame() {
           <View style={styles.widthSpacer2} />
           <View style={styles.timeOutContainer}>
             <Text style={styles.timeOutText}>Timeouts:</Text>
-            <TouchableOpacity>
-              <View style={styles.timeouts}>
-                <MaterialCommunityIcons
-                  name="numeric-1-circle"
-                  size={RFValue(22)}
-                  color={COLORS.primary}
-                />
-                <View style={styles.widthSpacer1} />
-                <MaterialCommunityIcons
-                  name="numeric-2-circle"
-                  size={RFValue(22)}
-                  color={COLORS.primary}
-                />
-              </View>
+            <TouchableOpacity
+              onPress={() => {
+                setHomeTimeOuts(homeTimeOuts - 1);
+              }}
+              //disabled={homeTimeOuts < 1 ? true : false}
+            >
+              <HomeTimeOutsDisplay />
             </TouchableOpacity>
             <View style={styles.servingIndicatorContainer}>
               {/* TODO: Conditionally render based on whos serving */}
@@ -514,7 +1093,6 @@ export default function statGame() {
             <TouchableOpacity
               onPress={() => {
                 setHomeScore(homeScore + 1);
-                homeScore + 1;
               }}
             >
               <View style={styles.scoreAmountContainer}>
@@ -529,6 +1107,7 @@ export default function statGame() {
               onPress={() => {
                 setOpponentScore(opponentScore + 1);
               }}
+              delayPressIn={0}
             >
               <View style={styles.scoreAmountContainer}>
                 <Text style={styles.scoreText}>{opponentScore}</Text>
@@ -537,20 +1116,12 @@ export default function statGame() {
           </View>
           <View style={styles.timeOutContainer}>
             <Text style={styles.timeOutText}>Timeouts:</Text>
-            <TouchableOpacity>
-              <View style={styles.timeouts}>
-                <MaterialCommunityIcons
-                  name="numeric-1-circle"
-                  size={RFValue(22)}
-                  color={COLORS.primary}
-                />
-                <View style={styles.widthSpacer1} />
-                <MaterialCommunityIcons
-                  name="numeric-2-circle"
-                  size={RFValue(22)}
-                  color={COLORS.primary}
-                />
-              </View>
+            <TouchableOpacity
+              onPress={() => {
+                setOpponentTimeOuts(opponentTimeOuts - 1);
+              }}
+            >
+              <OpponentTimeOutsDisplay />
             </TouchableOpacity>
             <View style={styles.servingIndicatorContainer}>
               {/* TODO: Conditionally render based on whos serving */}
@@ -632,7 +1203,7 @@ export default function statGame() {
           </Text>
         </View>
         <ScrollView>
-          {localRoster.map((player) => {
+          {rosterStats.map((player) => {
             return (
               <View style={styles.playerContainer} key={player.playerNumber}>
                 <View style={styles.playerNameNumContainer}>
@@ -654,9 +1225,13 @@ export default function statGame() {
                 <View style={styles.playerOffenseContainer}>
                   <View style={styles.offenseSubContainer}>
                     <TouchableOpacity
-                      onPress={() =>
-                        handleAttemptIncrement(player.playerNumber)
-                      }
+                      onPress={() => {
+                        handleAttemptIncrement(player.playerNumber);
+                        setTeamStats((teamStats) => ({
+                          ...teamStats,
+                          teamAttempts: teamStats.teamAttempts + 1,
+                        }));
+                      }}
                     >
                       <View style={styles.statBtn}>
                         <Text style={styles.btnTextSingleLine}>ATK</Text>
@@ -665,6 +1240,12 @@ export default function statGame() {
                     <TouchableOpacity
                       onPress={() => {
                         handleKillsIncrement(player.playerNumber);
+                        setTeamStats((teamStats) => ({
+                          ...teamStats,
+                          teamKills: teamStats.teamKills + 1,
+                          teamAttempts: teamStats.teamAttempts + 1,
+                          teamPts: teamStats.teamPts + 1,
+                        }));
                       }}
                     >
                       <View style={styles.statBtn}>
@@ -676,6 +1257,11 @@ export default function statGame() {
                     <TouchableOpacity
                       onPress={() => {
                         handleAttackErrorsIncrement(player.playerNumber);
+                        setTeamStats((teamStats) => ({
+                          ...teamStats,
+                          teamAttackErrors: teamStats.teamAttackErrors + 1,
+                          teamAttempts: teamStats.teamAttempts + 1,
+                        }));
                       }}
                     >
                       <View style={styles.statBtn}>
@@ -686,6 +1272,10 @@ export default function statGame() {
                     <TouchableOpacity
                       onPress={() => {
                         handleAssistsIncrement(player.playerNumber);
+                        setTeamStats((teamStats) => ({
+                          ...teamStats,
+                          teamAssists: teamStats.teamAssists + 1,
+                        }));
                       }}
                     >
                       <View style={styles.statBtn}>
@@ -700,6 +1290,11 @@ export default function statGame() {
                     <TouchableOpacity
                       onPress={() => {
                         handleBlockSolosIncrement(player.playerNumber);
+                        setTeamStats((teamStats) => ({
+                          ...teamStats,
+                          teamBlockSolos: teamStats.teamBlockSolos + 1,
+                          teamPts: teamStats.teamPts + 1,
+                        }));
                       }}
                     >
                       <View style={styles.statBtn}>
@@ -709,6 +1304,10 @@ export default function statGame() {
                     <TouchableOpacity
                       onPress={() => {
                         handleBlockErrorsIncrement(player.playerNumber);
+                        setTeamStats((teamStats) => ({
+                          ...teamStats,
+                          teamBlockErrors: teamStats.teamBlockErrors + 1,
+                        }));
                       }}
                     >
                       <View style={styles.statBtn}>
@@ -721,6 +1320,12 @@ export default function statGame() {
                     <TouchableOpacity
                       onPress={() => {
                         handleBlockAssistsIncrement(player.playerNumber);
+                        setTeamStats((teamStats) => ({
+                          ...teamStats,
+                          teamBlockAssists: teamStats.teamBlockAssists + 1,
+                          teamTotalBlocks: teamStats.teamTotalBlocks + 0.5,
+                          teamPts: teamStats.teamPts + 0.5,
+                        }));
                       }}
                     >
                       <View style={styles.statBtn}>
@@ -730,6 +1335,10 @@ export default function statGame() {
                     <TouchableOpacity
                       onPress={() => {
                         handleDigErrorsIncrement(player.playerNumber);
+                        setTeamStats((teamStats) => ({
+                          ...teamStats,
+                          teamDigErrors: teamStats.teamDigErrors + 1,
+                        }));
                       }}
                     >
                       <View style={styles.statBtn}>
@@ -742,6 +1351,10 @@ export default function statGame() {
                     <TouchableOpacity
                       onPress={() => {
                         handleDigIncrement(player.playerNumber);
+                        setTeamStats((teamStats) => ({
+                          ...teamStats,
+                          teamTotalDigs: teamStats.teamTotalDigs + 1,
+                        }));
                       }}
                     >
                       <View style={styles.statBtn}>
@@ -755,7 +1368,12 @@ export default function statGame() {
                   <View style={styles.defenseSubContainer}>
                     <TouchableOpacity
                       onPress={() => {
-                        handleAcesIncrement(player.playerNumber);
+                        handleserviceAcesIncrement(player.playerNumber);
+                        setTeamStats((teamStats) => ({
+                          ...teamStats,
+                          teamServiceAces: teamStats.teamServiceAces + 1,
+                          teamPts: teamStats.teamPts + 1,
+                        }));
                       }}
                     >
                       <View style={styles.statBtn}>
@@ -765,6 +1383,10 @@ export default function statGame() {
                     <TouchableOpacity
                       onPress={() => {
                         handleServiceErrorsIncrement(player.playerNumber);
+                        setTeamStats((teamStats) => ({
+                          ...teamStats,
+                          teamServiceErrors: teamStats.teamServiceErrors + 1,
+                        }));
                       }}
                     >
                       <View style={styles.statBtn}>
@@ -776,39 +1398,177 @@ export default function statGame() {
                 <View style={styles.seperator} />
                 <View style={styles.playerPassingContainer}>
                   <View style={styles.defenseSubContainer}>
-                    <TouchableOpacity>
-                      <View style={styles.statBtn}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        if (
+                          forearmPassSelected === true &&
+                          forearmPassPlayer == player.playerNumber
+                        ) {
+                          setForearmPassSelected(false);
+                          setForearmPassPlayer(null);
+                        } else {
+                          setForearmPassSelected(true);
+                          setForearmPassPlayer(player.playerNumber);
+
+                          setHandPassSelected(false);
+                          setHandPassPlayer(null);
+                        }
+                      }}
+                    >
+                      <View
+                        style={
+                          forearmPassSelected &&
+                          player.playerNumber === forearmPassPlayer
+                            ? styles.statBtnSelected
+                            : styles.statBtn
+                        }
+                      >
                         <Text style={styles.btnTextdoubleLine}>FOREARM</Text>
                         <Text style={styles.btnTextdoubleLine}>PASS</Text>
                       </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
-                      <View style={styles.statBtn}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        if (
+                          handPassSelected === true &&
+                          handPassPlayer == player.playerNumber
+                        ) {
+                          setHandPassSelected(false);
+                          setHandPassPlayer(null);
+                        } else {
+                          setHandPassSelected(true);
+                          setHandPassPlayer(player.playerNumber);
+
+                          setForearmPassSelected(false);
+                          setForearmPassPlayer(null);
+                        }
+                      }}
+                    >
+                      <View
+                        style={
+                          handPassSelected &&
+                          player.playerNumber === handPassPlayer
+                            ? styles.statBtnSelected
+                            : styles.statBtn
+                        }
+                      >
                         <Text style={styles.btnTextdoubleLine}>HAND</Text>
                         <Text style={styles.btnTextdoubleLine}>PASS</Text>
                       </View>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.defenseSubContainer}>
-                    <TouchableOpacity>
-                      <View style={styles.statBtn}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        handleReceptionErrorIncrement(player.playerNumber);
+                        setForearmPassSelected(false);
+                        setForearmPassPlayer(null);
+                        setHandPassSelected(false);
+                        setHandPassPlayer(null);
+                      }}
+                      disabled={
+                        handPassSelected === false &&
+                        forearmPassSelected === false
+                          ? true
+                          : false
+                      }
+                    >
+                      <View
+                        style={
+                          (handPassSelected &&
+                            player.playerNumber === handPassPlayer) ||
+                          (forearmPassSelected &&
+                            player.playerNumber === forearmPassPlayer)
+                            ? styles.statBtnSelected
+                            : styles.statBtn
+                        }
+                      >
                         <Text style={styles.btnTextSingleLine}>0</Text>
                       </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
-                      <View style={styles.statBtn}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        handleTwoPassIncrement(player.playerNumber);
+                        setForearmPassSelected(false);
+                        setForearmPassPlayer(null);
+                        setHandPassSelected(false);
+                        setHandPassPlayer(null);
+                      }}
+                      disabled={
+                        handPassSelected === false &&
+                        forearmPassSelected === false
+                          ? true
+                          : false
+                      }
+                    >
+                      <View
+                        style={
+                          (handPassSelected &&
+                            player.playerNumber === handPassPlayer) ||
+                          (forearmPassSelected &&
+                            player.playerNumber === forearmPassPlayer)
+                            ? styles.statBtnSelected
+                            : styles.statBtn
+                        }
+                      >
                         <Text style={styles.btnTextSingleLine}>2</Text>
                       </View>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.defenseSubContainer}>
-                    <TouchableOpacity>
-                      <View style={styles.statBtn}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        handleOnePassIncrement(player.playerNumber);
+                        setForearmPassSelected(false);
+                        setForearmPassPlayer(null);
+                        setHandPassSelected(false);
+                        setHandPassPlayer(null);
+                      }}
+                      disabled={
+                        handPassSelected === false &&
+                        forearmPassSelected === false
+                          ? true
+                          : false
+                      }
+                    >
+                      <View
+                        style={
+                          (handPassSelected &&
+                            player.playerNumber === handPassPlayer) ||
+                          (forearmPassSelected &&
+                            player.playerNumber === forearmPassPlayer)
+                            ? styles.statBtnSelected
+                            : styles.statBtn
+                        }
+                      >
                         <Text style={styles.btnTextSingleLine}>1</Text>
                       </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
-                      <View style={styles.statBtn}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        handleThreePassIncrement(player.playerNumber);
+                        setForearmPassSelected(false);
+                        setForearmPassPlayer(null);
+                        setHandPassSelected(false);
+                        setHandPassPlayer(null);
+                      }}
+                      disabled={
+                        handPassSelected === false &&
+                        forearmPassSelected === false
+                          ? true
+                          : false
+                      }
+                    >
+                      <View
+                        style={
+                          (handPassSelected &&
+                            player.playerNumber === handPassPlayer) ||
+                          (forearmPassSelected &&
+                            player.playerNumber === forearmPassPlayer)
+                            ? styles.statBtnSelected
+                            : styles.statBtn
+                        }
+                      >
                         <Text style={styles.btnTextSingleLine}>3</Text>
                       </View>
                     </TouchableOpacity>
@@ -1132,15 +1892,14 @@ const styles = StyleSheet.create({
     borderRadius: 7.5,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-
-    elevation: 4,
+  },
+  statBtnSelected: {
+    width: wp(6),
+    height: hp(6),
+    backgroundColor: COLORS.secondary,
+    borderRadius: 7.5,
+    justifyContent: "center",
+    alignItems: "center",
   },
   playerDefenseContainer: {
     flexDirection: "row",
