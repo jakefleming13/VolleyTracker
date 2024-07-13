@@ -1,19 +1,7 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  Alert,
-  TextInput,
-  Button,
-  Pressable,
-} from "react-native";
+import { View, Text, ScrollView, Alert } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeView } from "../../components/SafeView";
-import {
-  TouchableOpacity,
-  TouchableHighlight,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { TouchableOpacity } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -27,6 +15,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { useState } from "react";
 import Modal from "react-native-modal";
+import { Dropdown } from "react-native-element-dropdown";
 
 export default function statGame() {
   //Get game settings
@@ -41,15 +30,58 @@ export default function statGame() {
     location,
     opponent,
     setsBeingPlayed,
-    positionOne,
-    positionTwo,
-    positionThree,
-    positionFour,
-    positionFive,
-    positionSix,
-    firstLibero,
-    secondLibero,
+    pOne,
+    pTwo,
+    pThree,
+    pFour,
+    pFive,
+    pSix,
+    firstL,
+    secondL,
   } = params;
+
+  //Variable for which team is serving -> replace with 'firstServe' prop
+  const [serverTracker, setServerTracker] = useState("Opponent");
+
+  // Get the users Lineup -> replace with respective drilled prop
+  const [positionOne, setPositionOne] = useState("5");
+  const [positionTwo, setPositionTwo] = useState("8");
+  const [positionThree, setPositionThree] = useState("10");
+  const [positionFour, setPositionFour] = useState("2");
+  const [positionFive, setPositionFive] = useState("9");
+  const [positionSix, setPositionSix] = useState("15");
+  const [firstLibero, setFirstLibero] = useState("13");
+  const [secondLibero, setSecondLibero] = useState(null);
+
+  //Starters and subs for each position
+  const [starterPositionOne, setStarterPositionOne] = useState("5");
+  const [starterPositionOneSub, setStarterPositionOneSub] = useState(null);
+
+  const [starterPositionTwo, setStarterPositionTwo] = useState("8");
+  const [starterPositionTwoSub, setStarterPositionTwoSub] = useState(null);
+
+  const [starterPositionThree, setStarterPositionThree] = useState("10");
+  const [starterPositionThreeSub, setStarterPositionThreeSub] = useState(null);
+
+  const [starterPositionFour, setStarterPositionFour] = useState("2");
+  const [starterPositionFourSub, setStarterPositionFourSub] = useState(null);
+
+  const [starterPositionFive, setStarterPositionFive] = useState("9");
+  const [starterPositionFiveSub, setStarterPositionFiveSub] = useState(null);
+
+  const [starterPositionSix, setStarterPositionSix] = useState("15");
+  const [starterPositionSixSub, setStarterPositionSixSub] = useState(null);
+
+  const handleRotation = () => {
+    let temp = positionOne;
+
+    setPositionOne(positionTwo);
+    setPositionTwo(positionThree);
+    setPositionThree(positionFour);
+    setPositionFour(positionFive);
+    setPositionFive(positionSix);
+    setPositionSix(temp);
+  };
 
   //JSON.parse to deal with an array that is being prop drilled
   /////////////////////////////////////
@@ -332,7 +364,52 @@ export default function statGame() {
       totalPassingAverage: 0,
       twoPasses: 0,
     },
+    {
+      assists: 0,
+      assistsPerSet: 0,
+      attackErrors: 0,
+      attempts: 0,
+      blockAssists: 0,
+      blockErrors: 0,
+      blockSolos: 0,
+      digErrors: 0,
+      digs: 0,
+      digsPerSet: 0,
+      forearmPassingAttempts: 0,
+      forearmPassingAverage: 0,
+      handPassingAttempts: 0,
+      handPassingAverage: 0,
+      hittingPercentage: 0,
+      kills: 0,
+      matchesPlayed: 0,
+      onePasses: 0,
+      passingAttempts: 0,
+      playerName: "Ross",
+      playerNumber: "19",
+      pts: 0,
+      ptsPerSet: 0,
+      receptionErrors: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
+      setsLost: 0,
+      setsPlayed: 0,
+      setsWon: 0,
+      threePasses: 0,
+      totalBlocks: 0,
+      totalForearmPassValue: 0,
+      totalHandPassValue: 0,
+      totalPassValue: 0,
+      totalPassingAverage: 0,
+      twoPasses: 0,
+    },
   ];
+
+  //TODO: REMOVE AFTRER TESTING (roster is now sorted within addSeason Screen)
+  //Sort the diplayed roster by number
+  // let sortedTestingRoster = testingRoster.sort(
+  //   (p1, p2) => p1.playerNumber - p2.playerNumber
+  // );
 
   //rosterStats variable contains all of the player stats for the current game
   const [rosterStats, setRosterStats] = useState(testingRoster);
@@ -472,6 +549,13 @@ export default function statGame() {
 
   const toggleLiveStatsModal = () => {
     setLiveStatsModalVisible(!isLiveStatsModalVisible);
+  };
+
+  const [isRotationCheckModalVisible, setRotationCheckModalVisible] =
+    useState(false);
+
+  const toggleRotationCheckModal = () => {
+    setRotationCheckModalVisible(!isRotationCheckModalVisible);
   };
 
   const handleAttemptIncrement = (playerNumber) => {
@@ -796,6 +880,68 @@ export default function statGame() {
               <Text style={styles.liveStatsRotationText}>Live Stats</Text>
             </View>
           </TouchableOpacity>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Modal
+              isVisible={isRotationCheckModalVisible}
+              onBackdropPress={toggleRotationCheckModal}
+            >
+              <View style={styles.rotationCheckContainer}>
+                <View style={styles.court}>
+                  <View style={styles.netIndicator} />
+                  <View style={styles.courtRow}>
+                    <TouchableOpacity>
+                      <View style={styles.courtPosition}>
+                        <Text style={styles.courtPositionText}>
+                          {positionFour}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                      <View style={styles.courtPosition}>
+                        <Text style={styles.courtPositionText}>
+                          {positionThree}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                      <View style={styles.courtPosition}>
+                        <Text style={styles.courtPositionText}>
+                          {positionTwo}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.courtRow}>
+                    <TouchableOpacity>
+                      <View style={styles.courtPosition}>
+                        <Text style={styles.courtPositionText}>
+                          {positionFive}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                      <View style={styles.courtPosition}>
+                        <Text style={styles.courtPositionText}>
+                          {positionSix}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                    <View style={styles.courtPosition}>
+                      <Text style={styles.courtPositionText}>
+                        {positionOne}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+          </View>
 
           <View style={{ flex: 1 }}>
             <Modal
@@ -874,7 +1020,10 @@ export default function statGame() {
                     </View>
                     {rosterStats.map((player) => {
                       return (
-                        <View style={styles.liveStatsTitleRow}>
+                        <View
+                          style={styles.liveStatsTitleRow}
+                          key={player.playerNumber}
+                        >
                           <View style={styles.liveStatsStatHeader}>
                             <Text style={styles.liveStatsPlayerHeader}>
                               {/* TODO: validation for length of players name */}
@@ -903,10 +1052,15 @@ export default function statGame() {
                                 : player.attempts + " "}
                             </Text>
                             <Text style={styles.liveStatsModalSecondaryText2}>
-                              {(
+                              {isNaN(
                                 (player.kills - player.attackErrors) /
-                                player.attempts
-                              ).toFixed(3)}
+                                  player.attempts
+                              )
+                                ? "0.000"
+                                : (
+                                    (player.kills - player.attackErrors) /
+                                    player.attempts
+                                  ).toFixed(3)}
                             </Text>
                             <Text style={styles.liveStatsModalSecondaryText2}>
                               {player.assists.toString().length > 1
@@ -998,10 +1152,16 @@ export default function statGame() {
                             : teamStats.teamAttempts + " "}
                         </Text>
                         <Text style={styles.liveStatsModalSecondaryText2}>
-                          {(
+                          {isNaN(
                             (teamStats.teamKills - teamStats.teamAttackErrors) /
-                            teamStats.teamAttempts
-                          ).toFixed(3)}
+                              teamStats.teamAttempts
+                          )
+                            ? "0.000"
+                            : (
+                                (teamStats.teamKills -
+                                  teamStats.teamAttackErrors) /
+                                teamStats.teamAttempts
+                              ).toFixed(3)}
                         </Text>
                         <Text style={styles.liveStatsModalSecondaryText2}>
                           {teamStats.teamAssists.toString().length > 1
@@ -1074,17 +1234,20 @@ export default function statGame() {
               onPress={() => {
                 setHomeTimeOuts(homeTimeOuts - 1);
               }}
-              //disabled={homeTimeOuts < 1 ? true : false}
+              disabled={homeTimeOuts < 1 ? true : false}
             >
               <HomeTimeOutsDisplay />
             </TouchableOpacity>
             <View style={styles.servingIndicatorContainer}>
-              {/* TODO: Conditionally render based on whos serving */}
-              <FontAwesome6
-                name="volleyball"
-                size={RFValue(20)}
-                color="black"
-              />
+              {serverTracker !== "Opponent" ? (
+                <FontAwesome6
+                  name="volleyball"
+                  size={RFValue(20)}
+                  color="black"
+                />
+              ) : (
+                <View />
+              )}
             </View>
           </View>
           <View style={styles.scoreContainer}>
@@ -1093,6 +1256,10 @@ export default function statGame() {
             <TouchableOpacity
               onPress={() => {
                 setHomeScore(homeScore + 1);
+                if (serverTracker === "Opponent") {
+                  setServerTracker("Home");
+                  handleRotation();
+                }
               }}
             >
               <View style={styles.scoreAmountContainer}>
@@ -1106,6 +1273,9 @@ export default function statGame() {
             <TouchableOpacity
               onPress={() => {
                 setOpponentScore(opponentScore + 1);
+                if (serverTracker !== "Opponent") {
+                  setServerTracker("Opponent");
+                }
               }}
               delayPressIn={0}
             >
@@ -1120,21 +1290,24 @@ export default function statGame() {
               onPress={() => {
                 setOpponentTimeOuts(opponentTimeOuts - 1);
               }}
+              disabled={opponentTimeOuts < 1 ? true : false}
             >
               <OpponentTimeOutsDisplay />
             </TouchableOpacity>
             <View style={styles.servingIndicatorContainer}>
-              {/* TODO: Conditionally render based on whos serving */}
-              <FontAwesome6
-                name="volleyball"
-                size={RFValue(20)}
-                color="black"
-              />
+              {serverTracker === "Opponent" ? (
+                <FontAwesome6
+                  name="volleyball"
+                  size={RFValue(20)}
+                  color="black"
+                />
+              ) : (
+                <View />
+              )}
             </View>
           </View>
           <View style={styles.widthSpacer2} />
-          <TouchableOpacity>
-            {/* TODO: Add rotation pop-up */}
+          <TouchableOpacity onPress={toggleRotationCheckModal}>
             <View style={styles.rotationCheckContianer}>
               <Text style={styles.liveStatsRotationText}>Rotation Check</Text>
             </View>
@@ -1144,13 +1317,18 @@ export default function statGame() {
         {/* TODO: Add undo functionality onPress*/}
         <TouchableOpacity>
           <View style={styles.undoBtn}>
-            <AntDesign
-              style={styles.backIcon}
-              name="back"
-              size={hp(3.7)}
-              color={COLORS.white}
-            />
-            <Text style={styles.headerBtnText}>UNDO</Text>
+            <View style={styles.undoIcon}>
+              <AntDesign
+                style={styles.backIcon}
+                name="back"
+                size={hp(3.7)}
+                color={COLORS.white}
+              />
+            </View>
+            <View style={styles.undoTextContainer}>
+              <Text style={styles.undoBtnText}>UNDO</Text>
+              <Text style={styles.undoBtnText}>STAT</Text>
+            </View>
           </View>
         </TouchableOpacity>
       </View>
@@ -1204,378 +1382,463 @@ export default function statGame() {
         </View>
         <ScrollView>
           {rosterStats.map((player) => {
-            return (
-              <View style={styles.playerContainer} key={player.playerNumber}>
-                <View style={styles.playerNameNumContainer}>
-                  <Text style={styles.playerNumberText}>
-                    {player.playerNumber}
-                  </Text>
+            if (
+              player.playerNumber === positionOne ||
+              player.playerNumber === positionTwo ||
+              player.playerNumber === positionThree ||
+              player.playerNumber === positionFour ||
+              player.playerNumber === positionFive ||
+              player.playerNumber === positionSix ||
+              player.playerNumber === firstLibero ||
+              player.playerNumber === secondLibero
+            ) {
+              return (
+                <View style={styles.playerContainer} key={player.playerNumber}>
+                  <View style={styles.playerNameNumContainer}>
+                    <Text style={styles.playerNumberText}>
+                      {player.playerNumber}
+                    </Text>
 
-                  {/* TODO: Input validation to keep player name less that 15 chars */}
-                  <Text style={styles.playerNameText}>{player.playerName}</Text>
-                </View>
-                <View style={styles.widthSpacer1} />
-                <TouchableOpacity>
-                  <MaterialIcons
-                    name="swap-horizontal-circle"
-                    size={RFValue(22)}
-                    color={COLORS.primary}
-                  />
-                </TouchableOpacity>
-                <View style={styles.playerOffenseContainer}>
-                  <View style={styles.offenseSubContainer}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleAttemptIncrement(player.playerNumber);
-                        setTeamStats((teamStats) => ({
-                          ...teamStats,
-                          teamAttempts: teamStats.teamAttempts + 1,
-                        }));
-                      }}
-                    >
-                      <View style={styles.statBtn}>
-                        <Text style={styles.btnTextSingleLine}>ATK</Text>
-                      </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleKillsIncrement(player.playerNumber);
-                        setTeamStats((teamStats) => ({
-                          ...teamStats,
-                          teamKills: teamStats.teamKills + 1,
-                          teamAttempts: teamStats.teamAttempts + 1,
-                          teamPts: teamStats.teamPts + 1,
-                        }));
-                      }}
-                    >
-                      <View style={styles.statBtn}>
-                        <Text style={styles.btnTextSingleLine}>K</Text>
-                      </View>
-                    </TouchableOpacity>
+                    {/* TODO: Input validation to keep player name less that 15 chars */}
+                    <Text style={styles.playerNameText}>
+                      {player.playerName}
+                    </Text>
                   </View>
-                  <View style={styles.offenseSubContainer}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleAttackErrorsIncrement(player.playerNumber);
-                        setTeamStats((teamStats) => ({
-                          ...teamStats,
-                          teamAttackErrors: teamStats.teamAttackErrors + 1,
-                          teamAttempts: teamStats.teamAttempts + 1,
-                        }));
-                      }}
+                  <View style={styles.widthSpacer1} />
+                  <View
+                    style={{
+                      flexDirection: "column",
+                    }}
+                  >
+                    <Text style={styles.dropdownTitle}>
+                      {player.playerNumber === firstLibero ||
+                      player.playerNumber == secondLibero
+                        ? "Libero"
+                        : "Sub"}
+                    </Text>
+                    <View
+                      style={
+                        player.playerNumber === firstLibero ||
+                        player.playerNumber == secondLibero
+                          ? styles.dropdownContainerLibero
+                          : styles.dropdownContainer
+                      }
                     >
-                      <View style={styles.statBtn}>
-                        <Text style={styles.btnTextdoubleLine}>ATK</Text>
-                        <Text style={styles.btnTextdoubleLine}>ERR</Text>
-                      </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleAssistsIncrement(player.playerNumber);
-                        setTeamStats((teamStats) => ({
-                          ...teamStats,
-                          teamAssists: teamStats.teamAssists + 1,
-                        }));
-                      }}
-                    >
-                      <View style={styles.statBtn}>
-                        <Text style={styles.btnTextSingleLine}>A</Text>
-                      </View>
-                    </TouchableOpacity>
+                      {player.playerNumber === firstLibero ||
+                      player.playerNumber == secondLibero ? null : (
+                        <Dropdown
+                          style={styles.dropdown}
+                          selectedTextStyle={styles.selectedDropDownText}
+                          itemTextStyle={styles.dropDownText}
+                          data={rosterStats}
+                          search={false}
+                          maxHeight={300}
+                          disable={
+                            player.playerNumber === firstLibero ||
+                            player.playerNumber == secondLibero
+                              ? true
+                              : false
+                          }
+                          labelField={"playerNumber"}
+                          activeColor={COLORS.grey}
+                          valueField="PlayerNumber"
+                          value={starterPositionOne}
+                          //TODO: Add sub functionality
+                          onChange={(val) => val}
+                        />
+                      )}
+                    </View>
                   </View>
-                </View>
-                <View style={styles.seperator} />
-                <View style={styles.playerDefenseContainer}>
-                  <View style={styles.defenseSubContainer}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleBlockSolosIncrement(player.playerNumber);
-                        setTeamStats((teamStats) => ({
-                          ...teamStats,
-                          teamBlockSolos: teamStats.teamBlockSolos + 1,
-                          teamPts: teamStats.teamPts + 1,
-                        }));
-                      }}
-                    >
-                      <View style={styles.statBtn}>
-                        <Text style={styles.btnTextSingleLine}>BS</Text>
-                      </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleBlockErrorsIncrement(player.playerNumber);
-                        setTeamStats((teamStats) => ({
-                          ...teamStats,
-                          teamBlockErrors: teamStats.teamBlockErrors + 1,
-                        }));
-                      }}
-                    >
-                      <View style={styles.statBtn}>
-                        <Text style={styles.btnTextdoubleLine}>BLK</Text>
-                        <Text style={styles.btnTextdoubleLine}>ERR</Text>
-                      </View>
-                    </TouchableOpacity>
+                  <View style={styles.playerOffenseContainer}>
+                    <View style={styles.offenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleAttemptIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamAttempts: teamStats.teamAttempts + 1,
+                          }));
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>ATK</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleKillsIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamKills: teamStats.teamKills + 1,
+                            teamAttempts: teamStats.teamAttempts + 1,
+                            teamPts: teamStats.teamPts + 1,
+                          }));
+                          setHomeScore(homeScore + 1);
+                          if (serverTracker === "Opponent") {
+                            setServerTracker("Home");
+                            handleRotation();
+                          }
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>K</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.offenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleAttackErrorsIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamAttackErrors: teamStats.teamAttackErrors + 1,
+                            teamAttempts: teamStats.teamAttempts + 1,
+                          }));
+                          setOpponentScore(opponentScore + 1);
+                          if (serverTracker !== "Opponent") {
+                            setServerTracker("Opponent");
+                          }
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextdoubleLine}>ATK</Text>
+                          <Text style={styles.btnTextdoubleLine}>ERR</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleAssistsIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamAssists: teamStats.teamAssists + 1,
+                          }));
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>A</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                  <View style={styles.defenseSubContainer}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleBlockAssistsIncrement(player.playerNumber);
-                        setTeamStats((teamStats) => ({
-                          ...teamStats,
-                          teamBlockAssists: teamStats.teamBlockAssists + 1,
-                          teamTotalBlocks: teamStats.teamTotalBlocks + 0.5,
-                          teamPts: teamStats.teamPts + 0.5,
-                        }));
-                      }}
-                    >
-                      <View style={styles.statBtn}>
-                        <Text style={styles.btnTextSingleLine}>BA</Text>
-                      </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleDigErrorsIncrement(player.playerNumber);
-                        setTeamStats((teamStats) => ({
-                          ...teamStats,
-                          teamDigErrors: teamStats.teamDigErrors + 1,
-                        }));
-                      }}
-                    >
-                      <View style={styles.statBtn}>
-                        <Text style={styles.btnTextdoubleLine}>DIG</Text>
-                        <Text style={styles.btnTextdoubleLine}>ERR</Text>
-                      </View>
-                    </TouchableOpacity>
+                  <View style={styles.seperator} />
+                  <View style={styles.playerDefenseContainer}>
+                    <View style={styles.defenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleBlockSolosIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamBlockSolos: teamStats.teamBlockSolos + 1,
+                            teamPts: teamStats.teamPts + 1,
+                          }));
+                          setHomeScore(homeScore + 1);
+                          if (serverTracker === "Opponent") {
+                            setServerTracker("Home");
+                            handleRotation();
+                          }
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>BS</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleBlockErrorsIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamBlockErrors: teamStats.teamBlockErrors + 1,
+                          }));
+                          setOpponentScore(opponentScore + 1);
+                          if (serverTracker !== "Opponent") {
+                            setServerTracker("Opponent");
+                          }
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextdoubleLine}>BLK</Text>
+                          <Text style={styles.btnTextdoubleLine}>ERR</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.defenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleBlockAssistsIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamBlockAssists: teamStats.teamBlockAssists + 1,
+                            teamTotalBlocks: teamStats.teamTotalBlocks + 0.5,
+                            teamPts: teamStats.teamPts + 0.5,
+                          }));
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>BA</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleDigErrorsIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamDigErrors: teamStats.teamDigErrors + 1,
+                          }));
+                          setOpponentScore(opponentScore + 1);
+                          if (serverTracker !== "Opponent") {
+                            setServerTracker("Opponent");
+                          }
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextdoubleLine}>DIG</Text>
+                          <Text style={styles.btnTextdoubleLine}>ERR</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.defenseSubContainerSolo}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleDigIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamTotalDigs: teamStats.teamTotalDigs + 1,
+                          }));
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>DIG</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                  <View style={styles.defenseSubContainerSolo}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleDigIncrement(player.playerNumber);
-                        setTeamStats((teamStats) => ({
-                          ...teamStats,
-                          teamTotalDigs: teamStats.teamTotalDigs + 1,
-                        }));
-                      }}
-                    >
-                      <View style={styles.statBtn}>
-                        <Text style={styles.btnTextSingleLine}>DIG</Text>
-                      </View>
-                    </TouchableOpacity>
+                  <View style={styles.seperator} />
+                  <View style={styles.playerServingContainer}>
+                    <View style={styles.defenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleserviceAcesIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamServiceAces: teamStats.teamServiceAces + 1,
+                            teamPts: teamStats.teamPts + 1,
+                          }));
+                          setHomeScore(homeScore + 1);
+                          if (serverTracker === "Opponent") {
+                            setServerTracker("Home");
+                            handleRotation();
+                          }
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>SA</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleServiceErrorsIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamServiceErrors: teamStats.teamServiceErrors + 1,
+                          }));
+                          setOpponentScore(opponentScore + 1);
+                          if (serverTracker !== "Opponent") {
+                            setServerTracker("Opponent");
+                          }
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>SE</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
-                <View style={styles.seperator} />
-                <View style={styles.playerServingContainer}>
-                  <View style={styles.defenseSubContainer}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleserviceAcesIncrement(player.playerNumber);
-                        setTeamStats((teamStats) => ({
-                          ...teamStats,
-                          teamServiceAces: teamStats.teamServiceAces + 1,
-                          teamPts: teamStats.teamPts + 1,
-                        }));
-                      }}
-                    >
-                      <View style={styles.statBtn}>
-                        <Text style={styles.btnTextSingleLine}>SA</Text>
-                      </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleServiceErrorsIncrement(player.playerNumber);
-                        setTeamStats((teamStats) => ({
-                          ...teamStats,
-                          teamServiceErrors: teamStats.teamServiceErrors + 1,
-                        }));
-                      }}
-                    >
-                      <View style={styles.statBtn}>
-                        <Text style={styles.btnTextSingleLine}>SE</Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                <View style={styles.seperator} />
-                <View style={styles.playerPassingContainer}>
-                  <View style={styles.defenseSubContainer}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        if (
-                          forearmPassSelected === true &&
-                          forearmPassPlayer == player.playerNumber
-                        ) {
+                  <View style={styles.seperator} />
+                  <View style={styles.playerPassingContainer}>
+                    <View style={styles.defenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          if (
+                            forearmPassSelected === true &&
+                            forearmPassPlayer == player.playerNumber
+                          ) {
+                            setForearmPassSelected(false);
+                            setForearmPassPlayer(null);
+                          } else {
+                            setForearmPassSelected(true);
+                            setForearmPassPlayer(player.playerNumber);
+
+                            setHandPassSelected(false);
+                            setHandPassPlayer(null);
+                          }
+                        }}
+                      >
+                        <View
+                          style={
+                            forearmPassSelected &&
+                            player.playerNumber === forearmPassPlayer
+                              ? styles.statBtnSelected
+                              : styles.statBtn
+                          }
+                        >
+                          <Text style={styles.btnTextdoubleLine}>FOREARM</Text>
+                          <Text style={styles.btnTextdoubleLine}>PASS</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          if (
+                            handPassSelected === true &&
+                            handPassPlayer == player.playerNumber
+                          ) {
+                            setHandPassSelected(false);
+                            setHandPassPlayer(null);
+                          } else {
+                            setHandPassSelected(true);
+                            setHandPassPlayer(player.playerNumber);
+
+                            setForearmPassSelected(false);
+                            setForearmPassPlayer(null);
+                          }
+                        }}
+                      >
+                        <View
+                          style={
+                            handPassSelected &&
+                            player.playerNumber === handPassPlayer
+                              ? styles.statBtnSelected
+                              : styles.statBtn
+                          }
+                        >
+                          <Text style={styles.btnTextdoubleLine}>HAND</Text>
+                          <Text style={styles.btnTextdoubleLine}>PASS</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.defenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleReceptionErrorIncrement(player.playerNumber);
                           setForearmPassSelected(false);
                           setForearmPassPlayer(null);
-                        } else {
-                          setForearmPassSelected(true);
-                          setForearmPassPlayer(player.playerNumber);
-
                           setHandPassSelected(false);
                           setHandPassPlayer(null);
-                        }
-                      }}
-                    >
-                      <View
-                        style={
-                          forearmPassSelected &&
-                          player.playerNumber === forearmPassPlayer
-                            ? styles.statBtnSelected
-                            : styles.statBtn
+                          setOpponentScore(opponentScore + 1);
+                          if (serverTracker !== "Opponent") {
+                            setServerTracker("Opponent");
+                          }
+                        }}
+                        disabled={
+                          handPassSelected === false &&
+                          forearmPassSelected === false
+                            ? true
+                            : false
                         }
                       >
-                        <Text style={styles.btnTextdoubleLine}>FOREARM</Text>
-                        <Text style={styles.btnTextdoubleLine}>PASS</Text>
-                      </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        if (
-                          handPassSelected === true &&
-                          handPassPlayer == player.playerNumber
-                        ) {
-                          setHandPassSelected(false);
-                          setHandPassPlayer(null);
-                        } else {
-                          setHandPassSelected(true);
-                          setHandPassPlayer(player.playerNumber);
-
+                        <View
+                          style={
+                            (handPassSelected &&
+                              player.playerNumber === handPassPlayer) ||
+                            (forearmPassSelected &&
+                              player.playerNumber === forearmPassPlayer)
+                              ? styles.statBtnSelected
+                              : styles.statBtn
+                          }
+                        >
+                          <Text style={styles.btnTextSingleLine}>0</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleTwoPassIncrement(player.playerNumber);
                           setForearmPassSelected(false);
                           setForearmPassPlayer(null);
-                        }
-                      }}
-                    >
-                      <View
-                        style={
-                          handPassSelected &&
-                          player.playerNumber === handPassPlayer
-                            ? styles.statBtnSelected
-                            : styles.statBtn
-                        }
-                      >
-                        <Text style={styles.btnTextdoubleLine}>HAND</Text>
-                        <Text style={styles.btnTextdoubleLine}>PASS</Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.defenseSubContainer}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleReceptionErrorIncrement(player.playerNumber);
-                        setForearmPassSelected(false);
-                        setForearmPassPlayer(null);
-                        setHandPassSelected(false);
-                        setHandPassPlayer(null);
-                      }}
-                      disabled={
-                        handPassSelected === false &&
-                        forearmPassSelected === false
-                          ? true
-                          : false
-                      }
-                    >
-                      <View
-                        style={
-                          (handPassSelected &&
-                            player.playerNumber === handPassPlayer) ||
-                          (forearmPassSelected &&
-                            player.playerNumber === forearmPassPlayer)
-                            ? styles.statBtnSelected
-                            : styles.statBtn
+                          setHandPassSelected(false);
+                          setHandPassPlayer(null);
+                        }}
+                        disabled={
+                          handPassSelected === false &&
+                          forearmPassSelected === false
+                            ? true
+                            : false
                         }
                       >
-                        <Text style={styles.btnTextSingleLine}>0</Text>
-                      </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleTwoPassIncrement(player.playerNumber);
-                        setForearmPassSelected(false);
-                        setForearmPassPlayer(null);
-                        setHandPassSelected(false);
-                        setHandPassPlayer(null);
-                      }}
-                      disabled={
-                        handPassSelected === false &&
-                        forearmPassSelected === false
-                          ? true
-                          : false
-                      }
-                    >
-                      <View
-                        style={
-                          (handPassSelected &&
-                            player.playerNumber === handPassPlayer) ||
-                          (forearmPassSelected &&
-                            player.playerNumber === forearmPassPlayer)
-                            ? styles.statBtnSelected
-                            : styles.statBtn
+                        <View
+                          style={
+                            (handPassSelected &&
+                              player.playerNumber === handPassPlayer) ||
+                            (forearmPassSelected &&
+                              player.playerNumber === forearmPassPlayer)
+                              ? styles.statBtnSelected
+                              : styles.statBtn
+                          }
+                        >
+                          <Text style={styles.btnTextSingleLine}>2</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.defenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleOnePassIncrement(player.playerNumber);
+                          setForearmPassSelected(false);
+                          setForearmPassPlayer(null);
+                          setHandPassSelected(false);
+                          setHandPassPlayer(null);
+                        }}
+                        disabled={
+                          handPassSelected === false &&
+                          forearmPassSelected === false
+                            ? true
+                            : false
                         }
                       >
-                        <Text style={styles.btnTextSingleLine}>2</Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.defenseSubContainer}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleOnePassIncrement(player.playerNumber);
-                        setForearmPassSelected(false);
-                        setForearmPassPlayer(null);
-                        setHandPassSelected(false);
-                        setHandPassPlayer(null);
-                      }}
-                      disabled={
-                        handPassSelected === false &&
-                        forearmPassSelected === false
-                          ? true
-                          : false
-                      }
-                    >
-                      <View
-                        style={
-                          (handPassSelected &&
-                            player.playerNumber === handPassPlayer) ||
-                          (forearmPassSelected &&
-                            player.playerNumber === forearmPassPlayer)
-                            ? styles.statBtnSelected
-                            : styles.statBtn
+                        <View
+                          style={
+                            (handPassSelected &&
+                              player.playerNumber === handPassPlayer) ||
+                            (forearmPassSelected &&
+                              player.playerNumber === forearmPassPlayer)
+                              ? styles.statBtnSelected
+                              : styles.statBtn
+                          }
+                        >
+                          <Text style={styles.btnTextSingleLine}>1</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleThreePassIncrement(player.playerNumber);
+                          setForearmPassSelected(false);
+                          setForearmPassPlayer(null);
+                          setHandPassSelected(false);
+                          setHandPassPlayer(null);
+                        }}
+                        disabled={
+                          handPassSelected === false &&
+                          forearmPassSelected === false
+                            ? true
+                            : false
                         }
                       >
-                        <Text style={styles.btnTextSingleLine}>1</Text>
-                      </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleThreePassIncrement(player.playerNumber);
-                        setForearmPassSelected(false);
-                        setForearmPassPlayer(null);
-                        setHandPassSelected(false);
-                        setHandPassPlayer(null);
-                      }}
-                      disabled={
-                        handPassSelected === false &&
-                        forearmPassSelected === false
-                          ? true
-                          : false
-                      }
-                    >
-                      <View
-                        style={
-                          (handPassSelected &&
-                            player.playerNumber === handPassPlayer) ||
-                          (forearmPassSelected &&
-                            player.playerNumber === forearmPassPlayer)
-                            ? styles.statBtnSelected
-                            : styles.statBtn
-                        }
-                      >
-                        <Text style={styles.btnTextSingleLine}>3</Text>
-                      </View>
-                    </TouchableOpacity>
+                        <View
+                          style={
+                            (handPassSelected &&
+                              player.playerNumber === handPassPlayer) ||
+                            (forearmPassSelected &&
+                              player.playerNumber === forearmPassPlayer)
+                              ? styles.statBtnSelected
+                              : styles.statBtn
+                          }
+                        >
+                          <Text style={styles.btnTextSingleLine}>3</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
-              </View>
-            );
+              );
+            }
           })}
         </ScrollView>
       </View>
@@ -1632,9 +1895,24 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
     elevation: 6,
   },
+  undoTextContainer: {
+    flex: 1,
+    flexDirection: "column",
+    paddingRight: 3,
+  },
   headerBtnText: {
     fontSize: RFValue(9),
     paddingRight: 3,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: COLORS.white,
+  },
+  undoIcon: {
+    marginLeft: 4,
+  },
+  undoBtnText: {
+    fontSize: RFValue(7.5),
+    marginRight: 3,
     fontWeight: "bold",
     textAlign: "center",
     color: COLORS.white,
@@ -1814,6 +2092,44 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
     elevation: 6,
   },
+  rotationCheckContainer: {
+    height: hp(80),
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  court: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 95,
+  },
+  netIndicator: {
+    borderBottomColor: COLORS.black,
+    borderBottomWidth: hp(1.4),
+    width: wp(45),
+    alignSelf: "center",
+    marginTop: 20,
+  },
+  courtRow: {
+    flexDirection: "row",
+    alignSelf: "center",
+    justifyContent: "center",
+    width: "50%",
+    height: hp(15),
+  },
+  courtPosition: {
+    backgroundColor: COLORS.secondary,
+    height: hp(15),
+    width: wp(15),
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: COLORS.black,
+    borderWidth: 1,
+  },
+  courtPositionText: {
+    fontSize: RFValue(20),
+    color: COLORS.black,
+  },
   playerListContainer: {
     flex: 1,
     justifyContent: "center",
@@ -1952,6 +2268,38 @@ const styles = StyleSheet.create({
     height: hp(14),
     alignSelf: "center",
     justifyContent: "center",
-    marginHorizontal: wp(1.5),
+    marginHorizontal: wp(1.2),
+  },
+
+  //Dropdown
+  dropdownTitle: {
+    fontSize: RFValue(9),
+    fontWeight: "bold",
+    alignSelf: "center",
+  },
+  dropdownContainer: {
+    height: RFValue(20),
+    backgroundColor: COLORS.secondary,
+    borderRadius: 100,
+  },
+  dropdownContainerLibero: {
+    borderRadius: 100,
+  },
+  dropdown: {
+    borderColor: COLORS.darkGrey,
+    zIndex: 999,
+    paddingHorizontal: wp(1.5),
+  },
+  placeholderDropDown: {
+    color: COLORS.white,
+    fontSize: RFValue(11),
+  },
+  selectedDropDownText: {
+    fontSize: RFValue(11),
+    color: COLORS.black,
+  },
+  dropDownText: {
+    fontSize: RFValue(10),
+    color: COLORS.black,
   },
 });
