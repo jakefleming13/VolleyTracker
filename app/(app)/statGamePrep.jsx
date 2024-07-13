@@ -12,7 +12,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { AntDesign } from "@expo/vector-icons";
 import { useState } from "react";
 import { RadioButton } from "react-native-paper";
-import { SelectList } from "react-native-dropdown-select-list";
+import { Dropdown } from "react-native-element-dropdown";
 
 export default function statGamePrep() {
   // Get props that are being drilled
@@ -46,12 +46,19 @@ export default function statGamePrep() {
   // Function to handle player selection
   const handlePlayerSelection = (position, setPosition, val) => {
     // Remove the previously selected player for the current position from the selectedPlayers list
-    const updatedSelectedPlayers = selectedPlayers.filter(player => player !== position);
+    const updatedSelectedPlayers = selectedPlayers.filter(
+      (player) => player !== position
+    );
     // Add the newly selected player
     if (val) {
       updatedSelectedPlayers.push(val);
     }
     setSelectedPlayers(updatedSelectedPlayers);
+
+    //Extract only the player number so it can be passed to statGame
+    //let extractPlayerNumber = val.match(/(\d+)/);
+
+    // TODO: .toSting
     setPosition(val);
   };
 
@@ -107,11 +114,12 @@ export default function statGamePrep() {
       ptsPerSet: 0.0,
     });
   }
-  console.log(localRoster);
 
   // Update localRoster to filter out selected players
   const getFilteredRoster = () => {
-    return localRoster.filter(player => !selectedPlayers.includes(player.value));
+    return dropDownRosterList.filter(
+      (player) => !selectedPlayers.includes(player.value)
+    );
   };
 
   const cancelAlert = () => {
@@ -364,154 +372,120 @@ export default function statGamePrep() {
         <View style={styles.court}>
           <View style={styles.netIndicator} />
           <View style={styles.courtRow}>
-            <TouchableOpacity>
-              <View style={styles.courtPosition}>
-                <SelectList
-                  boxStyles={styles.dropdown}
-                  inputStyles={styles.dropdownText}
-                  dropdownStyles={styles.dropdownActive}
-                  dropdownTextStyles={styles.dropdownText}
-                  setSelected={(val) => handlePlayerSelection(positionFour, setPositionFour, val)}
-                  data={getFilteredRoster()}
-                  save="value"
-                  placeholder={
-                    <Text style={styles.placeholderDropDown}>Position 4</Text>
-                  }
-                  arrowicon={
-                    <AntDesign
-                      name="down"
-                      size={RFValue(15)}
-                      color={COLORS.black}
-                    />
-                  }
-                  search={false}
-                  maxHeight={500}
-                />
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <View style={styles.courtPosition}>
-                <SelectList
-                  boxStyles={styles.dropdown}
-                  inputStyles={styles.dropdownText}
-                  dropdownStyles={styles.dropdownActive}
-                  dropdownTextStyles={styles.dropdownText}
-                  setSelected={(val) => handlePlayerSelection(positionThree, setPositionThree, val)}
-                  data={getFilteredRoster()}
-                  save="value"
-                  placeholder={
-                    <Text style={styles.placeholderDropDown}>Position 3</Text>
-                  }
-                  arrowicon={
-                    <AntDesign
-                      name="down"
-                      size={RFValue(15)}
-                      color={COLORS.black}
-                    />
-                  }
-                  search={false}
-                  maxHeight={500}
-                />
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <View style={styles.courtPosition}>
-                <SelectList
-                  boxStyles={styles.dropdown}
-                  inputStyles={styles.dropdownText}
-                  dropdownStyles={styles.dropdownActive}
-                  dropdownTextStyles={styles.dropdownText}
-                  setSelected={(val) => handlePlayerSelection(positionTwo, setPositionTwo, val)}
-                  data={getFilteredRoster()}
-                  save="value"
-                  placeholder={
-                    <Text style={styles.placeholderDropDown}>Position 2</Text>
-                  }
-                  arrowicon={
-                    <AntDesign
-                      name="down"
-                      size={RFValue(15)}
-                      color={COLORS.black}
-                    />
-                  }
-                  search={false}
-                  maxHeight={500}
-                />
-              </View>
-            </TouchableOpacity>
+            <View style={styles.courtPosition}>
+              <Dropdown
+                style={styles.courtdropdown}
+                placeholderStyle={styles.placeholderDropDown}
+                selectedTextStyle={styles.selectedDropDownText}
+                itemTextStyle={styles.dropDownText}
+                data={getFilteredRoster()}
+                search={false}
+                maxHeight={300}
+                labelField="value"
+                activeColor={COLORS.grey}
+                valueField="key"
+                placeholder={"Position 4"}
+                value={positionFour}
+                onChange={(val) =>
+                  handlePlayerSelection(positionFour, setPositionFour, val)
+                }
+              />
+            </View>
+            <View style={styles.courtPosition}>
+              <Dropdown
+                style={styles.courtdropdown}
+                placeholderStyle={styles.placeholderDropDown}
+                selectedTextStyle={styles.selectedDropDownText}
+                itemTextStyle={styles.dropDownText}
+                data={getFilteredRoster()}
+                search={false}
+                maxHeight={300}
+                activeColor={COLORS.grey}
+                labelField="value"
+                valueField="key"
+                placeholder={"Position 3"}
+                value={positionThree}
+                onChange={(val) =>
+                  handlePlayerSelection(positionThree, setPositionThree, val)
+                }
+              />
+            </View>
+            <View style={styles.courtPosition}>
+              <Dropdown
+                style={styles.courtdropdown}
+                placeholderStyle={styles.placeholderDropDown}
+                selectedTextStyle={styles.selectedDropDownText}
+                itemTextStyle={styles.dropDownText}
+                data={getFilteredRoster()}
+                search={false}
+                maxHeight={300}
+                labelField="value"
+                activeColor={COLORS.grey}
+                valueField="key"
+                placeholder={"Position 2"}
+                value={positionTwo}
+                onChange={(val) => {
+                  handlePlayerSelection(positionTwo, setPositionTwo, val);
+                }}
+              />
+            </View>
           </View>
           <View style={styles.courtRow}>
-            <TouchableOpacity>
-              <View style={styles.courtPosition}>
-                <SelectList
-                  boxStyles={styles.dropdown}
-                  inputStyles={styles.dropdownText}
-                  dropdownStyles={styles.dropdownActive}
-                  dropdownTextStyles={styles.dropdownText}
-                  setSelected={(val) => handlePlayerSelection(positionFive, setPositionFive, val)}
-                  data={getFilteredRoster()}
-                  save="value"
-                  placeholder={
-                    <Text style={styles.placeholderDropDown}>Position 5</Text>
-                  }
-                  arrowicon={
-                    <AntDesign
-                      name="down"
-                      size={RFValue(15)}
-                      color={COLORS.black}
-                    />
-                  }
-                  search={false}
-                  maxHeight={500}
-                />
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <View style={styles.courtPosition}>
-                <SelectList
-                  boxStyles={styles.dropdown}
-                  inputStyles={styles.dropdownText}
-                  dropdownStyles={styles.dropdownActive}
-                  dropdownTextStyles={styles.dropdownText}
-                  setSelected={(val) => handlePlayerSelection(positionSix, setPositionSix, val)}
-                  data={getFilteredRoster()}
-                  save="value"
-                  placeholder={
-                    <Text style={styles.placeholderDropDown}>Position 6</Text>
-                  }
-                  arrowicon={
-                    <AntDesign
-                      name="down"
-                      size={RFValue(15)}
-                      color={COLORS.black}
-                    />
-                  }
-                  search={false}
-                  maxHeight={500}
-                />
-              </View>
-            </TouchableOpacity>
             <View style={styles.courtPosition}>
-              <SelectList
-                boxStyles={styles.dropdown}
-                inputStyles={styles.dropdownText}
-                dropdownStyles={styles.dropdownActive}
-                dropdownTextStyles={styles.dropdownText}
-                setSelected={(val) => handlePlayerSelection(positionOne, setPositionOne, val)}
+              <Dropdown
+                style={styles.courtdropdown}
+                placeholderStyle={styles.placeholderDropDown}
+                selectedTextStyle={styles.selectedDropDownText}
+                itemTextStyle={styles.dropDownText}
                 data={getFilteredRoster()}
-                save="value"
-                placeholder={
-                  <Text style={styles.placeholderDropDown}>Position 1</Text>
-                }
-                arrowicon={
-                  <AntDesign
-                    name="down"
-                    size={RFValue(15)}
-                    color={COLORS.black}
-                  />
-                }
                 search={false}
-                maxHeight={500}
+                maxHeight={300}
+                labelField="value"
+                activeColor={COLORS.grey}
+                valueField="key"
+                placeholder={"Position 5"}
+                value={positionFive}
+                onChange={(val) =>
+                  handlePlayerSelection(positionFive, setPositionFive, val)
+                }
+              />
+            </View>
+            <View style={styles.courtPosition}>
+              <Dropdown
+                style={styles.courtdropdown}
+                placeholderStyle={styles.placeholderDropDown}
+                selectedTextStyle={styles.selectedDropDownText}
+                itemTextStyle={styles.dropDownText}
+                data={getFilteredRoster()}
+                search={false}
+                maxHeight={300}
+                labelField="value"
+                valueField="key"
+                activeColor={COLORS.grey}
+                placeholder={"Position 6"}
+                value={positionSix}
+                onChange={(val) =>
+                  handlePlayerSelection(positionSix, setPositionSix, val)
+                }
+              />
+            </View>
+            <View style={styles.courtPosition}>
+              <Dropdown
+                style={styles.courtdropdown}
+                placeholderStyle={styles.placeholderDropDown}
+                selectedTextStyle={styles.selectedDropDownText}
+                itemTextStyle={styles.dropDownText}
+                data={getFilteredRoster()}
+                search={false}
+                maxHeight={300}
+                labelField="value"
+                activeColor={COLORS.grey}
+                valueField="key"
+                placeholder={"Position 1"}
+                value={positionOne}
+                onChange={(val) =>
+                  handlePlayerSelection(positionOne, setPositionOne, val)
+                }
               />
             </View>
           </View>
@@ -528,56 +502,46 @@ export default function statGamePrep() {
           </TouchableOpacity>
         </View>
         <View style={styles.liberoContainer}>
-          <TouchableOpacity>
-            <View style={styles.liberoSlot}>
-              <SelectList
-                boxStyles={styles.liberoDropDown}
-                inputStyles={styles.dropdownText}
-                dropdownStyles={styles.dropdownActive}
-                dropdownTextStyles={styles.dropdownText}
-                setSelected={(val) => handlePlayerSelection(firstLibero, setFirstLibero, val)}
-                data={getFilteredRoster()}
-                save="value"
-                placeholder={
-                  <Text style={styles.placeholderDropDown}>Optional</Text>
-                }
-                arrowicon={
-                  <AntDesign
-                    name="down"
-                    size={RFValue(15)}
-                    color={COLORS.black}
-                  />
-                }
-                search={false}
-                maxHeight={500}
-              />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <View style={styles.liberoSlot}>
-              <SelectList
-                boxStyles={styles.liberoDropDown}
-                inputStyles={styles.dropdownText}
-                dropdownStyles={styles.dropdownActive}
-                dropdownTextStyles={styles.dropdownText}
-                setSelected={(val) => handlePlayerSelection(secondLibero, setSecondLibero, val)}
-                data={getFilteredRoster()}
-                save="value"
-                placeholder={
-                  <Text style={styles.placeholderDropDown}>Optional</Text>
-                }
-                arrowicon={
-                  <AntDesign
-                    name="down"
-                    size={RFValue(15)}
-                    color={COLORS.black}
-                  />
-                }
-                search={false}
-                maxHeight={500}
-              />
-            </View>
-          </TouchableOpacity>
+          <View style={styles.liberoSlot}>
+            <Dropdown
+              style={styles.liberoDropDown}
+              placeholderStyle={styles.placeholderDropDown}
+              selectedTextStyle={styles.selectedDropDownText}
+              itemTextStyle={styles.dropDownText}
+              data={getFilteredRoster()}
+              search={false}
+              maxHeight={300}
+              labelField="value"
+              valueField="key"
+              placeholder={"Optional"}
+              activeColor={COLORS.grey}
+              dropdownPosition="top"
+              value={firstLibero}
+              onChange={(val) =>
+                handlePlayerSelection(firstLibero, setFirstLibero, val)
+              }
+            />
+          </View>
+          <View style={styles.liberoSlot}>
+            <Dropdown
+              style={styles.liberoDropDown}
+              placeholderStyle={styles.placeholderDropDown}
+              selectedTextStyle={styles.selectedDropDownText}
+              itemTextStyle={styles.dropDownText}
+              data={getFilteredRoster()}
+              search={false}
+              maxHeight={300}
+              labelField="value"
+              valueField="key"
+              placeholder={"Optional"}
+              activeColor={COLORS.grey}
+              dropdownPosition="top"
+              value={secondLibero}
+              onChange={(val) =>
+                handlePlayerSelection(secondLibero, setSecondLibero, val)
+              }
+            />
+          </View>
         </View>
         <View style={styles.confirmContainer}>
           <TouchableOpacity
@@ -592,14 +556,14 @@ export default function statGamePrep() {
                   location: selectedLocation,
                   opponent: selectedOpponent,
                   setsBeingPlayed: selectedSets,
-                  positionOne: positionOne,
-                  positionTwo: positionTwo,
-                  positionThree: positionThree,
-                  positionFour: positionFour,
-                  positionFive: positionFive,
-                  positionSix: positionSix,
-                  firstLibero: firstLibero,
-                  secondLibero: secondLibero,
+                  pOne: positionOne,
+                  pTwo: positionTwo,
+                  pThree: positionThree,
+                  pFour: positionFour,
+                  pFive: positionFive,
+                  pSix: positionSix,
+                  firstL: firstLibero,
+                  secondL: secondLibero,
                 },
               });
             }}
@@ -746,6 +710,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderColor: COLORS.black,
     borderWidth: 1,
+    zIndex: 99,
+    paddingHorizontal: wp(1.7),
   },
   courtPositionText: {
     fontSize: RFValue(12),
@@ -795,32 +761,32 @@ const styles = StyleSheet.create({
   },
 
   // DropDown
-  dropdown: {
+  courtdropdown: {
     height: hp(14),
     width: wp(14),
     borderColor: COLORS.darkGrey,
     backgroundColor: COLORS.secondary,
+    zIndex: 999,
+    paddingHorizontal: wp(1.5),
   },
   liberoDropDown: {
     height: hp(8),
     width: wp(18),
     borderColor: COLORS.darkGrey,
     backgroundColor: COLORS.secondary,
+    borderRadius: 10,
+    paddingHorizontal: wp(1.7),
   },
   placeholderDropDown: {
     color: COLORS.white,
     fontSize: RFValue(11),
   },
-  dropdownActive: {
-    backgroundColor: COLORS.white,
-    height: hp(30),
-  },
-  dropdownText: {
+  selectedDropDownText: {
     fontSize: RFValue(11),
     color: COLORS.black,
   },
-  selectedTextStyle: {
-    fontSize: RFValue(11),
+  dropDownText: {
+    fontSize: RFValue(10),
     color: COLORS.black,
   },
 });
