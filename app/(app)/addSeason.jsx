@@ -522,6 +522,11 @@ export default function addSeason() {
       delete newLocal[index].ptsPerSet;
     }
 
+    //Sort the local roster by number
+    let sortedLocalRoster = newLocal.sort(
+      (p1, p2) => p1.playerNumber - p2.playerNumber
+    );
+
     //add new season info in "users" collection for fast access
     firestore()
       .collection("users")
@@ -545,7 +550,7 @@ export default function addSeason() {
         seasonID: newID,
         teamName: teamName,
         year: year,
-        roster: newLocal,
+        roster: sortedLocalRoster,
       });
 
     //Create sub-collection "seasonStats"
@@ -589,9 +594,14 @@ export default function addSeason() {
       ptsPerSet: 0.0,
     });
 
+    //Sort the roster by number
+    let sortedRoster = players.sort(
+      (p1, p2) => p1.playerNumber - p2.playerNumber
+    );
+
     //Create sub-collection "playerStats"
     firestore().collection("seasons").doc(newID).collection("playerStats").add({
-      roster: players,
+      roster: sortedRoster,
     });
 
     //Navigate to seasons screen
