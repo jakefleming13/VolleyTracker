@@ -69,6 +69,7 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
+      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -77,15 +78,22 @@ export default function addSeason() {
       totalBlocks: 0,
       blockSolos: 0,
       blockAssists: 0,
-      aces: 0,
-      serveAttempts: 0,
-      missedServes: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
       passingAttempts: 0,
       handPassingAttempts: 0,
       forearmPassingAttempts: 0,
       totalPassingAverage: 0.0,
+      totalPassValue: 0,
       handPassingAverage: 0.0,
+      totalHandPassValue: 0,
+      totalForearmPassValue: 0,
       forearmPassingAverage: 0.0,
+      receptionErrors: 0,
+      onePasses: 0,
+      twoPasses: 0,
+      threePasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -100,6 +108,7 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
+      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -108,15 +117,22 @@ export default function addSeason() {
       totalBlocks: 0,
       blockSolos: 0,
       blockAssists: 0,
-      aces: 0,
-      serveAttempts: 0,
-      missedServes: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
       passingAttempts: 0,
       handPassingAttempts: 0,
       forearmPassingAttempts: 0,
       totalPassingAverage: 0.0,
+      totalPassValue: 0,
       handPassingAverage: 0.0,
+      totalHandPassValue: 0,
+      totalForearmPassValue: 0,
       forearmPassingAverage: 0.0,
+      receptionErrors: 0,
+      onePasses: 0,
+      twoPasses: 0,
+      threePasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -131,6 +147,7 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
+      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -139,15 +156,22 @@ export default function addSeason() {
       totalBlocks: 0,
       blockSolos: 0,
       blockAssists: 0,
-      aces: 0,
-      serveAttempts: 0,
-      missedServes: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
       passingAttempts: 0,
       handPassingAttempts: 0,
       forearmPassingAttempts: 0,
       totalPassingAverage: 0.0,
+      totalPassValue: 0,
       handPassingAverage: 0.0,
+      totalHandPassValue: 0,
+      totalForearmPassValue: 0,
       forearmPassingAverage: 0.0,
+      receptionErrors: 0,
+      onePasses: 0,
+      twoPasses: 0,
+      threePasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -162,6 +186,7 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
+      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -170,15 +195,22 @@ export default function addSeason() {
       totalBlocks: 0,
       blockSolos: 0,
       blockAssists: 0,
-      aces: 0,
-      serveAttempts: 0,
-      missedServes: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
       passingAttempts: 0,
       handPassingAttempts: 0,
       forearmPassingAttempts: 0,
       totalPassingAverage: 0.0,
+      totalPassValue: 0,
       handPassingAverage: 0.0,
+      totalHandPassValue: 0,
+      totalForearmPassValue: 0,
       forearmPassingAverage: 0.0,
+      receptionErrors: 0,
+      onePasses: 0,
+      twoPasses: 0,
+      threePasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -193,6 +225,7 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
+      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -201,15 +234,22 @@ export default function addSeason() {
       totalBlocks: 0,
       blockSolos: 0,
       blockAssists: 0,
-      aces: 0,
-      serveAttempts: 0,
-      missedServes: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
       passingAttempts: 0,
       handPassingAttempts: 0,
       forearmPassingAttempts: 0,
       totalPassingAverage: 0.0,
+      totalPassValue: 0,
       handPassingAverage: 0.0,
+      totalHandPassValue: 0,
+      totalForearmPassValue: 0,
       forearmPassingAverage: 0.0,
+      receptionErrors: 0,
+      onePasses: 0,
+      twoPasses: 0,
+      threePasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -224,6 +264,7 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
+      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -232,15 +273,22 @@ export default function addSeason() {
       totalBlocks: 0,
       blockSolos: 0,
       blockAssists: 0,
-      aces: 0,
-      serveAttempts: 0,
-      missedServes: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
       passingAttempts: 0,
       handPassingAttempts: 0,
       forearmPassingAttempts: 0,
       totalPassingAverage: 0.0,
+      totalPassValue: 0,
       handPassingAverage: 0.0,
+      totalHandPassValue: 0,
+      totalForearmPassValue: 0,
       forearmPassingAverage: 0.0,
+      receptionErrors: 0,
+      onePasses: 0,
+      twoPasses: 0,
+      threePasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -255,6 +303,7 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
+      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -263,15 +312,22 @@ export default function addSeason() {
       totalBlocks: 0,
       blockSolos: 0,
       blockAssists: 0,
-      aces: 0,
-      serveAttempts: 0,
-      missedServes: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
       passingAttempts: 0,
       handPassingAttempts: 0,
       forearmPassingAttempts: 0,
       totalPassingAverage: 0.0,
+      totalPassValue: 0,
       handPassingAverage: 0.0,
+      totalHandPassValue: 0,
+      totalForearmPassValue: 0,
       forearmPassingAverage: 0.0,
+      receptionErrors: 0,
+      onePasses: 0,
+      twoPasses: 0,
+      threePasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -286,6 +342,7 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
+      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -294,15 +351,22 @@ export default function addSeason() {
       totalBlocks: 0,
       blockSolos: 0,
       blockAssists: 0,
-      aces: 0,
-      serveAttempts: 0,
-      missedServes: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
       passingAttempts: 0,
       handPassingAttempts: 0,
       forearmPassingAttempts: 0,
       totalPassingAverage: 0.0,
+      totalPassValue: 0,
       handPassingAverage: 0.0,
+      totalHandPassValue: 0,
+      totalForearmPassValue: 0,
       forearmPassingAverage: 0.0,
+      receptionErrors: 0,
+      onePasses: 0,
+      twoPasses: 0,
+      threePasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -337,6 +401,7 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
+      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -345,15 +410,22 @@ export default function addSeason() {
       totalBlocks: 0,
       blockSolos: 0,
       blockAssists: 0,
-      aces: 0,
-      serveAttempts: 0,
-      missedServes: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
       passingAttempts: 0,
       handPassingAttempts: 0,
       forearmPassingAttempts: 0,
       totalPassingAverage: 0.0,
+      totalPassValue: 0,
       handPassingAverage: 0.0,
+      totalHandPassValue: 0,
+      totalForearmPassValue: 0,
       forearmPassingAverage: 0.0,
+      receptionErrors: 0,
+      onePasses: 0,
+      twoPasses: 0,
+      threePasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     });
@@ -413,7 +485,6 @@ export default function addSeason() {
     //Create Deep copy of players (array of objects)
     var newLocal = JSON.parse(JSON.stringify(players));
     for (let index = 0; index < newLocal.length; index++) {
-      delete newLocal[index].missedServes;
       delete newLocal[index].playerID;
       delete newLocal[index].setsWon;
       delete newLocal[index].setsLost;
@@ -422,6 +493,7 @@ export default function addSeason() {
       delete newLocal[index].attempts;
       delete newLocal[index].kills;
       delete newLocal[index].attackErrors;
+      delete newLocal[index].hittingPercentage;
       delete newLocal[index].assists;
       delete newLocal[index].assistsPerSet;
       delete newLocal[index].digs;
@@ -430,18 +502,30 @@ export default function addSeason() {
       delete newLocal[index].totalBlocks;
       delete newLocal[index].blockSolos;
       delete newLocal[index].blockAssists;
-      delete newLocal[index].aces;
-      delete newLocal[index].serveAttempts;
-      delete newLocal[index].missedServes;
+      delete newLocal[index].serviceAces;
+      delete newLocal[index].serviceAttempts;
+      delete newLocal[index].serviceErrors;
       delete newLocal[index].passingAttempts;
       delete newLocal[index].handPassingAttempts;
       delete newLocal[index].forearmPassingAttempts;
       delete newLocal[index].totalPassingAverage;
+      delete newLocal[index].totalPassValue;
       delete newLocal[index].handPassingAverage;
+      delete newLocal[index].totalHandPassValue;
+      delete newLocal[index].totalForearmPassValue;
       delete newLocal[index].forearmPassingAverage;
+      delete newLocal[index].receptionErrors;
+      delete newLocal[index].onePasses;
+      delete newLocal[index].twoPasses;
+      delete newLocal[index].threePasses;
       delete newLocal[index].pts;
       delete newLocal[index].ptsPerSet;
     }
+
+    //Sort the local roster by number
+    let sortedLocalRoster = newLocal.sort(
+      (p1, p2) => p1.playerNumber - p2.playerNumber
+    );
 
     //add new season info in "users" collection for fast access
     firestore()
@@ -466,10 +550,11 @@ export default function addSeason() {
         seasonID: newID,
         teamName: teamName,
         year: year,
-        roster: newLocal,
+        roster: sortedLocalRoster,
       });
 
     //Create sub-collection "seasonStats"
+    //TODO: re-name all values -> add `team` to the front of each value for clarity
     firestore().collection("seasons").doc(newID).collection("seasonStats").add({
       setsWon: 0,
       setsLost: 0,
@@ -480,6 +565,7 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
+      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -488,22 +574,34 @@ export default function addSeason() {
       totalBlocks: 0,
       blockSolos: 0,
       blockAssists: 0,
-      aces: 0,
-      serveAttempts: 0,
-      missedServes: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
       passingAttempts: 0,
       handPassingAttempts: 0,
       forearmPassingAttempts: 0,
       totalPassingAverage: 0.0,
+      totalPassValue: 0,
       handPassingAverage: 0.0,
+      totalHandPassValue: 0,
+      totalForearmPassValue: 0,
       forearmPassingAverage: 0.0,
+      receptionErrors: 0,
+      onePasses: 0,
+      twoPasses: 0,
+      threePasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     });
 
+    //Sort the roster by number
+    let sortedRoster = players.sort(
+      (p1, p2) => p1.playerNumber - p2.playerNumber
+    );
+
     //Create sub-collection "playerStats"
     firestore().collection("seasons").doc(newID).collection("playerStats").add({
-      roster: players,
+      roster: sortedRoster,
     });
 
     //Navigate to seasons screen
