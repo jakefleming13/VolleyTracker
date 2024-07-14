@@ -43,6 +43,9 @@ export default function statGame() {
   //Variable for which team is serving -> replace with 'firstServe' prop
   const [serverTracker, setServerTracker] = useState("Opponent");
 
+  //State Hook for the stat Stack
+  const [statStack, setStatStack] = useState([]);
+
   // Get the users Lineup -> replace with respective drilled prop
   const [positionOne, setPositionOne] = useState("5");
   const [positionTwo, setPositionTwo] = useState("8");
@@ -1677,22 +1680,36 @@ export default function statGame() {
         </View>
 
         {/* TODO: Add undo functionality onPress*/}
-        <TouchableOpacity>
-          <View style={styles.undoBtn}>
-            <View style={styles.undoIcon}>
-              <AntDesign
-                style={styles.backIcon}
-                name="back"
-                size={hp(3.7)}
-                color={COLORS.white}
-              />
+        <View style={styles.undoContainer}>
+          <TouchableOpacity>
+            <View style={styles.undoBtn}>
+              <View style={styles.undoIcon}>
+                <AntDesign
+                  style={styles.backIcon}
+                  name="back"
+                  size={hp(3.7)}
+                  color={COLORS.white}
+                />
+              </View>
+              <View style={styles.undoTextContainer}>
+                <Text style={styles.undoBtnText}>UNDO</Text>
+                <Text style={styles.undoBtnText}>STAT</Text>
+              </View>
             </View>
-            <View style={styles.undoTextContainer}>
-              <Text style={styles.undoBtnText}>UNDO</Text>
-              <Text style={styles.undoBtnText}>STAT</Text>
-            </View>
+          </TouchableOpacity>
+          <View style={styles.undoLogContainer}>
+            <Text style={styles.undoLogTextTitle}>Stat Log</Text>
+            <Text style={styles.undoLogText}>
+              {statStack[statStack.length - 1]}
+            </Text>
+            <Text style={styles.undoLogText}>
+              {statStack[statStack.length - 2]}
+            </Text>
+            <Text style={styles.undoLogText}>
+              {statStack[statStack.length - 3]}
+            </Text>
           </View>
-        </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.playerListContainer}>
@@ -1777,6 +1794,10 @@ export default function statGame() {
                             ...teamStats,
                             teamAttempts: teamStats.teamAttempts + 1,
                           }));
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            player.playerNumber + ": ATK",
+                          ]);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -1798,6 +1819,10 @@ export default function statGame() {
                             setServerTracker("Home");
                             handleRotation();
                           }
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            player.playerNumber + ": K",
+                          ]);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -1819,6 +1844,10 @@ export default function statGame() {
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
                           }
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            player.playerNumber + ": ATK ERR",
+                          ]);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -1833,6 +1862,10 @@ export default function statGame() {
                             ...teamStats,
                             teamAssists: teamStats.teamAssists + 1,
                           }));
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            player.playerNumber + ": A",
+                          ]);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -1858,6 +1891,10 @@ export default function statGame() {
                             setServerTracker("Home");
                             handleRotation();
                           }
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            player.playerNumber + ": BS",
+                          ]);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -1876,6 +1913,10 @@ export default function statGame() {
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
                           }
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            player.playerNumber + ": BLK ERR",
+                          ]);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -1908,6 +1949,7 @@ export default function statGame() {
                               firstBlockAssist,
                               player.playerNumber
                             );
+
                             //handleBlockAssistsIncrement(player.playerNumber);
                             setTeamStats((teamStats) => ({
                               ...teamStats,
@@ -1915,9 +1957,23 @@ export default function statGame() {
                               teamTotalBlocks: teamStats.teamTotalBlocks + 1,
                               teamPts: teamStats.teamPts + 1,
                             }));
+
+                            //Update the statStack
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              firstBlockAssist + ": BA",
+                            ]);
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              player.playerNumber + ": BA",
+                            ]);
+
+                            //Reset State Hooks
                             setSelectedBlockAssist(false);
                             setFirstBlockAssist("");
+
                             handleServeAttempts();
+
                             setHomeScore(homeScore + 1);
                             if (serverTracker === "Opponent") {
                               setServerTracker("Home");
@@ -1948,6 +2004,11 @@ export default function statGame() {
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
                           }
+
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            player.playerNumber + ": DIG ERR",
+                          ]);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -1964,6 +2025,11 @@ export default function statGame() {
                             ...teamStats,
                             teamTotalDigs: teamStats.teamTotalDigs + 1,
                           }));
+
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            player.playerNumber + ": DIG",
+                          ]);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -1978,17 +2044,25 @@ export default function statGame() {
                       <TouchableOpacity
                         onPress={() => {
                           handleserviceAcesIncrement(player.playerNumber);
+
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamServiceAces: teamStats.teamServiceAces + 1,
                             teamPts: teamStats.teamPts + 1,
                           }));
+
                           handleServeAttempts();
+
                           setHomeScore(homeScore + 1);
                           if (serverTracker === "Opponent") {
                             setServerTracker("Home");
                             handleRotation();
                           }
+
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            player.playerNumber + ": SA",
+                          ]);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -1998,15 +2072,23 @@ export default function statGame() {
                       <TouchableOpacity
                         onPress={() => {
                           handleServiceErrorsIncrement(player.playerNumber);
+
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamServiceErrors: teamStats.teamServiceErrors + 1,
                           }));
+
                           handleServeAttempts();
+
                           setOpponentScore(opponentScore + 1);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
                           }
+
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            player.playerNumber + ": SE",
+                          ]);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -2115,6 +2197,11 @@ export default function statGame() {
                                 teamStats.teamTotalForearmPassValue /
                                 teamStats.teamForearmPassingAttempts,
                             }));
+
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              player.playerNumber + ": RE",
+                            ]);
                           }
 
                           setForearmPassSelected(false);
@@ -2194,6 +2281,11 @@ export default function statGame() {
                             }));
                           }
 
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            player.playerNumber + ": 2 Pass",
+                          ]);
+
                           setForearmPassSelected(false);
                           setForearmPassPlayer(null);
                           setHandPassSelected(false);
@@ -2267,6 +2359,11 @@ export default function statGame() {
                             }));
                           }
 
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            player.playerNumber + ": 1 Pass",
+                          ]);
+
                           setForearmPassSelected(false);
                           setForearmPassPlayer(null);
                           setHandPassSelected(false);
@@ -2338,6 +2435,11 @@ export default function statGame() {
                             }));
                           }
 
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            player.playerNumber + ": 3 Pass",
+                          ]);
+
                           setForearmPassSelected(false);
                           setForearmPassPlayer(null);
                           setHandPassSelected(false);
@@ -2405,6 +2507,30 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
     elevation: 6,
   },
+  undoContainer: {
+    flexDirection: "column",
+    width: wp(9),
+    height: hp(20),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  undoLogContainer: {
+    flexDirection: "column",
+    backgroundColor: COLORS.grey,
+    justifyContent: "center",
+    alignItems: "center",
+    width: wp(7.5),
+    height: hp(10),
+    borderRadius: 15,
+  },
+  undoLogTextTitle: {
+    fontSize: RFValue(7),
+    fontWeight: "bold",
+    textDecorationLine: "underline",
+  },
+  undoLogText: {
+    fontSize: RFValue(7),
+  },
   undoBtn: {
     flexDirection: "row",
     width: wp(7.5),
@@ -2413,6 +2539,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginHorizontal: 5,
     marginTop: 5,
+    marginBottom: 7,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
