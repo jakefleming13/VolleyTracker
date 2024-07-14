@@ -54,23 +54,24 @@ export default function statGame() {
   const [secondLibero, setSecondLibero] = useState(null);
 
   //Starters and subs for each position
-  const [starterPositionOne, setStarterPositionOne] = useState("5");
-  const [starterPositionOneSub, setStarterPositionOneSub] = useState(null);
+  const [onCourtPositionOne, setOnCourtPositionOne] = useState(positionOne);
+  const [onCourtPositionOneSub, setOnCourtPositionOneSub] = useState(null);
 
-  const [starterPositionTwo, setStarterPositionTwo] = useState("8");
-  const [starterPositionTwoSub, setStarterPositionTwoSub] = useState(null);
+  const [onCourtPositionTwo, setOnCourtPositionTwo] = useState(positionTwo);
+  const [onCourtPositionTwoSub, setSOnCourtPositionTwoSub] = useState(null);
 
-  const [starterPositionThree, setStarterPositionThree] = useState("10");
-  const [starterPositionThreeSub, setStarterPositionThreeSub] = useState(null);
+  const [onCourtPositionThree, setOnCourtPositionThree] =
+    useState(positionThree);
+  const [onCourtPositionThreeSub, setOnCourtPositionThreeSub] = useState(null);
 
-  const [starterPositionFour, setStarterPositionFour] = useState("2");
-  const [starterPositionFourSub, setStarterPositionFourSub] = useState(null);
+  const [onCourtPositionFour, setOnCourtPositionFour] = useState(positionFour);
+  const [onCourtPositionFourSub, setOnCourtPositionFourSub] = useState(null);
 
-  const [starterPositionFive, setStarterPositionFive] = useState("9");
-  const [starterPositionFiveSub, setStarterPositionFiveSub] = useState(null);
+  const [onCourtPositionFive, setOnCourtPositionFive] = useState(positionFive);
+  const [onCourtPositionFiveSub, setOnCourtPositionFiveSub] = useState(null);
 
-  const [starterPositionSix, setStarterPositionSix] = useState("15");
-  const [starterPositionSixSub, setStarterPositionSixSub] = useState(null);
+  const [onCourtPositionSix, setOnCourtPositionSix] = useState(positionSix);
+  const [onCourtPositionSixSub, setOnCourtPositionSixSub] = useState(null);
 
   const handleRotation = () => {
     let temp = positionOne;
@@ -83,13 +84,14 @@ export default function statGame() {
     setPositionSix(temp);
   };
 
+  //TODO: Uncomment after testing
   //JSON.parse to deal with an array that is being prop drilled
   /////////////////////////////////////
   //When testing is done uncomment
   //const roster = JSON.parse(params.currentLocalRoster);
   /////////////////////////////////////
 
-  // Temp variable
+  // TODO: Remove Temp variable after testing
   const testingRoster = [
     {
       assists: 0,
@@ -405,12 +407,7 @@ export default function statGame() {
     },
   ];
 
-  //TODO: REMOVE AFTRER TESTING (roster is now sorted within addSeason Screen)
-  //Sort the diplayed roster by number
-  // let sortedTestingRoster = testingRoster.sort(
-  //   (p1, p2) => p1.playerNumber - p2.playerNumber
-  // );
-
+  //TODO: REMOVE testingRoster AFTER TESTING
   //rosterStats variable contains all of the player stats for the current game
   const [rosterStats, setRosterStats] = useState(testingRoster);
 
@@ -421,6 +418,107 @@ export default function statGame() {
 
   const [homeTimeOuts, setHomeTimeOuts] = useState(2);
   const [opponentTimeOuts, setOpponentTimeOuts] = useState(2);
+
+  //Filter the roster that is being displayed in the onCourt dropdown
+  const onCourtRoster = () => {
+    const dropDownRosterList = [];
+    for (let index = 0; index < rosterStats.length; index++) {
+      if (
+        rosterStats[index].playerNumber === onCourtPositionOne ||
+        rosterStats[index].playerNumber === onCourtPositionTwo ||
+        rosterStats[index].playerNumber === onCourtPositionThree ||
+        rosterStats[index].playerNumber === onCourtPositionFour ||
+        rosterStats[index].playerNumber === onCourtPositionFive ||
+        rosterStats[index].playerNumber === onCourtPositionSix
+      ) {
+        dropDownRosterList.push({
+          key: rosterStats[index].playerNumber,
+          value:
+            rosterStats[index].playerNumber +
+            " - " +
+            rosterStats[index].playerName,
+        });
+      }
+    }
+
+    return dropDownRosterList;
+  };
+
+  //Filter the roster that is being displayed in the bench dropdown
+  const benchRoster = () => {
+    const dropDownRosterList = [];
+    for (let index = 0; index < rosterStats.length; index++) {
+      if (
+        rosterStats[index].playerNumber === onCourtPositionOne ||
+        rosterStats[index].playerNumber === onCourtPositionTwo ||
+        rosterStats[index].playerNumber === onCourtPositionThree ||
+        rosterStats[index].playerNumber === onCourtPositionFour ||
+        rosterStats[index].playerNumber === onCourtPositionFive ||
+        rosterStats[index].playerNumber === onCourtPositionSix ||
+        rosterStats[index].playerNumber === firstLibero ||
+        rosterStats[index].playerNumber === secondLibero
+      ) {
+        continue;
+      } else {
+        dropDownRosterList.push({
+          key: rosterStats[index].playerNumber,
+          value:
+            rosterStats[index].playerNumber +
+            " - " +
+            rosterStats[index].playerName,
+        });
+      }
+    }
+    return dropDownRosterList;
+  };
+
+  const [courtDropDownValue, setCourtDropDownValue] = useState("");
+  const [benchDropDownValue, setBenchDropDownValue] = useState("");
+
+  const handleSubstitution = () => {
+    //find the players current position
+    courtDropDownValue === positionOne
+      ? setPositionOne(benchDropDownValue)
+      : courtDropDownValue === positionTwo
+      ? setPositionTwo(benchDropDownValue)
+      : courtDropDownValue === positionThree
+      ? setPositionThree(benchDropDownValue)
+      : courtDropDownValue === positionFour
+      ? setPositionFour(benchDropDownValue)
+      : courtDropDownValue === positionFive
+      ? setPositionFive(benchDropDownValue)
+      : courtDropDownValue === positionSix
+      ? setPositionSix(benchDropDownValue)
+      : null;
+
+    //set onCourt and sub values
+    if (courtDropDownValue === onCourtPositionOne) {
+      setOnCourtPositionOne(benchDropDownValue);
+      setOnCourtPositionOneSub(courtDropDownValue);
+    } else if (courtDropDownValue === onCourtPositionTwo) {
+      setOnCourtPositionTwo(benchDropDownValue);
+      setOnCourtPositionTwoSub(courtDropDownValue);
+    } else if (courtDropDownValue === onCourtPositionThree) {
+      setOnCourtPositionThree(benchDropDownValue);
+      setOnCourtPositionThreeSub(courtDropDownValue);
+    } else if (courtDropDownValue === onCourtPositionFour) {
+      setOnCourtPositionFour(benchDropDownValue);
+      setOnCourtPositionFourSub(courtDropDownValue);
+    } else if (courtDropDownValue === onCourtPositionFive) {
+      setOnCourtPositionFive(benchDropDownValue);
+      setOnCourtPositionFiveSub(courtDropDownValue);
+    } else if (courtDropDownValue === onCourtPositionSix) {
+      setOnCourtPositionSix(benchDropDownValue);
+      setOnCourtPositionSixSub(courtDropDownValue);
+    }
+
+    //Reset drop down values
+    setCourtDropDownValue("");
+    setBenchDropDownValue("");
+
+    toggleSubModal(!isSubModalVisible);
+    return;
+  };
 
   //Function to allow user to decrement number of home timeouts
   const HomeTimeOutsDisplay = () => {
@@ -433,7 +531,7 @@ export default function statGame() {
             size={RFValue(22)}
             color={COLORS.primary}
           />
-          <View style={styles.widthSpacer1} />
+          <View style={styles.widthSpacer3} />
           <MaterialCommunityIcons
             name="numeric-2-circle"
             size={RFValue(22)}
@@ -469,7 +567,7 @@ export default function statGame() {
             size={RFValue(22)}
             color={COLORS.primary}
           />
-          <View style={styles.widthSpacer1} />
+          <View style={styles.widthSpacer3} />
           <MaterialCommunityIcons
             name="numeric-2-circle"
             size={RFValue(22)}
@@ -556,6 +654,12 @@ export default function statGame() {
 
   const toggleRotationCheckModal = () => {
     setRotationCheckModalVisible(!isRotationCheckModalVisible);
+  };
+
+  const [isSubModalVisible, setSubModalVisible] = useState(false);
+
+  const toggleSubModal = () => {
+    setSubModalVisible(!isSubModalVisible);
   };
 
   const handleAttemptIncrement = (playerNumber) => {
@@ -870,16 +974,95 @@ export default function statGame() {
           </View>
         </TouchableOpacity>
         <View style={styles.scoreboardContainer}>
-          <TouchableOpacity onPress={toggleLiveStatsModal}>
-            <View style={styles.liveStatsContainer}>
-              <FontAwesome6
-                name="chart-bar"
-                size={RFValue(12)}
-                color={COLORS.primary}
-              />
-              <Text style={styles.liveStatsRotationText}>Live Stats</Text>
+          <View style={styles.liveStatsSubContainer}>
+            <TouchableOpacity onPress={toggleLiveStatsModal}>
+              <View style={styles.liveStatsContainer}>
+                <FontAwesome6
+                  name="chart-bar"
+                  size={RFValue(12)}
+                  color={COLORS.primary}
+                />
+                <Text style={styles.liveStatsRotationText}>Live Stats</Text>
+              </View>
+            </TouchableOpacity>
+            <View style={styles.subContainer}>
+              <TouchableOpacity onPress={toggleSubModal}>
+                <View style={styles.liveStatsContainer}>
+                  <MaterialIcons
+                    name="swap-horizontal-circle"
+                    size={RFValue(14)}
+                    color={COLORS.primary}
+                  />
+                  <Text style={styles.liveStatsRotationText}>Substitute</Text>
+                </View>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              flex: 1,
+            }}
+          >
+            <Modal
+              isVisible={isSubModalVisible}
+              onBackdropPress={toggleSubModal}
+            >
+              <View style={styles.subModalContainer}>
+                <View style={styles.subModalHeader}>
+                  <TouchableOpacity onPress={toggleSubModal}>
+                    <AntDesign
+                      name="closesquareo"
+                      size={RFValue(20)}
+                      color={COLORS.black}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.subModalText}>Substitute Players</Text>
+                <View style={styles.subDropDownContainer}>
+                  <Dropdown
+                    style={styles.dropdown}
+                    selectedTextStyle={styles.selectedDropDownText}
+                    itemTextStyle={styles.dropDownText}
+                    placeholderStyle={styles.placeholderDropDown}
+                    data={onCourtRoster()}
+                    search={false}
+                    placeholder="Court Player"
+                    maxHeight={300}
+                    labelField={"value"}
+                    activeColor={COLORS.grey}
+                    valueField="key"
+                    value={courtDropDownValue}
+                    onChange={(value) => setCourtDropDownValue(value.key)}
+                  />
+                  <Text style={styles.subModalBodyText}>for</Text>
+                  <Dropdown
+                    style={styles.dropdown}
+                    selectedTextStyle={styles.selectedDropDownText}
+                    itemTextStyle={styles.dropDownText}
+                    placeholderStyle={styles.placeholderDropDown}
+                    data={benchRoster()}
+                    search={false}
+                    placeholder="Bench Player"
+                    maxHeight={300}
+                    labelField={"value"}
+                    activeColor={COLORS.grey}
+                    valueField="key"
+                    value={benchDropDownValue}
+                    onChange={(value) => {
+                      setBenchDropDownValue(value.key);
+                    }}
+                  />
+                </View>
+                <View style={styles.subConfirmContainer}>
+                  <TouchableOpacity onPress={handleSubstitution}>
+                    <View style={styles.liveStatsContainer}>
+                      <Text style={styles.liveStatsRotationText}>Confirm</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+          </View>
           <View
             style={{
               flex: 1,
@@ -895,43 +1078,33 @@ export default function statGame() {
                 <View style={styles.court}>
                   <View style={styles.netIndicator} />
                   <View style={styles.courtRow}>
-                    <TouchableOpacity>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionFour}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionThree}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionTwo}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
+                    <View style={styles.courtPosition}>
+                      <Text style={styles.courtPositionText}>
+                        {positionFour}
+                      </Text>
+                    </View>
+                    <View style={styles.courtPosition}>
+                      <Text style={styles.courtPositionText}>
+                        {positionThree}
+                      </Text>
+                    </View>
+                    <View style={styles.courtPosition}>
+                      <Text style={styles.courtPositionText}>
+                        {positionTwo}
+                      </Text>
+                    </View>
                   </View>
                   <View style={styles.courtRow}>
-                    <TouchableOpacity>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionFive}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionSix}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
+                    <View style={styles.courtPosition}>
+                      <Text style={styles.courtPositionText}>
+                        {positionFive}
+                      </Text>
+                    </View>
+                    <View style={styles.courtPosition}>
+                      <Text style={styles.courtPositionText}>
+                        {positionSix}
+                      </Text>
+                    </View>
                     <View style={styles.courtPosition}>
                       <Text style={styles.courtPositionText}>
                         {positionOne}
@@ -1405,50 +1578,7 @@ export default function statGame() {
                     </Text>
                   </View>
                   <View style={styles.widthSpacer1} />
-                  <View
-                    style={{
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Text style={styles.dropdownTitle}>
-                      {player.playerNumber === firstLibero ||
-                      player.playerNumber == secondLibero
-                        ? "Libero"
-                        : "Sub"}
-                    </Text>
-                    <View
-                      style={
-                        player.playerNumber === firstLibero ||
-                        player.playerNumber == secondLibero
-                          ? styles.dropdownContainerLibero
-                          : styles.dropdownContainer
-                      }
-                    >
-                      {player.playerNumber === firstLibero ||
-                      player.playerNumber == secondLibero ? null : (
-                        <Dropdown
-                          style={styles.dropdown}
-                          selectedTextStyle={styles.selectedDropDownText}
-                          itemTextStyle={styles.dropDownText}
-                          data={rosterStats}
-                          search={false}
-                          maxHeight={300}
-                          disable={
-                            player.playerNumber === firstLibero ||
-                            player.playerNumber == secondLibero
-                              ? true
-                              : false
-                          }
-                          labelField={"playerNumber"}
-                          activeColor={COLORS.grey}
-                          valueField="PlayerNumber"
-                          value={starterPositionOne}
-                          //TODO: Add sub functionality
-                          onChange={(val) => val}
-                        />
-                      )}
-                    </View>
-                  </View>
+
                   <View style={styles.playerOffenseContainer}>
                     <View style={styles.offenseSubContainer}>
                       <TouchableOpacity
@@ -1907,6 +2037,57 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: COLORS.white,
   },
+  liveStatsSubContainer: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: hp(1),
+  },
+  subContainer: {
+    flexDirection: "row",
+    marginTop: hp(2),
+    height: hp(8),
+    width: wp(10),
+    justifyContent: "center",
+  },
+  subBtn: {
+    height: hp(4),
+    width: wp(4),
+    backgroundColor: COLORS.grey,
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
+  subModalContainer: {
+    flexDirection: "column",
+    backgroundColor: COLORS.secondary,
+    height: hp(45),
+    borderRadius: 20,
+  },
+  subModalHeader: {
+    height: hp(6),
+    justifyContent: "center",
+    alignItems: "flex-end",
+    paddingRight: wp(0.7),
+    borderRadius: 20,
+  },
+  subModalText: { fontSize: RFValue(20), alignSelf: "center" },
+  subModalBodyText: { fontSize: RFValue(14), marginHorizontal: wp(4) },
+  subDropDownContainer: {
+    flexDirection: "row",
+    height: hp(20),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  subConfirmContainer: { justifyContent: "center", alignItems: "center" },
   undoIcon: {
     marginLeft: 4,
   },
@@ -1991,10 +2172,13 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   widthSpacer1: {
-    width: wp(0.7),
+    width: wp(4),
   },
   widthSpacer2: {
     width: wp(2.5),
+  },
+  widthSpacer3: {
+    width: wp(0.7),
   },
   liveStatsContainer: {
     flexDirection: "row",
@@ -2287,12 +2471,18 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     borderColor: COLORS.darkGrey,
+    backgroundColor: COLORS.grey,
+    borderRadius: 20,
     zIndex: 999,
     paddingHorizontal: wp(1.5),
+    height: hp(6),
+    width: wp(12),
+    justifyContent: "center",
+    alignItems: "center",
   },
   placeholderDropDown: {
-    color: COLORS.white,
-    fontSize: RFValue(11),
+    fontSize: RFValue(8),
+    fontWeight: "bold",
   },
   selectedDropDownText: {
     fontSize: RFValue(11),
