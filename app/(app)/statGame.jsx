@@ -670,6 +670,7 @@ export default function statGame() {
         return {
           ...player,
           attempts: player.attempts + 1,
+          //TODO: Decide if hitting percentage should be removed
           hittingPercentage:
             (player.kills - player.attackErrors) / player.attempts,
         };
@@ -786,16 +787,27 @@ export default function statGame() {
     setRosterStats(updatedRoster);
   };
 
-  const handleBlockAssistsIncrement = (playerNumber) => {
+  //Set first block assists
+  const [selectedBlockAssist, setSelectedBlockAssist] = useState(false);
+  const [firstBlockAssist, setFirstBlockAssist] = useState("");
+
+  const handleBlockAssistsIncrement = (
+    firstPlayerNumber,
+    secondPlayerNumber
+  ) => {
     const updatedRoster = rosterStats.map((player) => {
-      if (player.playerNumber === playerNumber) {
+      if (
+        player.playerNumber === firstPlayerNumber ||
+        player.playerNumber === secondPlayerNumber
+      ) {
         return {
           ...player,
           blockAssists: player.blockAssists + 1,
-          totalBlocks: player.totalBlocks + 1,
+          totalBlocks: player.totalBlocks + 0.5,
           pts: player.pts + 0.5,
         };
       }
+
       return player;
     });
     setRosterStats(updatedRoster);
@@ -1694,16 +1706,46 @@ export default function statGame() {
                     <View style={styles.defenseSubContainer}>
                       <TouchableOpacity
                         onPress={() => {
-                          handleBlockAssistsIncrement(player.playerNumber);
-                          setTeamStats((teamStats) => ({
-                            ...teamStats,
-                            teamBlockAssists: teamStats.teamBlockAssists + 1,
-                            teamTotalBlocks: teamStats.teamTotalBlocks + 0.5,
-                            teamPts: teamStats.teamPts + 0.5,
-                          }));
+                          //Handle All conditions: initial select, deselect, and completion
+                          if (
+                            selectedBlockAssist === false &&
+                            firstBlockAssist === ""
+                          ) {
+                            setSelectedBlockAssist(!selectedBlockAssist);
+                            setFirstBlockAssist(player.playerNumber);
+                          } else if (
+                            selectedBlockAssist === true &&
+                            firstBlockAssist === player.playerNumber
+                          ) {
+                            setSelectedBlockAssist(!selectedBlockAssist);
+                            setFirstBlockAssist("");
+                          } else if (
+                            selectedBlockAssist === true &&
+                            firstBlockAssist !== player.playerNumber
+                          ) {
+                            handleBlockAssistsIncrement(
+                              firstBlockAssist,
+                              player.playerNumber
+                            );
+                            //handleBlockAssistsIncrement(player.playerNumber);
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamBlockAssists: teamStats.teamBlockAssists + 1,
+                              teamTotalBlocks: teamStats.teamTotalBlocks + 1,
+                              teamPts: teamStats.teamPts + 1,
+                            }));
+                            setSelectedBlockAssist(false);
+                            setFirstBlockAssist("");
+                          }
                         }}
                       >
-                        <View style={styles.statBtn}>
+                        <View
+                          style={
+                            selectedBlockAssist
+                              ? styles.statBtnSelected
+                              : styles.statBtn
+                          }
+                        >
                           <Text style={styles.btnTextSingleLine}>BA</Text>
                         </View>
                       </TouchableOpacity>
