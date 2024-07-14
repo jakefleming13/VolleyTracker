@@ -723,6 +723,16 @@ export default function statGame() {
     setRosterStats(updatedRoster);
   };
 
+  const handleServeAttempts = () => {
+    const updatedRoster = rosterStats.map((player) => {
+      if (player.playerNumber === positionOne && serverTracker !== "Opponent") {
+        return { ...player, serviceAttempts: player.serviceAttempts + 1 };
+      }
+      return player;
+    });
+    setRosterStats(updatedRoster);
+  };
+
   const handleserviceAcesIncrement = (playerNumber) => {
     const updatedRoster = rosterStats.map((player) => {
       if (player.playerNumber === playerNumber) {
@@ -1440,6 +1450,7 @@ export default function statGame() {
             <Text style={styles.scoreTeamNameText}>Team Name</Text>
             <TouchableOpacity
               onPress={() => {
+                handleServeAttempts();
                 setHomeScore(homeScore + 1);
                 if (serverTracker === "Opponent") {
                   setServerTracker("Home");
@@ -1457,6 +1468,7 @@ export default function statGame() {
             <Text style={styles.scoreTeamNameText}>Opponent</Text>
             <TouchableOpacity
               onPress={() => {
+                handleServeAttempts();
                 setOpponentScore(opponentScore + 1);
                 if (serverTracker !== "Opponent") {
                   setServerTracker("Opponent");
@@ -1586,7 +1598,7 @@ export default function statGame() {
 
                     {/* TODO: Input validation to keep player name less that 15 chars */}
                     <Text style={styles.playerNameText}>
-                      {player.playerName}
+                      {player.playerName} {player.serviceAttempts}
                     </Text>
                   </View>
                   <View style={styles.widthSpacer1} />
@@ -1615,6 +1627,7 @@ export default function statGame() {
                             teamAttempts: teamStats.teamAttempts + 1,
                             teamPts: teamStats.teamPts + 1,
                           }));
+                          handleServeAttempts();
                           setHomeScore(homeScore + 1);
                           if (serverTracker === "Opponent") {
                             setServerTracker("Home");
@@ -1636,6 +1649,7 @@ export default function statGame() {
                             teamAttackErrors: teamStats.teamAttackErrors + 1,
                             teamAttempts: teamStats.teamAttempts + 1,
                           }));
+                          handleServeAttempts();
                           setOpponentScore(opponentScore + 1);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
@@ -1673,6 +1687,7 @@ export default function statGame() {
                             teamBlockSolos: teamStats.teamBlockSolos + 1,
                             teamPts: teamStats.teamPts + 1,
                           }));
+                          handleServeAttempts();
                           setHomeScore(homeScore + 1);
                           if (serverTracker === "Opponent") {
                             setServerTracker("Home");
@@ -1691,6 +1706,7 @@ export default function statGame() {
                             ...teamStats,
                             teamBlockErrors: teamStats.teamBlockErrors + 1,
                           }));
+                          handleServeAttempts();
                           setOpponentScore(opponentScore + 1);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
@@ -1736,6 +1752,12 @@ export default function statGame() {
                             }));
                             setSelectedBlockAssist(false);
                             setFirstBlockAssist("");
+                            handleServeAttempts();
+                            setHomeScore(homeScore + 1);
+                            if (serverTracker === "Opponent") {
+                              setServerTracker("Home");
+                              handleRotation();
+                            }
                           }
                         }}
                       >
@@ -1756,6 +1778,7 @@ export default function statGame() {
                             ...teamStats,
                             teamDigErrors: teamStats.teamDigErrors + 1,
                           }));
+                          handleServeAttempts();
                           setOpponentScore(opponentScore + 1);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
@@ -1795,6 +1818,7 @@ export default function statGame() {
                             teamServiceAces: teamStats.teamServiceAces + 1,
                             teamPts: teamStats.teamPts + 1,
                           }));
+                          handleServeAttempts();
                           setHomeScore(homeScore + 1);
                           if (serverTracker === "Opponent") {
                             setServerTracker("Home");
@@ -1813,6 +1837,7 @@ export default function statGame() {
                             ...teamStats,
                             teamServiceErrors: teamStats.teamServiceErrors + 1,
                           }));
+                          handleServeAttempts();
                           setOpponentScore(opponentScore + 1);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
@@ -1895,6 +1920,8 @@ export default function statGame() {
                           setForearmPassPlayer(null);
                           setHandPassSelected(false);
                           setHandPassPlayer(null);
+
+                          handleServeAttempts();
                           setOpponentScore(opponentScore + 1);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");

@@ -35,7 +35,8 @@ const Seasons = () => {
 
     // Check if there is already an active season
     if (seasonID) {
-      router.push("seasonHome");
+      // router.push("seasonHome");
+      router.push("statGame");
 
       return;
     }
