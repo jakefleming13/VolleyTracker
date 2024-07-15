@@ -40,6 +40,8 @@ export default function statGamePrep() {
   const [firstLibero, setFirstLibero] = useState("");
   const [secondLibero, setSecondLibero] = useState("");
 
+  const [setter, setSetter] = useState("");
+
   // Track selected players
   const [selectedPlayers, setSelectedPlayers] = useState([]);
 
@@ -490,6 +492,28 @@ export default function statGamePrep() {
             </View>
           </View>
         </View>
+        <View style={styles.setterContainer}>
+          <Text style={styles.setterTitleText}>On Court Setter: </Text>
+          <View style={styles.setterSlot}>
+            <Dropdown
+              style={styles.setterDropDown}
+              placeholderStyle={styles.setterPlaceHolderDropDown}
+              selectedTextStyle={styles.selectedDropDownText}
+              itemTextStyle={styles.dropDownText}
+              //TODO: Ensure selection is only from on court players
+              data={getFilteredRoster()}
+              search={false}
+              maxHeight={300}
+              labelField="value"
+              valueField="key"
+              placeholder={"Select Setter"}
+              activeColor={COLORS.grey}
+              dropdownPosition="auto"
+              value={setter}
+              onChange={(val) => setSetter(val)}
+            />
+          </View>
+        </View>
         <View style={styles.secondaryTitleContainer}>
           <Text style={styles.secondaryTitleText}>Libero(s):</Text>
           <TouchableOpacity>
@@ -686,7 +710,7 @@ const styles = StyleSheet.create({
   court: {
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 95,
+    marginBottom: 10,
   },
   netIndicator: {
     borderBottomColor: COLORS.black,
@@ -716,6 +740,46 @@ const styles = StyleSheet.create({
   courtPositionText: {
     fontSize: RFValue(12),
     color: COLORS.white,
+  },
+  setterContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 55,
+    height: hp(13),
+  },
+  setterTitleText: {
+    fontSize: RFValue(12),
+    color: COLORS.primary,
+  },
+  setterSlot: {
+    backgroundColor: COLORS.secondary,
+    height: hp(6),
+    width: wp(14),
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 5,
+    borderRadius: 10,
+  },
+  setterDropDown: {
+    height: hp(6),
+    width: wp(15),
+    borderColor: COLORS.darkGrey,
+    backgroundColor: COLORS.secondary,
+    borderRadius: 10,
+    paddingHorizontal: wp(1.7),
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
+  setterPlaceHolderDropDown: {
+    color: COLORS.white,
+    fontSize: RFValue(9),
   },
   liberoContainer: {
     flexDirection: "row",
@@ -776,6 +840,14 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.secondary,
     borderRadius: 10,
     paddingHorizontal: wp(1.7),
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   placeholderDropDown: {
     color: COLORS.white,
