@@ -212,6 +212,8 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     margin: wp(1.5),
+    
+    
   },
   section: {
     marginBottom: hp(3),
@@ -222,16 +224,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.primary,
     textAlign: 'center',
-    marginBottom: hp(2),
+    marginBottom: hp(2.5),
     
   },
   statRow: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     flexWrap: 'wrap',
-    backgroundColor: COLORS.darkGrey,
-    
-  
+    backgroundColor: COLORS.white,
+    width: "70%",
+    alignSelf: 'center'
   },
   statColumn: {
     minWidth: wp(2),
@@ -242,7 +244,7 @@ const styles = StyleSheet.create({
   statHeader: {
     fontSize: RFValue(10),
     color: COLORS.darkGray,
-    marginBottom: 10,
+    marginBottom: hp(3),
     
     
   },
