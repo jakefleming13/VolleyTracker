@@ -61,8 +61,6 @@ export default function TeamStats() {
   });
 
 
-
-  
   useEffect(() => {
     const fetchPlayerStats = async () => {
       if (seasonID && user) {
@@ -76,25 +74,34 @@ export default function TeamStats() {
             const allStats = snapshot.docs[0].data(); // Assuming all stats are in one document
             const categorizedStats = {
               offense: {
-                kills: allStats.kills,
-                assists: allStats.assists,
-                aces: allStats.aces,
-                attempts: allStats.attempts,
-                pts: allStats.pts,
-                ptsPerSet: allStats.ptsPerSet,
+                M: allStats.matchesPlayed || 0,
+                S: allStats.setsPlayed || 0,
+                K: allStats.kills || 0,
+                'K/S': allStats.killsPerSet || 0,
+                TA: allStats.attempts || 0,
+                A: allStats.assists || 0,
+                'A/S': allStats.assistsPerSet || 0,
+                PTS: allStats.pts || 0,
+                'PTS/S': allStats.ptsPerSet || 0,
               },
               defense: {
-                digs: allStats.digs,
-                digsPerSet: allStats.digsPerSet,
-                totalBlocks: allStats.totalBlocks,
-                blockAssists: allStats.blockAssists,
-                blockSolos: allStats.blockSolos,
+                M: allStats.matchesPlayed || 0,
+                S: allStats.setsPlayed || 0,
+                DIGS: allStats.digs || 0,
+                'D/S': allStats.digsPerSet || 0,
+                BS: allStats.blockSolos || 0,
+                BA: allStats.blockAssists || 0,
+                TOT: allStats.totalBlocks || 0,
+                'B/S': allStats.blocksPerSet || 0,
               },
               serveReceive: {
-                serveAttempts: allStats.serveAttempts,
-                missedServes: allStats.missedServes,
-                forearmPassingAttempts: allStats.forearmPassingAttempts,
-                forearmPassingAverage: allStats.forearmPassingAverage,
+                M: allStats.matchesPlayed || 0,
+                S: allStats.setsPlayed || 0,
+                SA: allStats.aces || 0,
+                'SA/S': allStats.acesPerSet || 0,
+                R: allStats.receptions || 0,
+                RE: allStats.receptionErrors || 0,
+                'PASSING AVG': allStats.passingAverage || 0,
               }
             };
             setTeamStats(categorizedStats);
