@@ -9,6 +9,7 @@ import { useAuth } from "../../context/authContext";
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { COLORS } from "../../constants/Colors";
 import { AntDesign, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import Loading from "../../components/Loading";
 
 export default function playerStats() {
   const router = useRouter();
@@ -24,6 +25,8 @@ export default function playerStats() {
   const { currentLocalTeamName, currentLocalYear } = params;
 
   const [playerStats, setPlayerStats] = useState([]);
+  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const fetchPlayerStats = async () => {
@@ -44,11 +47,22 @@ export default function playerStats() {
         } catch (error) {
           console.error('Failed to fetch player stats:', error);
         }
+        setLoading(false)
       }
     };
 
     fetchPlayerStats();
   }, [seasonID, user]);
+
+
+  if (loading) {
+    return (
+      <View style={styles.loading}>
+        <Loading size={hp(10)} />
+      </View>
+    );
+  }
+
 
   // Render a single player element
   const renderPlayerElement = ({ item }) => (
@@ -124,7 +138,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   headerBottom: {
     paddingHorizontal: wp(4),
     paddingBottom: hp(2),
