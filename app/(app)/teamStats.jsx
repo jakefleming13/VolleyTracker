@@ -71,7 +71,7 @@ export default function TeamStats() {
             .collection('seasonStats');
           const snapshot = await teamStatsCollection.get();
           if (!snapshot.empty) {
-            const allStats = snapshot.docs[0].data(); // Assuming all stats are in one document
+            const allStats = snapshot.docs[0].data(); 
             const categorizedStats = {
               offense: {
                 M: allStats.matchesPlayed || 0,
@@ -124,7 +124,7 @@ export default function TeamStats() {
         </TouchableOpacity>
       </View>
       <Text style={styles.title}>{currentLocalTeamName}, {currentLocalYear}</Text>
-      <View style={styles.separator} />
+      <View style={styles.seperator} />
       <View style={styles.headerBottom}>
         <TouchableOpacity style={styles.filterExportButton}>
           <FontAwesome name="filter" size={hp(3)} color={COLORS.white} />
@@ -184,10 +184,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: hp(1),
   },
-  separator: {
-    borderBottomWidth: 2,
+  seperator: {
     borderBottomColor: COLORS.primary,
-    marginVertical: hp(1),
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    width: "60%",
+    alignSelf: "center",
+    marginVertical: hp(1)
   },
   headerBottom: {
     paddingHorizontal: wp(4),
@@ -199,8 +201,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.primary,
-    paddingHorizontal: wp(2),
-    paddingVertical: hp(1),
+    paddingHorizontal: wp(1.6),
+    paddingVertical: hp(0.8),
     borderRadius: 10,
   },
   buttonText: {
@@ -227,12 +229,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     flexWrap: 'wrap',
+    backgroundColor: COLORS.darkGrey,
     
-    
-
+  
   },
   statColumn: {
-    minWidth: wp(6),
+    minWidth: wp(2),
     alignItems: 'center',
     margin: 5,
 
