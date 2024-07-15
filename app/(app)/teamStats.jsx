@@ -5,18 +5,108 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { COLORS } from '../../constants/Colors';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { AntDesign, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/authContext';
+import firestore from "@react-native-firebase/firestore";
+
+
+const statAbbreviations = {
+  aces: 'Aces',
+  assists: 'A',
+  assistsPerSet: 'A/S',
+  attackErrors: 'AE',
+  attempts: 'TA',
+  blockAssists: 'BA',
+  blockSolos: 'BS',
+  digErrors: 'DE',
+  digs: 'Digs',
+  digsPerSet: 'Digs/S',
+  forearmPassingAttempts: 'FPA',
+  forearmPassingAverage: 'FPAvg',
+  handPassingAttempts: 'HPA',
+  handPassingAverage: 'HPAvg',
+  kills: 'K',
+  matchesLost: 'ML',
+  matchesPlayed: 'MP',
+  matchesWon: 'MW',
+  missedServes: 'MS',
+  passingAttempts: 'PA',
+  pts: 'PTS',
+  ptsPerSet: 'PTS/S',
+  serveAttempts: 'SA',
+  setsLost: 'SL',
+  setsPlayed: 'SP',
+  setsWon: 'SW',
+  totalBlocks: 'TB',
+  totalPassingAverage: 'TPA'
+};
 
 export default function TeamStats() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const { currentLocalTeamName, currentLocalYear } = params;
+  const {
+    user,
+    isAuthenticated,
+    initializing,
+    logout,
+    seasonID,
+    setActiveSeason,
+  } = useAuth();
 
   const [teamStats, setTeamStats] = useState({
-    offense: { 'M': 10, 'S': 20, 'K': 300, 'K/S': 15, 'TA': 500, 'A': 50, 'A/S': 2.5, 'PTS': 350, 'PTS/S': 17.5 },
-    defense: { 'M': 10, 'S': 20, 'DIGS': 250, 'D/S': 12.5, 'BS': 30, 'BA': 60, 'TOT': 90, 'B/S': 4.5 },
-    serveReceive: { 'M': 10, 'S': 20, 'SA': 40, 'SA/S': 2, 'R': 200, 'RE': 5, 'PASSING AVG': 2.8 },
+    offense: {},
+    defense: {},
+    serveReceive: {},
   });
+
+
+
+  
+  useEffect(() => {
+    const fetchPlayerStats = async () => {
+      if (seasonID && user) {
+        try {
+          const teamStatsCollection = firestore()
+            .collection('seasons')
+            .doc(seasonID)
+            .collection('seasonStats');
+          const snapshot = await teamStatsCollection.get();
+          if (!snapshot.empty) {
+            const allStats = snapshot.docs[0].data(); // Assuming all stats are in one document
+            const categorizedStats = {
+              offense: {
+                kills: allStats.kills,
+                assists: allStats.assists,
+                aces: allStats.aces,
+                attempts: allStats.attempts,
+                pts: allStats.pts,
+                ptsPerSet: allStats.ptsPerSet,
+              },
+              defense: {
+                digs: allStats.digs,
+                digsPerSet: allStats.digsPerSet,
+                totalBlocks: allStats.totalBlocks,
+                blockAssists: allStats.blockAssists,
+                blockSolos: allStats.blockSolos,
+              },
+              serveReceive: {
+                serveAttempts: allStats.serveAttempts,
+                missedServes: allStats.missedServes,
+                forearmPassingAttempts: allStats.forearmPassingAttempts,
+                forearmPassingAverage: allStats.forearmPassingAverage,
+              }
+            };
+            setTeamStats(categorizedStats);
+          }
+        } catch (error) {
+          console.error('Failed to fetch team stats:', error);
+        }
+      }
+    };
+  
+    fetchPlayerStats();
+  }, [seasonID, user]);
 
   return (
     <SafeView style={styles.container}>
@@ -39,9 +129,9 @@ export default function TeamStats() {
         </TouchableOpacity>
       </View>
       <ScrollView style={styles.scrollView}>
-        <StatSection title="Offense" data={teamStats.offense} />
-        <StatSection title="Defense" data={teamStats.defense} />
-        <StatSection title="Serve Receive" data={teamStats.serveReceive} />
+        {teamStats.offense && <StatSection title="Offense" data={teamStats.offense} />}
+        {teamStats.defense && <StatSection title="Defense" data={teamStats.defense} />}
+        {teamStats.serveReceive && <StatSection title="Serve Receive" data={teamStats.serveReceive} />}
       </ScrollView>
     </SafeView>
   );
@@ -53,7 +143,7 @@ const StatSection = ({ title, data }) => (
     <View style={styles.statRow}>
       {Object.entries(data).map(([key, value]) => (
         <View key={key} style={styles.statColumn}>
-          <Text style={styles.statHeader}>{key.replace('_', '/')}</Text>
+          <Text style={styles.statHeader}>{statAbbreviations[key] || key}</Text>
           <Text style={styles.statValue}>{value}</Text>
         </View>
       ))}
@@ -116,6 +206,7 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: hp(3),
+    
   },
   sectionTitle: {
     fontSize: RFValue(14),
@@ -123,21 +214,28 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     textAlign: 'center',
     marginBottom: hp(2),
+    
   },
   statRow: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     flexWrap: 'wrap',
+    
+    
+
   },
   statColumn: {
     minWidth: wp(6),
     alignItems: 'center',
     margin: 5,
+
   },
   statHeader: {
     fontSize: RFValue(10),
     color: COLORS.darkGray,
     marginBottom: 10,
+    
+    
   },
   statValue: {
     fontSize: RFValue(8),
