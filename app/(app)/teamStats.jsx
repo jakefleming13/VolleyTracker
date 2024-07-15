@@ -5,7 +5,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-nat
 import { COLORS } from '../../constants/Colors';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { AntDesign, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function TeamStats() {
   const router = useRouter();
@@ -13,33 +13,30 @@ export default function TeamStats() {
   const { currentLocalTeamName, currentLocalYear } = params;
 
   const [teamStats, setTeamStats] = useState({
-    offense: { M: 10, S: 20, K: 300, K_S: 15, TA: 500, A: 50, A_S: 2.5, PTS: 350, PTS_S: 17.5 },
-    defense: { M: 10, S: 20, DIGS: 250, D_S: 12.5, BS: 30, BA: 60, TOT: 90, B_S: 4.5 },
-    serveReceive: { M: 10, S: 20, SA: 40, SA_S: 2, R: 200, RE: 5, PASSING_AVG: 2.8 },
+    offense: { 'M': 10, 'S': 20, 'K': 300, 'K/S': 15, 'TA': 500, 'A': 50, 'A/S': 2.5, 'PTS': 350, 'PTS/S': 17.5 },
+    defense: { 'M': 10, 'S': 20, 'DIGS': 250, 'D/S': 12.5, 'BS': 30, 'BA': 60, 'TOT': 90, 'B/S': 4.5 },
+    serveReceive: { 'M': 10, 'S': 20, 'SA': 40, 'SA/S': 2, 'R': 200, 'RE': 5, 'PASSING AVG': 2.8 },
   });
-
-  useEffect(() => {
-    // Placeholder for your data fetching logic
-  }, []);
 
   return (
     <SafeView style={styles.container}>
-      <View style={styles.header}>
+      <View style={styles.headerTop}>
         <TouchableOpacity onPress={() => router.push('seasonHome')} style={styles.backButton}>
-          <AntDesign name="left" size={hp(2.5)} color={COLORS.white} />
-          <Text style={styles.backButtonText}>Back</Text>
+          <AntDesign name="left" size={hp(3)} color={COLORS.white} />
+          <Text style={styles.buttonText}>Home</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>{currentLocalTeamName}, {currentLocalYear}</Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button}>
-            <FontAwesome name="filter" size={hp(2.5)} color={COLORS.white} />
-            <Text style={styles.buttonText}>Filter</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
-            <MaterialCommunityIcons name="file-export" size={hp(2.5)} color={COLORS.white} />
-            <Text style={styles.buttonText}>Export</Text>
-          </TouchableOpacity>
-        </View>
+      </View>
+      <Text style={styles.title}>{currentLocalTeamName}, {currentLocalYear}</Text>
+      <View style={styles.separator} />
+      <View style={styles.headerBottom}>
+        <TouchableOpacity style={styles.filterExportButton}>
+          <FontAwesome name="filter" size={hp(3)} color={COLORS.white} />
+          <Text style={styles.buttonText}>Filter</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.filterExportButton}>
+          <MaterialCommunityIcons name="file-export" size={hp(3)} color={COLORS.white} />
+          <Text style={styles.buttonText}>Export</Text>
+        </TouchableOpacity>
       </View>
       <ScrollView style={styles.scrollView}>
         <StatSection title="Offense" data={teamStats.offense} />
@@ -56,7 +53,7 @@ const StatSection = ({ title, data }) => (
     <View style={styles.statRow}>
       {Object.entries(data).map(([key, value]) => (
         <View key={key} style={styles.statColumn}>
-          <Text style={styles.statHeader}>{key}</Text>
+          <Text style={styles.statHeader}>{key.replace('_', '/')}</Text>
           <Text style={styles.statValue}>{value}</Text>
         </View>
       ))}
@@ -68,36 +65,43 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  headerTop: {
     paddingHorizontal: wp(4),
-    paddingVertical: hp(2),
-    backgroundColor: COLORS.primary,
+    paddingTop: hp(2),
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
   },
   backButton: {
-    backgroundColor: COLORS.primary,
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  backButtonText: {
-    color: COLORS.white,
-    fontSize: RFValue(16),
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: wp(2),
+    paddingVertical: hp(1),
+    borderRadius: 10,
+    marginTop: hp(1),
+    marginRight: wp(1)
   },
   title: {
-    fontSize: RFValue(18),
+    fontSize: RFValue(25),
     color: COLORS.primary,
     textAlign: 'center',
-    flex: 1, // Ensures center alignment
+    marginTop: hp(1),
   },
-  buttonContainer: {
+  separator: {
+    borderBottomWidth: 2,
+    borderBottomColor: COLORS.primary,
+    marginVertical: hp(1),
+  },
+  headerBottom: {
+    paddingHorizontal: wp(4),
+    paddingBottom: hp(2),
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  button: {
-    backgroundColor: COLORS.primary,
+  filterExportButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: COLORS.primary,
     paddingHorizontal: wp(2),
     paddingVertical: hp(1),
     borderRadius: 10,
@@ -108,35 +112,35 @@ const styles = StyleSheet.create({
     fontSize: RFValue(14),
   },
   scrollView: {
-    margin: wp(4),
+    margin: wp(1.5),
   },
   section: {
-    marginBottom: hp(8),
+    marginBottom: hp(3),
   },
   sectionTitle: {
-    fontSize: RFValue(18),
+    fontSize: RFValue(14),
     fontWeight: 'bold',
     color: COLORS.primary,
     textAlign: 'center',
-    marginBottom: hp(2)
+    marginBottom: hp(2),
   },
   statRow: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    flexWrap: 'wrap', // Ensures wrapping of stats
+    flexWrap: 'wrap',
   },
   statColumn: {
-    minWidth: wp(8), // Sets a minimum width for each column
-    alignItems: 'center', // Centers the items within each column
+    minWidth: wp(6),
+    alignItems: 'center',
     margin: 5,
   },
   statHeader: {
-    fontSize: RFValue(12),
+    fontSize: RFValue(10),
     color: COLORS.darkGray,
     marginBottom: 10,
   },
   statValue: {
-    fontSize: RFValue(12),
+    fontSize: RFValue(8),
     color: COLORS.black,
   },
 });
