@@ -8,6 +8,7 @@ import { AntDesign, FontAwesome, MaterialCommunityIcons } from '@expo/vector-ico
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/authContext';
 import firestore from "@react-native-firebase/firestore";
+import Loading from '../../components/Loading';
 
 
 const statAbbreviations = {
@@ -45,6 +46,8 @@ export default function TeamStats() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const { currentLocalTeamName, currentLocalYear } = params;
+  const [loading, setLoading] = useState(true);
+
   const {
     user,
     isAuthenticated,
@@ -109,11 +112,22 @@ export default function TeamStats() {
         } catch (error) {
           console.error('Failed to fetch team stats:', error);
         }
+
+        setLoading(false)
       }
     };
   
     fetchPlayerStats();
   }, [seasonID, user]);
+
+  
+  if (loading) {
+    return (
+      <View style={styles.loading}>
+        <Loading size={hp(10)} />
+      </View>
+    );
+  }
 
   return (
     <SafeView style={styles.container}>
@@ -215,6 +229,13 @@ const styles = StyleSheet.create({
     
     
   },
+
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
   section: {
     marginBottom: hp(3),
     
