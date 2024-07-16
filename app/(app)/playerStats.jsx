@@ -2,12 +2,14 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeView } from "../../components/SafeView";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { RFValue } from "react-native-responsive-fontsize";
-import { AntDesign, FontAwesome } from "@expo/vector-icons";
+
 import firestore from "@react-native-firebase/firestore";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/authContext";
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { COLORS } from "../../constants/Colors";
+import { AntDesign, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import Loading from "../../components/Loading";
 
 export default function playerStats() {
   const router = useRouter();
@@ -23,6 +25,8 @@ export default function playerStats() {
   const { currentLocalTeamName, currentLocalYear } = params;
 
   const [playerStats, setPlayerStats] = useState([]);
+  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const fetchPlayerStats = async () => {
@@ -43,11 +47,22 @@ export default function playerStats() {
         } catch (error) {
           console.error('Failed to fetch player stats:', error);
         }
+        setLoading(false)
       }
     };
 
     fetchPlayerStats();
   }, [seasonID, user]);
+
+
+  if (loading) {
+    return (
+      <View style={styles.loading}>
+        <Loading size={hp(10)} />
+      </View>
+    );
+  }
+
 
   // Render a single player element
   const renderPlayerElement = ({ item }) => (
@@ -101,6 +116,14 @@ export default function playerStats() {
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>{currentLocalTeamName}, {currentLocalYear}</Text>
       </View>
+
+      <View style={styles.headerBottom}>
+      <TouchableOpacity style={styles.filterExportButton}>
+          <FontAwesome name="filter" size={hp(3)} color={COLORS.white} />
+          <Text style={styles.buttonText}>Filter</Text>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
         data={playerStats}
         renderItem={renderPlayerElement}
@@ -115,6 +138,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerBottom: {
+    paddingHorizontal: wp(4),
+    paddingBottom: hp(2),
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  filterExportButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: wp(1.6),
+    paddingVertical: hp(0.8),
+    borderRadius: 10,
+  },
+
+  buttonText: {
+    color: COLORS.white,
+    marginLeft: 5,
+    fontSize: RFValue(14),
+  },
+
   backContainer: {
     flexDirection: "row",
     justifyContent: "start",

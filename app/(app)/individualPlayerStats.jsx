@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import { SafeView } from "../../components/SafeView";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { RFValue } from "react-native-responsive-fontsize";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS } from "../../constants/Colors";
 import { useRouter, useLocalSearchParams } from "expo-router";
 
@@ -48,13 +48,14 @@ const IndividualPlayerStats = () => {
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>{playerName} #{playerNumber}</Text>
       </View>
-      <View style={styles.exportContainer}>
-        <TouchableOpacity onPress={() => {}}>
-          <View style={styles.exportBtn}>
-            <Text style={styles.exportBtnText}>Export</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+
+    <View style={styles.headerBottom}>
+      <TouchableOpacity style={styles.filterExportButton} onPress={() => { /* Export logic here */ }}>
+        <MaterialCommunityIcons name="file-export" size={hp(3)} color={COLORS.white} />
+        <Text style={styles.buttonText}>Export</Text>
+       </TouchableOpacity>
+    </View>
+
       <ScrollView>
         <View style={styles.seperator} />
         <View style={[styles.sectionContainer, styles.playerStatsContainer]}>
@@ -289,6 +290,30 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
     },
+
+    headerBottom: {
+      paddingHorizontal: wp(4),
+      paddingBottom: hp(2),
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+    },
+    filterExportButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: COLORS.primary,
+      paddingHorizontal: wp(1.6),
+      paddingVertical: hp(0.8),
+      borderRadius: 10,
+    },
+
+
+    buttonText: {
+      color: COLORS.white,
+      marginLeft: 5,
+      fontSize: RFValue(14),
+    },
+
     backContainer: {
       flexDirection: "row",
       justifyContent: "start",
@@ -320,21 +345,7 @@ const styles = StyleSheet.create({
     titleContainer: {
       alignItems: "center",
     },
-    exportContainer: {
-      alignItems: 'flex-end',
-      paddingRight: 20,
-    },
-    exportBtn: {
-      backgroundColor: COLORS.primary,
-      borderRadius: 20,
-      paddingVertical: 5,
-      paddingHorizontal: 15,
-    },
-    exportBtnText: {
-      fontSize: RFValue(12),
-      fontWeight: "bold",
-      color: COLORS.white,
-    },
+    
     sectionContainer: {
       marginHorizontal: 20,
       marginVertical: 10,
