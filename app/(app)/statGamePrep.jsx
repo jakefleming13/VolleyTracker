@@ -19,9 +19,11 @@ export default function statGamePrep() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const { currentLocalTeamName, currentLocalYear } = params;
+
   // JSON.parse to deal with an array that is being prop drilled
   const roster = JSON.parse(params.currentLocalRoster);
 
+  //All the settings that will be passed into statGame
   const [selectedView, setSelectedView] = useState("List View");
   const [selectedGameType, setSelectedGameType] = useState("Game");
   const [selectedSets, setSelectedSets] = useState("");
@@ -39,30 +41,7 @@ export default function statGamePrep() {
   const [positionSix, setPositionSix] = useState("");
   const [firstLibero, setFirstLibero] = useState("");
   const [secondLibero, setSecondLibero] = useState("");
-
   const [setter, setSetter] = useState("");
-
-  // Track selected players
-  const [selectedPlayers, setSelectedPlayers] = useState([]);
-
-  // Function to handle player selection
-  const handlePlayerSelection = (position, setPosition, val) => {
-    // Remove the previously selected player for the current position from the selectedPlayers list
-    const updatedSelectedPlayers = selectedPlayers.filter(
-      (player) => player !== position
-    );
-    // Add the newly selected player
-    if (val) {
-      updatedSelectedPlayers.push(val);
-    }
-    setSelectedPlayers(updatedSelectedPlayers);
-
-    //Extract only the player number so it can be passed to statGame
-    //let extractPlayerNumber = val.match(/(\d+)/);
-
-    // TODO: .toSting
-    setPosition(val);
-  };
 
   // Get the roster being prop drilled and format it to match specifications of dropdown library
   const dropDownRosterList = [];
@@ -70,9 +49,11 @@ export default function statGamePrep() {
     dropDownRosterList.push({
       key: index.toString(),
       value: roster[index].playerNumber + " - " + roster[index].playerName,
+      playerNumber: roster[index].playerNumber,
     });
   }
 
+  //Array for the set Selection DropDown
   const setSelectionList = [
     { key: "BO3", value: "Best of 3" },
     { key: "BO5", value: "Best of 5" },
@@ -126,13 +107,6 @@ export default function statGamePrep() {
       ptsPerSet: 0.0,
     });
   }
-
-  // Update localRoster to filter out selected players
-  const getFilteredRoster = () => {
-    return dropDownRosterList.filter(
-      (player) => !selectedPlayers.includes(player.value)
-    );
-  };
 
   const cancelAlert = () => {
     Alert.alert("Are you sure?", "All data will be lost.", [
@@ -378,17 +352,15 @@ export default function statGamePrep() {
                 placeholderStyle={styles.placeholderDropDown}
                 selectedTextStyle={styles.selectedDropDownText}
                 itemTextStyle={styles.dropDownText}
-                data={getFilteredRoster()}
+                data={dropDownRosterList}
                 search={false}
                 maxHeight={300}
                 labelField="value"
                 activeColor={COLORS.grey}
-                valueField="key"
+                valueField="playerNumber"
                 placeholder={"Position 4"}
                 value={positionFour}
-                onChange={(val) =>
-                  handlePlayerSelection(positionFour, setPositionFour, val)
-                }
+                onChange={(val) => setPositionFour(val.playerNumber)}
               />
             </View>
             <View style={styles.courtPosition}>
@@ -397,17 +369,15 @@ export default function statGamePrep() {
                 placeholderStyle={styles.placeholderDropDown}
                 selectedTextStyle={styles.selectedDropDownText}
                 itemTextStyle={styles.dropDownText}
-                data={getFilteredRoster()}
+                data={dropDownRosterList}
                 search={false}
                 maxHeight={300}
                 activeColor={COLORS.grey}
                 labelField="value"
-                valueField="key"
+                valueField="playerNumber"
                 placeholder={"Position 3"}
                 value={positionThree}
-                onChange={(val) =>
-                  handlePlayerSelection(positionThree, setPositionThree, val)
-                }
+                onChange={(val) => setPositionThree(val.playerNumber)}
               />
             </View>
             <View style={styles.courtPosition}>
@@ -416,16 +386,16 @@ export default function statGamePrep() {
                 placeholderStyle={styles.placeholderDropDown}
                 selectedTextStyle={styles.selectedDropDownText}
                 itemTextStyle={styles.dropDownText}
-                data={getFilteredRoster()}
+                data={dropDownRosterList}
                 search={false}
                 maxHeight={300}
                 labelField="value"
                 activeColor={COLORS.grey}
-                valueField="key"
+                valueField="playerNumber"
                 placeholder={"Position 2"}
                 value={positionTwo}
                 onChange={(val) => {
-                  handlePlayerSelection(positionTwo, setPositionTwo, val);
+                  setPositionTwo(val.playerNumber);
                 }}
               />
             </View>
@@ -437,17 +407,15 @@ export default function statGamePrep() {
                 placeholderStyle={styles.placeholderDropDown}
                 selectedTextStyle={styles.selectedDropDownText}
                 itemTextStyle={styles.dropDownText}
-                data={getFilteredRoster()}
+                data={dropDownRosterList}
                 search={false}
                 maxHeight={300}
                 labelField="value"
                 activeColor={COLORS.grey}
-                valueField="key"
+                valueField="playerNumber"
                 placeholder={"Position 5"}
                 value={positionFive}
-                onChange={(val) =>
-                  handlePlayerSelection(positionFive, setPositionFive, val)
-                }
+                onChange={(val) => setPositionFive(val.playerNumber)}
               />
             </View>
             <View style={styles.courtPosition}>
@@ -456,17 +424,15 @@ export default function statGamePrep() {
                 placeholderStyle={styles.placeholderDropDown}
                 selectedTextStyle={styles.selectedDropDownText}
                 itemTextStyle={styles.dropDownText}
-                data={getFilteredRoster()}
+                data={dropDownRosterList}
                 search={false}
                 maxHeight={300}
                 labelField="value"
-                valueField="key"
+                valueField="playerNumber"
                 activeColor={COLORS.grey}
                 placeholder={"Position 6"}
                 value={positionSix}
-                onChange={(val) =>
-                  handlePlayerSelection(positionSix, setPositionSix, val)
-                }
+                onChange={(val) => setPositionSix(val.playerNumber)}
               />
             </View>
             <View style={styles.courtPosition}>
@@ -475,17 +441,15 @@ export default function statGamePrep() {
                 placeholderStyle={styles.placeholderDropDown}
                 selectedTextStyle={styles.selectedDropDownText}
                 itemTextStyle={styles.dropDownText}
-                data={getFilteredRoster()}
+                data={dropDownRosterList}
                 search={false}
                 maxHeight={300}
                 labelField="value"
                 activeColor={COLORS.grey}
-                valueField="key"
+                valueField="playerNumber"
                 placeholder={"Position 1"}
                 value={positionOne}
-                onChange={(val) =>
-                  handlePlayerSelection(positionOne, setPositionOne, val)
-                }
+                onChange={(val) => setPositionOne(val.playerNumber)}
               />
             </View>
           </View>
@@ -499,16 +463,16 @@ export default function statGamePrep() {
               selectedTextStyle={styles.selectedDropDownText}
               itemTextStyle={styles.dropDownText}
               //TODO: Ensure selection is only from on court players
-              data={getFilteredRoster()}
+              data={dropDownRosterList}
               search={false}
               maxHeight={300}
               labelField="value"
-              valueField="key"
+              valueField="playerNumber"
               placeholder={"Select Setter"}
               activeColor={COLORS.grey}
               dropdownPosition="auto"
               value={setter}
-              onChange={(val) => setSetter(val)}
+              onChange={(val) => setSetter(val.playerNumber)}
             />
           </View>
         </View>
@@ -530,18 +494,16 @@ export default function statGamePrep() {
               placeholderStyle={styles.placeholderDropDown}
               selectedTextStyle={styles.selectedDropDownText}
               itemTextStyle={styles.dropDownText}
-              data={getFilteredRoster()}
+              data={dropDownRosterList}
               search={false}
               maxHeight={300}
               labelField="value"
-              valueField="key"
+              valueField="playerNumber"
               placeholder={"Optional"}
               activeColor={COLORS.grey}
               dropdownPosition="top"
               value={firstLibero}
-              onChange={(val) =>
-                handlePlayerSelection(firstLibero, setFirstLibero, val)
-              }
+              onChange={(val) => setFirstLibero(val.playerNumber)}
             />
           </View>
           <View style={styles.liberoSlot}>
@@ -550,18 +512,16 @@ export default function statGamePrep() {
               placeholderStyle={styles.placeholderDropDown}
               selectedTextStyle={styles.selectedDropDownText}
               itemTextStyle={styles.dropDownText}
-              data={getFilteredRoster()}
+              data={dropDownRosterList}
               search={false}
               maxHeight={300}
               labelField="value"
-              valueField="key"
+              valueField="playerNumber"
               placeholder={"Optional"}
               activeColor={COLORS.grey}
               dropdownPosition="top"
               value={secondLibero}
-              onChange={(val) =>
-                handlePlayerSelection(secondLibero, setSecondLibero, val)
-              }
+              onChange={(val) => setSecondLibero(val.playerNumber)}
             />
           </View>
         </View>
