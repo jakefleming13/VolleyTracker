@@ -546,6 +546,7 @@ export default function statGamePrep() {
                   pSix: positionSix,
                   firstL: firstLibero,
                   secondL: secondLibero,
+                  onCourtSetter: setter,
                 },
               });
             }}
