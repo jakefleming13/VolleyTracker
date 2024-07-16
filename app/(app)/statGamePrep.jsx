@@ -24,7 +24,7 @@ export default function statGamePrep() {
 
   const [selectedView, setSelectedView] = useState("List View");
   const [selectedGameType, setSelectedGameType] = useState("Game");
-  const [selectedSets, setSelectedSets] = useState("Best of 3");
+  const [selectedSets, setSelectedSets] = useState("");
   const [selectedFirstServe, setSelectedFirstServe] =
     useState(currentLocalTeamName);
   const [selectedOpponent, setSelectedOpponent] = useState("");
@@ -72,6 +72,16 @@ export default function statGamePrep() {
       value: roster[index].playerNumber + " - " + roster[index].playerName,
     });
   }
+
+  const setSelectionList = [
+    { key: "BO3", value: "Best of 3" },
+    { key: "BO5", value: "Best of 5" },
+    { key: "1", value: "1 Set" },
+    { key: "2", value: "2 Sets" },
+    { key: "3", value: "3 Sets" },
+    { key: "4", value: "4 Sets" },
+    { key: "5", value: "5 Sets" },
+  ];
 
   //Build the roster that will be passed to the statGame screen
   const localRoster = [];
@@ -255,35 +265,23 @@ export default function statGamePrep() {
           </TouchableOpacity>
         </View>
         <View style={styles.radioContainer}>
-          <View style={styles.radioGroup}>
-            <View style={styles.radioButton}>
-              <RadioButton
-                value="Best of 3"
-                status={selectedSets === "Best of 3" ? "checked" : "unchecked"}
-                onPress={() => setSelectedSets("Best of 3")}
-                color={COLORS.primary}
-              />
-              <Text style={styles.radioLabel}>Best of 3</Text>
-            </View>
-
-            <View style={styles.radioButton}>
-              <RadioButton
-                value="Best of 5"
-                status={selectedSets === "Best of 5" ? "checked" : "unchecked"}
-                onPress={() => setSelectedSets("Best of 5")}
-                color={COLORS.primary}
-              />
-              <Text style={styles.radioLabel}>Best of 5</Text>
-            </View>
-            <View style={styles.radioButton}>
-              <RadioButton
-                value="Other: "
-                status={selectedSets === "Other" ? "checked" : "unchecked"}
-                onPress={() => setSelectedSets("Other")}
-                color={COLORS.primary}
-              />
-              <Text style={styles.radioLabel}>Other</Text>
-            </View>
+          <View style={styles.setSelectionSlot}>
+            <Dropdown
+              style={styles.setSelectionDropDown}
+              placeholderStyle={styles.setSelectionPlaceHolderDropDown}
+              selectedTextStyle={styles.selectedDropDownText}
+              itemTextStyle={styles.dropDownText}
+              data={setSelectionList}
+              search={false}
+              maxHeight={300}
+              labelField="value"
+              valueField="key"
+              placeholder={"Select Sets Being Played"}
+              activeColor={COLORS.grey}
+              dropdownPosition="auto"
+              value={selectedSets}
+              onChange={(val) => setSelectedSets(val.key)}
+            />
           </View>
         </View>
         <View style={styles.secondaryTitleContainer}>
@@ -647,6 +645,34 @@ const styles = StyleSheet.create({
     fontSize: RFValue(18),
     color: COLORS.primary,
   },
+  setSelectionSlot: {
+    backgroundColor: COLORS.secondary,
+    height: hp(8),
+    width: wp(25),
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 5,
+    borderRadius: 20,
+  },
+  setSelectionDropDown: {
+    height: hp(8),
+    width: wp(25),
+    borderColor: COLORS.darkGrey,
+    backgroundColor: COLORS.secondary,
+    borderRadius: 20,
+    paddingHorizontal: wp(1.7),
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
+  setSelectionPlaceHolderDropDown: {
+    fontSize: RFValue(10),
+  },
   radioContainer: {
     flex: 1,
     justifyContent: "center",
@@ -701,6 +727,14 @@ const styles = StyleSheet.create({
     height: hp(7),
     justifyContent: "center",
     padding: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   inputText: {
     flex: 1,
@@ -759,14 +793,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 5,
-    borderRadius: 10,
+    borderRadius: 20,
   },
   setterDropDown: {
     height: hp(6),
     width: wp(15),
     borderColor: COLORS.darkGrey,
     backgroundColor: COLORS.secondary,
-    borderRadius: 10,
+    borderRadius: 20,
     paddingHorizontal: wp(1.7),
     shadowColor: "#000",
     shadowOffset: {
@@ -779,7 +813,7 @@ const styles = StyleSheet.create({
   },
   setterPlaceHolderDropDown: {
     color: COLORS.white,
-    fontSize: RFValue(9),
+    fontSize: RFValue(9.5),
   },
   liberoContainer: {
     flexDirection: "row",
@@ -795,7 +829,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginHorizontal: 45,
-    borderRadius: 10,
+    borderRadius: 20,
   },
   liberoText: {
     fontSize: RFValue(10),
@@ -838,7 +872,7 @@ const styles = StyleSheet.create({
     width: wp(18),
     borderColor: COLORS.darkGrey,
     backgroundColor: COLORS.secondary,
-    borderRadius: 10,
+    borderRadius: 20,
     paddingHorizontal: wp(1.7),
     shadowColor: "#000",
     shadowOffset: {
