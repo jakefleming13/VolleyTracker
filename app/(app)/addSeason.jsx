@@ -592,6 +592,22 @@ export default function addSeason() {
       threePasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
+      totalSideOutAttempts: 0,
+      successfulSideOuts: 0,
+      firstBallSideOutAttempts: 0,
+      successfulFirstBallSideOuts: 0,
+      totalSideOutAttemptsPos1: 0,
+      successfulSideOutsPos1: 0,
+      totalSideOutAttemptsPos2: 0,
+      successfulSideOutsPos2: 0,
+      totalSideOutAttemptsPos3: 0,
+      successfulSideOutsPos3: 0,
+      totalSideOutAttemptsPos4: 0,
+      successfulSideOutsPos4: 0,
+      totalSideOutAttemptsPos5: 0,
+      successfulSideOutsPos5: 0,
+      totalSideOutAttemptsPos6: 0,
+      successfulSideOutsPos6: 0,
     });
 
     //Sort the roster by number
