@@ -1619,11 +1619,17 @@ export default function statGame() {
             <TouchableOpacity
               onPress={() => {
                 handleServeAttempts();
+
                 setHomeScore(homeScore + 1);
                 if (serverTracker === "Opponent") {
                   setServerTracker("Home");
                   handleRotation();
                 }
+
+                setStatStack((oldStack) => [
+                  ...oldStack,
+                  homeScore + 1 + "-" + opponentScore,
+                ]);
               }}
             >
               <View style={styles.scoreAmountContainer}>
@@ -1637,10 +1643,16 @@ export default function statGame() {
             <TouchableOpacity
               onPress={() => {
                 handleServeAttempts();
+
                 setOpponentScore(opponentScore + 1);
                 if (serverTracker !== "Opponent") {
                   setServerTracker("Opponent");
                 }
+
+                setStatStack((oldStack) => [
+                  ...oldStack,
+                  homeScore + "-" + (opponentScore + 1),
+                ]);
               }}
               delayPressIn={0}
             >
@@ -2197,12 +2209,12 @@ export default function statGame() {
                                 teamStats.teamTotalForearmPassValue /
                                 teamStats.teamForearmPassingAttempts,
                             }));
-
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": RE",
-                            ]);
                           }
+
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            player.playerNumber + ": RE",
+                          ]);
 
                           setForearmPassSelected(false);
                           setForearmPassPlayer(null);
