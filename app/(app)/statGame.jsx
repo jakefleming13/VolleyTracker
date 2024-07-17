@@ -63,7 +63,7 @@ export default function statGame() {
   const [onCourtPositionOneSub, setOnCourtPositionOneSub] = useState(null);
 
   const [onCourtPositionTwo, setOnCourtPositionTwo] = useState(positionTwo);
-  const [onCourtPositionTwoSub, setSOnCourtPositionTwoSub] = useState(null);
+  const [onCourtPositionTwoSub, setOnCourtPositionTwoSub] = useState(null);
 
   const [onCourtPositionThree, setOnCourtPositionThree] =
     useState(positionThree);
@@ -683,7 +683,29 @@ export default function statGame() {
     setSubModalVisible(!isSubModalVisible);
   };
 
+  const [isFBSO, setIsFBSO] = useState(true);
+
+  const handleFBSO = (point) => {
+    if (isFBSO) {
+      if (point === "Home") {
+        setTeamStats((prev) => ({
+          ...prev,
+          teamFirstBallSideOutAttempts: prev.teamFirstBallSideOutAttempts + 1,
+          teamSuccessfulFirstBallSideOuts:
+            prev.teamSuccessfulFirstBallSideOuts + 1,
+        }));
+      } else {
+        setTeamStats((prev) => ({
+          ...prev,
+          teamFirstBallSideOutAttempts: prev.teamFirstBallSideOutAttempts + 1,
+        }));
+      }
+    }
+    setIsFBSO(false);
+  };
+
   const handleSideOuts = (point) => {
+    //Handle Team Side Out
     if (serverTracker == "Opponent") {
       if (point == "Home") {
         setTeamStats((prev) => ({
@@ -697,9 +719,8 @@ export default function statGame() {
           teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts + 1,
         }));
       }
-      console.log("setter " + setter + ", positionOne:  " + positionOne);
-      console.log("setter " + setter + ", positionTwo:  " + positionTwo);
 
+      //Handle side out by rotation
       if (setter === positionOne) {
         if (point == "Home") {
           setTeamStats((prev) => ({
@@ -1998,6 +2019,8 @@ export default function statGame() {
 
                 handleSideOuts("Home");
 
+                handleFBSO("Home");
+
                 setHomeScore(homeScore + 1);
                 if (serverTracker === "Opponent") {
                   setServerTracker("Home");
@@ -2024,9 +2047,12 @@ export default function statGame() {
 
                 handleSideOuts("Opponent");
 
+                handleFBSO("Opponent");
+
                 setOpponentScore(opponentScore + 1);
                 if (serverTracker !== "Opponent") {
                   setServerTracker("Opponent");
+                  setIsFBSO(true);
                 }
 
                 setStatStack((oldStack) => [
@@ -2204,6 +2230,8 @@ export default function statGame() {
 
                           handleSideOuts("Home");
 
+                          handleFBSO("Home");
+
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamKills: teamStats.teamKills + 1,
@@ -2237,6 +2265,8 @@ export default function statGame() {
 
                           handleSideOuts("Opponent");
 
+                          handleFBSO("Home");
+
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamAttackErrors: teamStats.teamAttackErrors + 1,
@@ -2248,6 +2278,7 @@ export default function statGame() {
                           setOpponentScore(opponentScore + 1);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
+                            setIsFBSO(true);
                           }
 
                           setStatStack((oldStack) => [
@@ -2291,6 +2322,8 @@ export default function statGame() {
 
                           handleSideOuts("Home");
 
+                          handleFBSO("Home");
+
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamBlockSolos: teamStats.teamBlockSolos + 1,
@@ -2321,6 +2354,8 @@ export default function statGame() {
 
                           handleSideOuts("Opponent");
 
+                          handleFBSO("Opponent");
+
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamBlockErrors: teamStats.teamBlockErrors + 1,
@@ -2331,6 +2366,7 @@ export default function statGame() {
                           setOpponentScore(opponentScore + 1);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
+                            setIsFBSO(true);
                           }
 
                           setStatStack((oldStack) => [
@@ -2389,6 +2425,8 @@ export default function statGame() {
 
                             handleSideOuts("Home");
 
+                            handleFBSO("Home");
+
                             //Reset State Hooks
                             setSelectedBlockAssist(false);
                             setFirstBlockAssist("");
@@ -2419,6 +2457,8 @@ export default function statGame() {
 
                           handleSideOuts("Opponent");
 
+                          handleFBSO("Home");
+
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamDigErrors: teamStats.teamDigErrors + 1,
@@ -2429,6 +2469,7 @@ export default function statGame() {
                           setOpponentScore(opponentScore + 1);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
+                            setIsFBSO(true);
                           }
 
                           setStatStack((oldStack) => [
@@ -2510,6 +2551,7 @@ export default function statGame() {
                           setOpponentScore(opponentScore + 1);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
+                            setIsFBSO(true);
                           }
 
                           setStatStack((oldStack) => [
@@ -2633,6 +2675,8 @@ export default function statGame() {
 
                           handleSideOuts("Opponent");
 
+                          handleFBSO("Opponent");
+
                           setForearmPassSelected(false);
                           setForearmPassPlayer(null);
                           setHandPassSelected(false);
@@ -2643,6 +2687,7 @@ export default function statGame() {
                           setOpponentScore(opponentScore + 1);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
+                            setIsFBSO(true);
                           }
                         }}
                         disabled={
