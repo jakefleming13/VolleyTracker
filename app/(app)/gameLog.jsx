@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, StyleSheet } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeView } from "../../components/SafeView";
-import { StyleSheet } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import firestore from '@react-native-firebase/firestore';
 import {
@@ -143,32 +142,28 @@ export default function gameLog() {
           {currentLocalTeamName}, {currentLocalYear}
         </Text>
       </View>
-      <ScrollView>
-        <View style={styles.seperator} />
-        {loading ? (
-          <Text>Loading...</Text>
-        ) : games.length === 0 ? (
-          <View style={styles.titleContainer}>
-            <Text>No games found.</Text>
-            <TouchableOpacity onPress={addDummyGame} style={styles.addButton}>
-              <Text style={styles.addButtonText}>Add Game</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <FlatList
-            data={games}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.gameItem}>
-                <Text>{item.id}</Text>
-              </View>
-            )}
-          />
-        )}
-        <View style={styles.titleContainer}>
-          <Text style={styles.spacerText}></Text>
+      {loading ? (
+        <Text>Loading...</Text>
+      ) : games.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text>No games found.</Text>
         </View>
-      </ScrollView>
+      ) : (
+        <FlatList
+          data={games}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.gameItem}>
+              <Text>{item.id}</Text>
+            </View>
+          )}
+        />
+      )}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={addDummyGame} style={styles.addButton}>
+          <Text style={styles.addButtonText}>Add Game</Text>
+        </TouchableOpacity>
+      </View>
     </SafeView>
   );
 }
@@ -180,7 +175,7 @@ const styles = StyleSheet.create({
   },
   backContainer: {
     flexDirection: "row",
-    justifyContent: "start",
+    justifyContent: "flex-start",
     height: hp(11),
   },
   headerBtn: {
@@ -235,8 +230,18 @@ const styles = StyleSheet.create({
   backIcon: {
     paddingRight: 5,
   },
+  emptyContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
   addButton: {
-    marginTop: 20,
     padding: 10,
     backgroundColor: COLORS.primary,
     borderRadius: 5,
