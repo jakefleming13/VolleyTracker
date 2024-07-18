@@ -1,21 +1,127 @@
-import { View, Text, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, ScrollView, TouchableOpacity, FlatList } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeView } from "../../components/SafeView";
-import { TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
+import firestore from '@react-native-firebase/firestore';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { COLORS } from "../../constants/Colors";
-import { StyleSheet } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
-import { AntDesign } from "@expo/vector-icons";
+import { useAuth } from "../../context/authContext";
 
 export default function gameLog() {
+  const {
+    user,
+    isAuthenticated,
+    initializing,
+    logout,
+    seasonID,
+    setActiveSeason,
+  } = useAuth();
   const router = useRouter();
   const params = useLocalSearchParams();
-  const { currentLocalTeamName, currentLocalYear, currentLocalSeasonID } =
-    params;
+  const { currentLocalTeamName, currentLocalYear } = params;
+
+  const [games, setGames] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        const gamesSnapshot = await firestore()
+          .collection('seasons')
+          .doc(seasonID)
+          .collection('gameLog')
+          .get();
+
+        if (gamesSnapshot.empty) {
+          setGames([]);
+        } else {
+          const gamesList = gamesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setGames(gamesList);
+        }
+      } catch (error) {
+        console.error('Error fetching games: ', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGames();
+  }, [seasonID]);
+
+  const addDummyGame = async () => {
+    try {
+      const dummyGame = {
+        opponent: 'Dummy Opponent',
+        date: new Date().toISOString(),
+        location: 'Dummy Location',
+        matchesPlayed: 1,
+        set1: {
+          teamPoints: 25,
+          opponentPoints: 20,
+        },
+        setsWon: 1,
+        setsLost: 0,
+        roster: [
+          {
+            name: 'Player 1',
+            number: 1,
+            matchesPlayed: 1,
+            setsPlayed: 1,
+            attempts: 10,
+            kills: 5,
+            attackErrors: 1,
+            assists: 2,
+            assistsPerSet: 2.0,
+            blockSolos: 0,
+            blockAssists: 1,
+            totalBlocks: 1,
+            digs: 5,
+            digsPerSet: 5.0,
+            digErrors: 0,
+            serveAttempts: 10,
+            aces: 1,
+            serviceErrors: 1,
+            passingAttempts: 10,
+            handPassingAttempts: 5,
+            forearmPassingAttempts: 5,
+            totalPassingAverage: 2.5,
+            handPassingAverage: 2.5,
+            forearmPassingAverage: 2.5,
+            PTS: 10,
+            PTSPerSet: 10.0,
+          },
+        ],
+      };
+
+      await firestore()
+        .collection('seasons')
+        .doc(seasonID)
+        .collection('gameLog')
+        .add(dummyGame);
+
+      // Re-fetch games to update the list
+      const gamesSnapshot = await firestore()
+        .collection('seasons')
+        .doc(seasonID)
+        .collection('gameLog')
+        .get();
+
+      if (gamesSnapshot.empty) {
+        setGames([]);
+      } else {
+        const gamesList = gamesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setGames(gamesList);
+      }
+    } catch (error) {
+      console.error('Error adding dummy game: ', error);
+    }
+  };
 
   return (
     <SafeView style={styles.container}>
@@ -39,10 +145,26 @@ export default function gameLog() {
       </View>
       <ScrollView>
         <View style={styles.seperator} />
-
-        <View style={styles.titleContainer}>
-          <Text style={styles.secondaryTitleText}>Game Log</Text>
-        </View>
+        {loading ? (
+          <Text>Loading...</Text>
+        ) : games.length === 0 ? (
+          <View style={styles.titleContainer}>
+            <Text>No games found.</Text>
+            <TouchableOpacity onPress={addDummyGame} style={styles.addButton}>
+              <Text style={styles.addButtonText}>Add Game</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <FlatList
+            data={games}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.gameItem}>
+                <Text>{item.id}</Text>
+              </View>
+            )}
+          />
+        )}
         <View style={styles.titleContainer}>
           <Text style={styles.spacerText}></Text>
         </View>
@@ -112,5 +234,21 @@ const styles = StyleSheet.create({
   },
   backIcon: {
     paddingRight: 5,
+  },
+  addButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: COLORS.primary,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  addButtonText: {
+    color: COLORS.white,
+    fontSize: RFValue(18),
+  },
+  gameItem: {
+    padding: 10,
+    borderBottomColor: COLORS.primary,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 });
