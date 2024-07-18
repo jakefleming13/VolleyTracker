@@ -28,6 +28,9 @@ export default function gameLog() {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // First we attempt to grab ALL the documents from gameLog collection
+  // Each document == ONE game (which contains all game information)
+
   useEffect(() => {
     const fetchGames = async () => {
       try {
@@ -36,10 +39,12 @@ export default function gameLog() {
           .doc(seasonID)
           .collection('gameLog')
           .get();
-
+        
+          // if game snapshot is empty, we simply setGames to be an empty list -> and handle that in the rendering
         if (gamesSnapshot.empty) {
           setGames([]);
         } else {
+          // Otherwise, add all the docs to the setgames list
           const gamesList = gamesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
           setGames(gamesList);
         }
@@ -53,6 +58,7 @@ export default function gameLog() {
     fetchGames();
   }, [seasonID]);
 
+  // Dummy game information for testing
   const addDummyGame = async () => {
     try {
       const dummyGame = {
@@ -97,7 +103,7 @@ export default function gameLog() {
           },
         ],
       };
-
+      // Add to games collection, works fine if its empty
       await firestore()
         .collection('seasons')
         .doc(seasonID)
