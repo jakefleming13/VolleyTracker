@@ -3,11 +3,11 @@ import { MenuProvider } from "react-native-popup-menu";
 
 export default function StartPage() {
   return (
-    <MenuProvider>
+    
       <View style={styles.container}>
         <ActivityIndicator size="large" color="gray" />
       </View>
-    </MenuProvider>
+   
   );
 }
 const styles = StyleSheet.create({
