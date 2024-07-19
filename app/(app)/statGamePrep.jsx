@@ -129,7 +129,6 @@ export default function statGamePrep() {
   };
 
   return (
-    <MenuProvider>
       <SafeView style={styles.container}>
         <View style={styles.backContainer}>
           <TouchableOpacity onPress={cancelAlert}>
@@ -694,7 +693,7 @@ export default function statGamePrep() {
           </View>
         </ScrollView>
       </SafeView>
-    </MenuProvider>
+  
   );
 }
 
