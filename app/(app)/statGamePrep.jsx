@@ -84,7 +84,6 @@ export default function statGamePrep() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
-      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,

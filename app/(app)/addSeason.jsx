@@ -69,7 +69,6 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
-      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -108,7 +107,6 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
-      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -147,7 +145,6 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
-      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -186,7 +183,6 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
-      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -225,7 +221,6 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
-      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -264,7 +259,6 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
-      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -303,7 +297,6 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
-      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -342,7 +335,6 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
-      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -401,7 +393,6 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
-      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
@@ -493,7 +484,6 @@ export default function addSeason() {
       delete newLocal[index].attempts;
       delete newLocal[index].kills;
       delete newLocal[index].attackErrors;
-      delete newLocal[index].hittingPercentage;
       delete newLocal[index].assists;
       delete newLocal[index].assistsPerSet;
       delete newLocal[index].digs;
@@ -565,7 +555,6 @@ export default function addSeason() {
       attempts: 0,
       kills: 0,
       attackErrors: 0,
-      hittingPercentage: 0,
       assists: 0,
       assistsPerSet: 0.0,
       digs: 0,
