@@ -17,7 +17,6 @@ import { useState } from "react";
 import Modal from "react-native-modal";
 import { Dropdown } from "react-native-element-dropdown";
 import {
-  MenuProvider,
   Menu,
   MenuOptions,
   MenuOption,
@@ -50,6 +49,9 @@ export default function statGame() {
 
   //Variable for which team is serving -> TODO: replace with 'firstServe' prop
   const [serverTracker, setServerTracker] = useState("Opponent");
+
+  //Keeps the state of the previous serve for undo functionality
+  const [prevServerTracker, setPrevServerTracker] = useState(null);
 
   //State Hook for the stat Stack
   const [statStack, setStatStack] = useState([]);
@@ -85,6 +87,7 @@ export default function statGame() {
   const [onCourtPositionSix, setOnCourtPositionSix] = useState(positionSix);
   const [onCourtPositionSixSub, setOnCourtPositionSixSub] = useState(null);
 
+  //Function that rotates the players on the court
   const handleRotation = () => {
     let temp = positionOne;
 
@@ -94,6 +97,18 @@ export default function statGame() {
     setPositionFour(positionFive);
     setPositionFive(positionSix);
     setPositionSix(temp);
+  };
+
+  //Function that rotates the players in reverse when the undo button is pressed
+  const handleUndoRotation = () => {
+    let temp = positionOne;
+
+    setPositionOne(positionSix);
+    setPositionSix(positionFive);
+    setPositionFive(positionFour);
+    setPositionFour(positionThree);
+    setPositionThree(positionTwo);
+    setPositionTwo(temp);
   };
 
   //TODO: Uncomment after testing
@@ -117,10 +132,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -141,7 +153,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
     {
@@ -156,10 +167,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -180,7 +188,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
     {
@@ -195,10 +202,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -219,7 +223,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
     {
@@ -234,10 +237,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -258,7 +258,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
     {
@@ -273,10 +272,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -297,7 +293,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
     {
@@ -312,10 +307,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -336,7 +328,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
     {
@@ -351,10 +342,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -375,7 +363,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
     {
@@ -390,10 +377,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -414,7 +398,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
   ];
@@ -612,7 +595,6 @@ export default function statGame() {
     teamAttempts: 0,
     teamKills: 0,
     teamAttackErrors: 0,
-    teamHittingPercentage: 0,
     teamAssists: 0,
     teamAssistsPerSet: 0.0,
     teamDigs: 0,
@@ -628,12 +610,9 @@ export default function statGame() {
     teamPassingAttempts: 0,
     teamHandPassingAttempts: 0,
     teamForearmPassingAttempts: 0,
-    teamTotalPassingAverage: 0.0,
     teamTotalPassValue: 0,
-    teamHandPassingAverage: 0.0,
     teamTotalHandPassValue: 0,
     teamTotalForearmPassValue: 0,
-    teamForearmPassingAverage: 0.0,
     teamReceptionErrors: 0,
     teamOnePasses: 0,
     teamTwoPasses: 0,
@@ -690,8 +669,16 @@ export default function statGame() {
     setSubModalVisible(!isSubModalVisible);
   };
 
+  //Holds the state of if it's currently FBSO
   const [isFBSO, setIsFBSO] = useState(true);
 
+  //Holds the previous FBSO for undo functionality
+  const [prevFBSO, setPrevFBSO] = useState({
+    FBSO: null,
+    success: null,
+  });
+
+  //Checks if FBSO -> then updates the team stats accordingly
   const handleFBSO = (point) => {
     if (isFBSO) {
       if (point === "Home") {
@@ -701,16 +688,59 @@ export default function statGame() {
           teamSuccessfulFirstBallSideOuts:
             prev.teamSuccessfulFirstBallSideOuts + 1,
         }));
+        setPrevFBSO((prev) => ({
+          FBSO: true,
+          success: true,
+        }));
       } else {
         setTeamStats((prev) => ({
           ...prev,
           teamFirstBallSideOutAttempts: prev.teamFirstBallSideOutAttempts + 1,
         }));
+        setPrevFBSO((prev) => ({
+          FBSO: true,
+          success: false,
+        }));
       }
+    } else {
+      setPrevFBSO((prev) => ({
+        FBSO: false,
+        success: false,
+      }));
     }
     setIsFBSO(false);
   };
 
+  //Handles the Undo event when considering FBSO
+  const handleUndoFBSO = () => {
+    if (prevFBSO.FBSO === true) {
+      if (prevFBSO.success === true) {
+        //reset FBSO success
+        setTeamStats((prev) => ({
+          ...prev,
+          teamFirstBallSideOutAttempts: prev.teamFirstBallSideOutAttempts - 1,
+          teamSuccessfulFirstBallSideOuts:
+            prev.teamSuccessfulFirstBallSideOuts - 1,
+        }));
+      } else {
+        //reset FBSO failure
+        setTeamStats((prev) => ({
+          ...prev,
+          teamFirstBallSideOutAttempts: prev.teamFirstBallSideOutAttempts - 1,
+        }));
+      }
+      setIsFBSO(true);
+    } else {
+      setIsFBSO(false);
+    }
+  };
+
+  const [prevSideOut, setPrevSideOut] = useState({
+    rotation: null,
+    success: null,
+  });
+
+  //Function that handles all side outs (Only occurs when the Opponent is serving)
   const handleSideOuts = (point) => {
     //Handle Team Side Out
     if (serverTracker == "Opponent") {
@@ -735,10 +765,20 @@ export default function statGame() {
             teamTotalSideOutAttemptsPos1: prev.teamTotalSideOutAttemptsPos1 + 1,
             teamSuccessfulSideOutsPos1: prev.teamSuccessfulSideOutsPos1 + 1,
           }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "1",
+            success: true,
+          }));
         } else {
           setTeamStats((prev) => ({
             ...prev,
             teamTotalSideOutAttemptsPos1: prev.teamTotalSideOutAttemptsPos1 + 1,
+          }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "1",
+            success: false,
           }));
         }
       } else if (setter === positionTwo) {
@@ -748,10 +788,20 @@ export default function statGame() {
             teamTotalSideOutAttemptsPos2: prev.teamTotalSideOutAttemptsPos2 + 1,
             teamSuccessfulSideOutsPos2: prev.teamSuccessfulSideOutsPos2 + 1,
           }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "2",
+            success: true,
+          }));
         } else {
           setTeamStats((prev) => ({
             ...prev,
             teamTotalSideOutAttemptsPos2: prev.teamTotalSideOutAttemptsPos2 + 1,
+          }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "2",
+            success: false,
           }));
         }
       } else if (setter === positionThree) {
@@ -761,10 +811,20 @@ export default function statGame() {
             teamTotalSideOutAttemptsPos3: prev.teamTotalSideOutAttemptsPos3 + 1,
             teamSuccessfulSideOutsPos3: prev.teamSuccessfulSideOutsPos3 + 1,
           }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "3",
+            success: true,
+          }));
         } else {
           setTeamStats((prev) => ({
             ...prev,
             teamTotalSideOutAttemptsPos3: prev.teamTotalSideOutAttemptsPos3 + 1,
+          }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "3",
+            success: false,
           }));
         }
       } else if (setter === positionFour) {
@@ -774,10 +834,20 @@ export default function statGame() {
             teamTotalSideOutAttemptsPos4: prev.teamTotalSideOutAttemptsPos4 + 1,
             teamSuccessfulSideOutsPos4: prev.teamSuccessfulSideOutsPos4 + 1,
           }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "4",
+            success: true,
+          }));
         } else {
           setTeamStats((prev) => ({
             ...prev,
             teamTotalSideOutAttemptsPos4: prev.teamTotalSideOutAttemptsPos4 + 1,
+          }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "4",
+            success: false,
           }));
         }
       } else if (setter === positionFive) {
@@ -787,10 +857,20 @@ export default function statGame() {
             teamTotalSideOutAttemptsPos5: prev.teamTotalSideOutAttemptsPos5 + 1,
             teamSuccessfulSideOutsPos5: prev.teamSuccessfulSideOutsPos5 + 1,
           }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "5",
+            success: true,
+          }));
         } else {
           setTeamStats((prev) => ({
             ...prev,
             teamTotalSideOutAttemptsPos5: prev.teamTotalSideOutAttemptsPos5 + 1,
+          }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "5",
+            success: false,
           }));
         }
       } else if (setter === positionSix) {
@@ -800,14 +880,531 @@ export default function statGame() {
             teamTotalSideOutAttemptsPos6: prev.teamTotalSideOutAttemptsPos6 + 1,
             teamSuccessfulSideOutsPos6: prev.teamSuccessfulSideOutsPos6 + 1,
           }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "6",
+            success: true,
+          }));
         } else {
           setTeamStats((prev) => ({
             ...prev,
             teamTotalSideOutAttemptsPos6: prev.teamTotalSideOutAttemptsPos6 + 1,
           }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "6",
+            success: false,
+          }));
         }
       }
     }
+  };
+
+  //function that allows the last side out attempt to be undone
+  const undoLastSideOut = () => {
+    //switch statement that holds each of the 6 rotations as cases
+    switch (prevSideOut.rotation) {
+      case "1":
+        if (prevSideOut.success === true && prevSideOut.rotation === "1") {
+          //undo successful sideout in row 1
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos1: prev.teamTotalSideOutAttemptsPos1 - 1,
+            teamSuccessfulSideOutsPos1: prev.teamSuccessfulSideOutsPos1 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+            teamSuccessfulSideOuts: prev.teamSuccessfulSideOuts - 1,
+          }));
+        } else if (
+          prevSideOut.success === false &&
+          prevSideOut.rotation === "1"
+        ) {
+          //undo unsuccessful sideout in row 1
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos1: prev.teamTotalSideOutAttemptsPos1 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+          }));
+        }
+
+      case "2":
+        if (prevSideOut.success === true && prevSideOut.rotation === "2") {
+          //undo successful sideout in row 2
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos2: prev.teamTotalSideOutAttemptsPos2 - 1,
+            teamSuccessfulSideOutsPos2: prev.teamSuccessfulSideOutsPos2 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+            teamSuccessfulSideOuts: prev.teamSuccessfulSideOuts - 1,
+          }));
+        } else if (
+          prevSideOut.success === false &&
+          prevSideOut.rotation === "2"
+        ) {
+          //undo unsuccessful sideout in row 2
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos2: prev.teamTotalSideOutAttemptsPos2 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+          }));
+        }
+
+      case "3":
+        if (prevSideOut.success === true && prevSideOut.rotation === "3") {
+          //undo successful sideout in row 3
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos3: prev.teamTotalSideOutAttemptsPos3 - 1,
+            teamSuccessfulSideOutsPos3: prev.teamSuccessfulSideOutsPos3 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+            teamSuccessfulSideOuts: prev.teamSuccessfulSideOuts - 1,
+          }));
+        } else if (
+          prevSideOut.success === false &&
+          prevSideOut.rotation === "3"
+        ) {
+          //undo unsuccessful sideout in row 3
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos3: prev.teamTotalSideOutAttemptsPos3 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+          }));
+        }
+
+      case "4":
+        if (prevSideOut.success === true && prevSideOut.rotation === "4") {
+          //undo successful sideout in row 4
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos4: prev.teamTotalSideOutAttemptsPos4 - 1,
+            teamSuccessfulSideOutsPos4: prev.teamSuccessfulSideOutsPos4 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+            teamSuccessfulSideOuts: prev.teamSuccessfulSideOuts - 1,
+          }));
+        } else if (
+          prevSideOut.success === false &&
+          prevSideOut.rotation === "4"
+        ) {
+          //undo unsuccessful sideout in row 4
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos4: prev.teamTotalSideOutAttemptsPos4 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+          }));
+        }
+
+      case "5":
+        if (prevSideOut.success === true && prevSideOut.rotation === "5") {
+          //undo successful sideout in row 5
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos5: prev.teamTotalSideOutAttemptsPos5 - 1,
+            teamSuccessfulSideOutsPos5: prev.teamSuccessfulSideOutsPos5 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+            teamSuccessfulSideOuts: prev.teamSuccessfulSideOuts - 1,
+          }));
+        } else if (
+          prevSideOut.success === false &&
+          prevSideOut.rotation === "5"
+        ) {
+          //undo unsuccessful sideout in row 5
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos5: prev.teamTotalSideOutAttemptsPos5 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+          }));
+        }
+
+      case "6":
+        if (prevSideOut.success === true && prevSideOut.rotation === "6") {
+          //undo successful sideout in row 6
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos6: prev.teamTotalSideOutAttemptsPos6 - 1,
+            teamSuccessfulSideOutsPos6: prev.teamSuccessfulSideOutsPos6 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+            teamSuccessfulSideOuts: prev.teamSuccessfulSideOuts - 1,
+          }));
+        } else if (
+          prevSideOut.success === false &&
+          prevSideOut.rotation === "6"
+        ) {
+          //undo unsuccessful sideout in row 6
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos6: prev.teamTotalSideOutAttemptsPos6 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+          }));
+        }
+    }
+  };
+
+  //Holds the state for the undo button -> Can only undo the last stat
+  const [undoAvailable, setUndoAvailable] = useState(false);
+
+  //Function to handle the undo stat event
+  const undoLastStat = () => {
+    //if prevServerTracker === "Opponent" -> Handle undo Side Outs
+    if (prevServerTracker === "Opponent") {
+      undoLastSideOut();
+      handleUndoFBSO();
+    }
+
+    //If Home team needs to rotate back after undo event
+    if (prevServerTracker !== serverTracker) {
+      setServerTracker(prevServerTracker);
+      handleUndoRotation();
+    }
+
+    //Reset prev point trackers
+    setPrevSideOut((prev) => ({
+      ...prev,
+      rotation: null,
+      success: null,
+    }));
+    setPrevServerTracker(null);
+    setPrevFBSO((prev) => ({
+      FBSO: null,
+      success: null,
+    }));
+
+    setStatStack((oldStack) => {
+      if (oldStack.length === 0) return oldStack;
+
+      const lastStat = oldStack[oldStack.length - 1];
+
+      if (lastStat.playerNumber === "Opponent") {
+        setOpponentScore(opponentScore - 1);
+      } else if (lastStat.playerNumber === "Your Team") {
+        setHomeScore(homeScore - 1);
+      } else {
+        const updatedRoster = rosterStats.map((player) => {
+          if (
+            player.playerNumber === lastStat.playerNumber ||
+            player.playerNumber === lastStat.playerNumber2
+          ) {
+            //Undo Attempt
+            switch (lastStat.statType) {
+              case "ATK":
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamAttempts: prevStats.teamAttempts - 1,
+                }));
+                return {
+                  ...player,
+                  attempts: player.attempts - 1,
+                };
+
+              //Undo Kill
+              case "K":
+                //Handle Rotation
+                setHomeScore(homeScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamKills: prevStats.teamKills - 1,
+                  teamAttempts: prevStats.teamAttempts - 1,
+                  teamPts: prevStats.teamPts - 1,
+                }));
+                return {
+                  ...player,
+                  kills: player.kills - 1,
+                  attempts: player.attempts - 1,
+                  pts: player.pts - 1,
+                };
+
+              //Undo Attack Error
+              case "ATK ERR":
+                //Handle Rotation
+                setOpponentScore(opponentScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamAttempts: prevStats.teamAttempts - 1,
+                  teamAttackErrors: prevStats.teamAttackErrors - 1,
+                }));
+                return {
+                  ...player,
+                  attempts: player.attempts - 1,
+                  attackErrors: player.attackErrors - 1,
+                };
+
+              //Undo Assist
+              case "A":
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamAssists: prevStats.teamAssists - 1,
+                }));
+                return {
+                  ...player,
+                  assists: player.assists - 1,
+                };
+
+              //Undo Block Solo
+              case "BS":
+                //Handle Rotation
+                setHomeScore(homeScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamBlockSolos: prevStats.teamBlockSolos - 1,
+                  teamPts: prevStats.teamPts - 1,
+                }));
+                return {
+                  ...player,
+                  blockSolos: player.blockSolos - 1,
+                  pts: player.pts - 1,
+                };
+
+              //Undo Block assist, will occur twice
+              case "BA":
+                //Handle Rotation
+                setHomeScore(homeScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamBlockAssists: prevStats.teamBlockAssists - 1,
+                  teamPts: prevStats.teamPts - 0.5,
+                }));
+
+                return {
+                  ...player,
+                  blockAssists: player.blockAssists - 1,
+                  pts: player.pts - 0.5, // Decrement player points by 0.5
+                };
+
+              //Undo Block Error
+              case "BLK ERR":
+                //Handle Rotation
+                setOpponentScore(opponentScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamBlockErrors: prevStats.teamBlockErrors - 1,
+                }));
+                return {
+                  ...player,
+                  blockErrors: player.blockErrors - 1,
+                };
+
+              //Undo Dig
+              case "DIG":
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamDigs: prevStats.teamDigs - 1,
+                }));
+                return {
+                  ...player,
+                  digs: player.digs - 1,
+                };
+
+              //Undo Dig Error
+              case "DIG ERR":
+                //Handle Rotation
+                setOpponentScore(opponentScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamDigErrors: prevStats.teamDigErrors - 1,
+                }));
+                return {
+                  ...player,
+                  digErrors: player.digErrors - 1,
+                };
+
+              //Undo Service Ace
+              case "SA":
+                //Handle Rotation
+                setHomeScore(homeScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamServiceAces: prevStats.teamServiceAces - 1,
+                  teamPts: prevStats.teamPts - 1,
+                }));
+                return {
+                  ...player,
+                  serviceAces: player.serviceAces - 1,
+                  pts: player.pts - 1,
+                };
+
+              //Undo Service Error
+              case "SE":
+                //Handle Rotation
+                setOpponentScore(opponentScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamServiceErrors: prevStats.teamServiceErrors - 1,
+                }));
+                return {
+                  ...player,
+                  serviceErrors: player.serviceErrors - 1,
+                };
+
+              //Undo Reception Error
+              case "RE":
+                //Handle Rotation
+                setOpponentScore(opponentScore - 1);
+                if (lastStat.passingType === "Hand") {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamReceptionErrors: prevStats.teamReceptionErrors - 1,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamHandPassingAttempts:
+                      prevStats.teamHandPassingAttempts - 1,
+                  }));
+                  return {
+                    ...player,
+                    receptionErrors: player.receptionErrors - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    handPassingAttempts: player.handPassingAttempts - 1,
+                  };
+                } else {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamReceptionErrors: prevStats.teamReceptionErrors - 1,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamForearmPassingAttempts:
+                      prevStats.teamForearmPassingAttempts - 1,
+                  }));
+                  return {
+                    ...player,
+                    receptionErrors: player.receptionErrors - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    forearmPassingAttempts: player.forearmPassingAttempts - 1,
+                  };
+                }
+
+              //Undo 1 Pass
+              case "1 Pass":
+                //Handle Rotation
+
+                if (lastStat.passingType === "Hand") {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamOnePasses: prevStats.teamOnePasses - 1,
+                    teamTotalPassValue: prevStats.teamTotalPassValue - 1,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamHandPassingAttempts:
+                      prevStats.teamHandPassingAttempts - 1,
+                    teamTotalHandPassValue:
+                      prevStats.teamTotalHandPassValue - 1,
+                  }));
+                  return {
+                    ...player,
+                    onePasses: player.onePasses - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    handPassingAttempts: player.handPassingAttempts - 1,
+                    totalPassValue: player.totalPassValue - 1,
+                    totalHandPassValue: player.totalHandPassValue - 1,
+                  };
+                } else {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamOnePasses: prevStats.teamOnePasses - 1,
+                    teamTotalPassValue: prevStats.teamTotalPassValue - 1,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamForearmPassingAttempts:
+                      prevStats.teamForearmPassingAttempts - 1,
+                    teamTotalForearmPassValue:
+                      prevStats.teamTotalForearmPassValue - 1,
+                  }));
+                  return {
+                    ...player,
+                    onePasses: player.onePasses - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    forearmPassingAttempts: player.forearmPassingAttempts - 1,
+                    totalPassValue: player.totalPassValue - 1,
+                    totalForearmPassValue: player.totalForearmPassValue - 1,
+                  };
+                }
+
+              //Undo 2 Pass
+              case "2 Pass":
+                if (lastStat.passingType === "Hand") {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamTwoPasses: prevStats.teamTwoPasses - 1,
+                    teamTotalPassValue: prevStats.teamTotalPassValue - 2,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamHandPassingAttempts:
+                      prevStats.teamHandPassingAttempts - 1,
+                    teamTotalHandPassValue:
+                      prevStats.teamTotalHandPassValue - 2,
+                  }));
+                  return {
+                    ...player,
+                    twoPasses: player.twoPasses - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    handPassingAttempts: player.handPassingAttempts - 1,
+                    totalPassValue: player.totalPassValue - 2,
+                    totalHandPassValue: player.totalHandPassValue - 2,
+                  };
+                } else {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamTwoPasses: prevStats.teamTwoPasses - 1,
+                    teamTotalPassValue: prevStats.teamTotalPassValue - 2,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamForearmPassingAttempts:
+                      prevStats.teamForearmPassingAttempts - 1,
+                    teamTotalForearmPassValue:
+                      prevStats.teamTotalForearmPassValue - 2,
+                  }));
+                  return {
+                    ...player,
+                    twoPasses: player.twoPasses - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    forearmPassingAttempts: player.forearmPassingAttempts - 1,
+                    totalPassValue: player.totalPassValue - 2,
+                    totalForearmPassValue: player.totalForearmPassValue - 2,
+                  };
+                }
+
+              //Undo 3 Pass
+              case "3 Pass":
+                if (lastStat.passingType === "Hand") {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamThreePasses: prevStats.teamThreePasses - 1,
+                    teamTotalPassValue: prevStats.teamTotalPassValue - 3,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamHandPassingAttempts:
+                      prevStats.teamHandPassingAttempts - 1,
+                    teamTotalHandPassValue:
+                      prevStats.teamTotalHandPassValue - 3,
+                  }));
+                  return {
+                    ...player,
+                    threePasses: player.threePasses - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    handPassingAttempts: player.handPassingAttempts - 1,
+                    totalPassValue: player.totalPassValue - 3,
+                    totalHandPassValue: player.totalHandPassValue - 3,
+                  };
+                } else {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamThreePasses: prevStats.teamThreePasses - 1,
+                    teamTotalPassValue: prevStats.teamTotalPassValue - 3,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamForearmPassingAttempts:
+                      prevStats.teamForearmPassingAttempts - 1,
+                    teamTotalForearmPassValue:
+                      prevStats.teamTotalForearmPassValue - 3,
+                  }));
+                  return {
+                    ...player,
+                    threePasses: player.threePasses - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    forearmPassingAttempts: player.forearmPassingAttempts - 1,
+                    totalPassValue: player.totalPassValue - 3,
+                    totalForearmPassValue: player.totalForearmPassValue - 3,
+                  };
+                }
+            }
+          }
+          return player;
+        });
+
+        setRosterStats(updatedRoster);
+      }
+
+      setUndoAvailable(false);
+      return oldStack.slice(0, oldStack.length - 1);
+    });
   };
 
   const handleAttemptIncrement = (playerNumber) => {
@@ -818,9 +1415,6 @@ export default function statGame() {
         return {
           ...player,
           attempts: player.attempts + 1,
-          //TODO: Decide if hitting percentage should be removed
-          hittingPercentage:
-            (player.kills - player.attackErrors) / player.attempts,
         };
       }
       return player; // Return the player object unchanged
@@ -836,8 +1430,6 @@ export default function statGame() {
           kills: player.kills + 1,
           attempts: player.attempts + 1,
           pts: player.pts + 1,
-          hittingPercentage:
-            (player.kills - player.attackErrors) / player.attempts,
         };
       }
       return player;
@@ -852,8 +1444,6 @@ export default function statGame() {
           ...player,
           attackErrors: player.attackErrors + 1,
           attempts: player.attempts + 1,
-          hittingPercentage:
-            (player.kills - player.attackErrors) / player.attempts,
         };
       }
       return player;
@@ -1001,22 +1591,16 @@ export default function statGame() {
             ...player,
             receptionErrors: player.receptionErrors + 1,
             passingAttempts: player.passingAttempts + 1,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             handPassingAttempts: player.handPassingAttempts + 1,
-            handPassingAverage:
-              player.totalHandPassValue / player.handPassingAttempts,
           };
         } else {
           return {
             ...player,
             receptionErrors: player.receptionErrors + 1,
             passingAttempts: player.passingAttempts + 1,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             forearmPassingAttempts: player.forearmPassingAttempts + 1,
-            forearmPassingAverage:
-              player.totalForearmPassValue / player.forearmPassingAttempts,
           };
         }
       }
@@ -1034,12 +1618,9 @@ export default function statGame() {
             onePasses: player.onePasses + 1,
             passingAttempts: player.passingAttempts + 1,
             totalPassValue: player.totalPassValue + 1,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             handPassingAttempts: player.handPassingAttempts + 1,
             totalHandPassValue: player.totalHandPassValue + 1,
-            handPassingAverage:
-              player.totalHandPassValue / player.handPassingAttempts,
           };
         } else {
           return {
@@ -1047,12 +1628,9 @@ export default function statGame() {
             onePasses: player.onePasses + 1,
             passingAttempts: player.passingAttempts + 1,
             totalPassValue: player.totalPassValue + 1,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             forearmPassingAttempts: player.forearmPassingAttempts + 1,
             totalForearmPassValue: player.totalForearmPassValue + 1,
-            forearmPassingAverage:
-              player.totalForearmPassValue / player.forearmPassingAttempts,
           };
         }
       }
@@ -1070,12 +1648,9 @@ export default function statGame() {
             twoPasses: player.twoPasses + 1,
             passingAttempts: player.passingAttempts + 1,
             totalPassValue: player.totalPassValue + 2,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             handPassingAttempts: player.handPassingAttempts + 1,
             totalHandPassValue: player.totalHandPassValue + 2,
-            handPassingAverage:
-              player.totalHandPassValue / player.handPassingAttempts,
           };
         } else {
           return {
@@ -1083,12 +1658,9 @@ export default function statGame() {
             twoPasses: player.twoPasses + 1,
             passingAttempts: player.passingAttempts + 1,
             totalPassValue: player.totalPassValue + 2,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             forearmPassingAttempts: player.forearmPassingAttempts + 1,
             totalForearmPassValue: player.totalForearmPassValue + 2,
-            forearmPassingAverage:
-              player.totalForearmPassValue / player.forearmPassingAttempts,
           };
         }
       }
@@ -1106,12 +1678,9 @@ export default function statGame() {
             threePasses: player.threePasses + 1,
             passingAttempts: player.passingAttempts + 1,
             totalPassValue: player.totalPassValue + 3,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             handPassingAttempts: player.handPassingAttempts + 1,
             totalHandPassValue: player.totalHandPassValue + 3,
-            handPassingAverage:
-              player.totalHandPassValue / player.handPassingAttempts,
           };
         } else {
           return {
@@ -1119,12 +1688,9 @@ export default function statGame() {
             threePasses: player.threePasses + 1,
             passingAttempts: player.passingAttempts + 1,
             totalPassValue: player.totalPassValue + 3,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             forearmPassingAttempts: player.forearmPassingAttempts + 1,
             totalForearmPassValue: player.totalForearmPassValue + 3,
-            forearmPassingAverage:
-              player.totalForearmPassValue / player.forearmPassingAttempts,
           };
         }
       }
@@ -1134,56 +1700,171 @@ export default function statGame() {
   };
 
   return (
-      <SafeView style={styles.container}>
-        <View style={styles.headerContainer}>
-          <TouchableOpacity onPress={cancelAlert}>
-            <View style={styles.exitBtn}>
-              <AntDesign
-                style={styles.backIcon}
-                name="left"
-                size={hp(3.7)}
-                color={COLORS.white}
-              />
-              <Text style={styles.headerBtnText}>EXIT</Text>
-            </View>
-          </TouchableOpacity>
-          <View style={styles.scoreboardContainer}>
-            <View style={styles.liveStatsSubContainer}>
-              <TouchableOpacity onPress={toggleLiveStatsModal}>
+    <SafeView style={styles.container}>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={cancelAlert}>
+          <View style={styles.exitBtn}>
+            <AntDesign
+              style={styles.backIcon}
+              name="left"
+              size={hp(3.7)}
+              color={COLORS.white}
+            />
+            <Text style={styles.headerBtnText}>EXIT</Text>
+          </View>
+        </TouchableOpacity>
+        <View style={styles.scoreboardContainer}>
+          <View style={styles.liveStatsSubContainer}>
+            <TouchableOpacity onPress={toggleLiveStatsModal}>
+              <View style={styles.liveStatsContainer}>
+                <FontAwesome6
+                  name="chart-bar"
+                  size={RFValue(12)}
+                  color={COLORS.primary}
+                />
+                <Text style={styles.liveStatsRotationText}>Live Stats</Text>
+              </View>
+            </TouchableOpacity>
+            <View style={styles.subContainer}>
+              <TouchableOpacity onPress={toggleSubModal}>
                 <View style={styles.liveStatsContainer}>
-                  <FontAwesome6
-                    name="chart-bar"
-                    size={RFValue(12)}
+                  <MaterialIcons
+                    name="swap-horizontal-circle"
+                    size={RFValue(14)}
                     color={COLORS.primary}
                   />
-                  <Text style={styles.liveStatsRotationText}>Live Stats</Text>
+                  <Text style={styles.liveStatsRotationText}>Substitute</Text>
                 </View>
               </TouchableOpacity>
-              <View style={styles.subContainer}>
-                <TouchableOpacity onPress={toggleSubModal}>
-                  <View style={styles.liveStatsContainer}>
-                    <MaterialIcons
-                      name="swap-horizontal-circle"
-                      size={RFValue(14)}
-                      color={COLORS.primary}
-                    />
-                    <Text style={styles.liveStatsRotationText}>Substitute</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
             </View>
-            <View
-              style={{
-                flex: 1,
-              }}
+          </View>
+          <View
+            style={{
+              flex: 1,
+            }}
+          >
+            <Modal
+              isVisible={isSubModalVisible}
+              onBackdropPress={toggleSubModal}
             >
-              <Modal
-                isVisible={isSubModalVisible}
-                onBackdropPress={toggleSubModal}
-              >
-                <View style={styles.subModalContainer}>
-                  <View style={styles.subModalHeader}>
-                    <TouchableOpacity onPress={toggleSubModal}>
+              <View style={styles.subModalContainer}>
+                <View style={styles.subModalHeader}>
+                  <TouchableOpacity onPress={toggleSubModal}>
+                    <AntDesign
+                      name="closesquareo"
+                      size={RFValue(20)}
+                      color={COLORS.black}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.subModalText}>Substitute Players</Text>
+                <View style={styles.subDropDownContainer}>
+                  <Dropdown
+                    style={styles.dropdown}
+                    selectedTextStyle={styles.selectedDropDownText}
+                    itemTextStyle={styles.dropDownText}
+                    placeholderStyle={styles.placeholderDropDown}
+                    data={onCourtRoster()}
+                    search={false}
+                    placeholder="Court Player"
+                    maxHeight={300}
+                    labelField={"value"}
+                    activeColor={COLORS.grey}
+                    valueField="key"
+                    value={courtDropDownValue}
+                    onChange={(value) => setCourtDropDownValue(value.key)}
+                  />
+                  <Text style={styles.subModalBodyText}>for</Text>
+                  <Dropdown
+                    style={styles.dropdown}
+                    selectedTextStyle={styles.selectedDropDownText}
+                    itemTextStyle={styles.dropDownText}
+                    placeholderStyle={styles.placeholderDropDown}
+                    data={benchRoster()}
+                    search={false}
+                    placeholder="Bench Player"
+                    maxHeight={300}
+                    labelField={"value"}
+                    activeColor={COLORS.grey}
+                    valueField="key"
+                    value={benchDropDownValue}
+                    onChange={(value) => {
+                      setBenchDropDownValue(value.key);
+                    }}
+                  />
+                </View>
+                <View style={styles.subConfirmContainer}>
+                  <TouchableOpacity onPress={handleSubstitution}>
+                    <View style={styles.liveStatsContainer}>
+                      <Text style={styles.liveStatsRotationText}>Confirm</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Modal
+              isVisible={isRotationCheckModalVisible}
+              onBackdropPress={toggleRotationCheckModal}
+            >
+              <View style={styles.rotationCheckContainer}>
+                <View style={styles.court}>
+                  <View style={styles.netIndicator} />
+                  <View style={styles.courtRow}>
+                    <View style={styles.courtPosition}>
+                      <Text style={styles.courtPositionText}>
+                        {positionFour}
+                      </Text>
+                    </View>
+                    <View style={styles.courtPosition}>
+                      <Text style={styles.courtPositionText}>
+                        {positionThree}
+                      </Text>
+                    </View>
+                    <View style={styles.courtPosition}>
+                      <Text style={styles.courtPositionText}>
+                        {positionTwo}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.courtRow}>
+                    <View style={styles.courtPosition}>
+                      <Text style={styles.courtPositionText}>
+                        {positionFive}
+                      </Text>
+                    </View>
+                    <View style={styles.courtPosition}>
+                      <Text style={styles.courtPositionText}>
+                        {positionSix}
+                      </Text>
+                    </View>
+                    <View style={styles.courtPosition}>
+                      <Text style={styles.courtPositionText}>
+                        {positionOne}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Modal
+              isVisible={isLiveStatsModalVisible}
+              onBackdropPress={toggleLiveStatsModal}
+              propagateSwipe={true}
+            >
+              <View style={styles.liveStatsModalContainer}>
+                <ScrollView>
+                  <View style={styles.liveStatsModalHeader}>
+                    <TouchableOpacity onPress={toggleLiveStatsModal}>
                       <AntDesign
                         name="closesquareo"
                         size={RFValue(20)}
@@ -1191,186 +1872,320 @@ export default function statGame() {
                       />
                     </TouchableOpacity>
                   </View>
-                  <Text style={styles.subModalText}>Substitute Players</Text>
-                  <View style={styles.subDropDownContainer}>
-                    <Dropdown
-                      style={styles.dropdown}
-                      selectedTextStyle={styles.selectedDropDownText}
-                      itemTextStyle={styles.dropDownText}
-                      placeholderStyle={styles.placeholderDropDown}
-                      data={onCourtRoster()}
-                      search={false}
-                      placeholder="Court Player"
-                      maxHeight={300}
-                      labelField={"value"}
-                      activeColor={COLORS.grey}
-                      valueField="key"
-                      value={courtDropDownValue}
-                      onChange={(value) => setCourtDropDownValue(value.key)}
-                    />
-                    <Text style={styles.subModalBodyText}>for</Text>
-                    <Dropdown
-                      style={styles.dropdown}
-                      selectedTextStyle={styles.selectedDropDownText}
-                      itemTextStyle={styles.dropDownText}
-                      placeholderStyle={styles.placeholderDropDown}
-                      data={benchRoster()}
-                      search={false}
-                      placeholder="Bench Player"
-                      maxHeight={300}
-                      labelField={"value"}
-                      activeColor={COLORS.grey}
-                      valueField="key"
-                      value={benchDropDownValue}
-                      onChange={(value) => {
-                        setBenchDropDownValue(value.key);
-                      }}
-                    />
+                  <View style={styles.liveStatsModalHeader2}>
+                    <Text style={styles.liveStatsModalHeaderText}>
+                      Live Stats
+                    </Text>
                   </View>
-                  <View style={styles.subConfirmContainer}>
-                    <TouchableOpacity onPress={handleSubstitution}>
-                      <View style={styles.liveStatsContainer}>
-                        <Text style={styles.liveStatsRotationText}>
-                          Confirm
+                  <View style={styles.liveStatsModalBody}>
+                    <View style={styles.liveStatsTitleRow}>
+                      <View style={styles.liveStatsStatHeader}>
+                        <Text style={styles.liveStatsPlayerHeader}>
+                          #{"  "}Player
                         </Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </Modal>
-            </View>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Modal
-                isVisible={isRotationCheckModalVisible}
-                onBackdropPress={toggleRotationCheckModal}
-              >
-                <View style={styles.rotationCheckContainer}>
-                  <View style={styles.court}>
-                    <View style={styles.netIndicator} />
-                    <View style={styles.courtRow}>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionFour}
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          SP
                         </Text>
-                      </View>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionThree}
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          K{" "}
                         </Text>
-                      </View>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionTwo}
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          E{" "}
                         </Text>
-                      </View>
-                    </View>
-                    <View style={styles.courtRow}>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionFive}
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          TA
                         </Text>
-                      </View>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionSix}
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          {"    "}
+                          K%{"   "}
                         </Text>
-                      </View>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionOne}
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          A{" "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          SA
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          SE
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          RE
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          P AVG.
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          D
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          BS
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          BA
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          BE
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryTextEnd}>
+                          PTS
                         </Text>
                       </View>
                     </View>
-                  </View>
-                </View>
-              </Modal>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Modal
-                isVisible={isLiveStatsModalVisible}
-                onBackdropPress={toggleLiveStatsModal}
-                propagateSwipe={true}
-              >
-                <View style={styles.liveStatsModalContainer}>
-                  <ScrollView>
-                    <View style={styles.liveStatsModalHeader}>
-                      <TouchableOpacity onPress={toggleLiveStatsModal}>
-                        <AntDesign
-                          name="closesquareo"
-                          size={RFValue(20)}
-                          color={COLORS.black}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                    <View style={styles.liveStatsModalHeader2}>
-                      <Text style={styles.liveStatsModalHeaderText}>
-                        Live Stats
-                      </Text>
-                    </View>
-                    <View style={styles.liveStatsModalBody}>
-                      <View style={styles.liveStatsTitleRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <Text style={styles.liveStatsPlayerHeader}>
-                            #{"  "}Player
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            SP
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            K{" "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            E{" "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            TA
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            {"    "}
-                            K%{"   "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            A{" "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            SA
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            SE
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            RE
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            P AVG.
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            D
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            BS
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            BA
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            BE
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryTextEnd}>
-                            PTS
-                          </Text>
+                    {rosterStats.map((player) => {
+                      return (
+                        <View
+                          style={styles.liveStatsTitleRow}
+                          key={player.playerNumber}
+                        >
+                          <View style={styles.liveStatsStatHeader}>
+                            <Text style={styles.liveStatsPlayerHeader}>
+                              {/* TODO: validation for length of players name */}
+                              {player.playerNumber}
+                              {"  "}
+                              {player.playerName}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.setsPlayed.toString().length > 1
+                                ? player.setsPlayed
+                                : player.setsPlayed + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.kills.toString().length > 1
+                                ? player.kills
+                                : player.kills + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.attackErrors.toString().length > 1
+                                ? player.attackErrors
+                                : player.attackErrors + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.attempts.toString().length > 1
+                                ? player.attempts
+                                : player.attempts + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {isNaN(
+                                (player.kills - player.attackErrors) /
+                                  player.attempts
+                              )
+                                ? "0.000"
+                                : (
+                                    (player.kills - player.attackErrors) /
+                                    player.attempts
+                                  ).toFixed(3)}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.assists.toString().length > 1
+                                ? player.assists
+                                : player.assists + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.serviceAces.toString().length > 1
+                                ? player.serviceAces
+                                : player.serviceAces + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.serviceErrors.toString().length > 1
+                                ? player.serviceErrors
+                                : player.serviceErrors + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.receptionErrors.toString().length > 1
+                                ? player.receptionErrors
+                                : player.receptionErrors + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {isNaN(
+                                player.totalPassValue / player.passingAttempts
+                              )
+                                ? "0.00"
+                                : (
+                                    player.totalPassValue /
+                                    player.passingAttempts
+                                  ).toFixed(2)}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.digs.toString().length > 1
+                                ? player.digs
+                                : player.digs + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.blockSolos.toString().length > 1
+                                ? player.blockSolos
+                                : player.blockSolos + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.blockAssists.toString().length > 1
+                                ? player.blockAssists
+                                : player.blockAssists + " "}
+                            </Text>
+                            <Text style={styles.liveStatsModalSecondaryText2}>
+                              {player.blockErrors.toString().length > 1
+                                ? player.blockErrors
+                                : player.blockErrors + " "}
+                            </Text>
+                            <Text
+                              style={styles.liveStatsModalSecondaryTextEnd2}
+                            >
+                              {player.pts.toString().length > 1
+                                ? player.pts.toFixed(1)
+                                : player.pts.toFixed(1)}
+                            </Text>
+                          </View>
                         </View>
+                      );
+                    })}
+                    <View style={styles.liveStatsTitleRow}>
+                      <View style={styles.liveStatsStatHeader}>
+                        <Text style={styles.liveStatsPlayerHeader}>
+                          Team
+                          {"  "}
+                          Total
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamSetsPlayed.toString().length > 1
+                            ? teamStats.teamSetsPlayed
+                            : teamStats.teamSetsPlayed + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamKills.toString().length > 1
+                            ? teamStats.teamKills
+                            : teamStats.teamKills + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamAttackErrors.toString().length > 1
+                            ? teamStats.teamAttackErrors
+                            : teamStats.teamAttackErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamAttempts.toString().length > 1
+                            ? teamStats.teamAttempts
+                            : teamStats.teamAttempts + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {isNaN(
+                            (teamStats.teamKills - teamStats.teamAttackErrors) /
+                              teamStats.teamAttempts
+                          )
+                            ? "0.000"
+                            : (
+                                (teamStats.teamKills -
+                                  teamStats.teamAttackErrors) /
+                                teamStats.teamAttempts
+                              ).toFixed(3)}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamAssists.toString().length > 1
+                            ? teamStats.teamAssists
+                            : teamStats.teamAssists + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamServiceAces.toString().length > 1
+                            ? teamStats.teamServiceAces
+                            : teamStats.teamServiceAces + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamServiceErrors.toString().length > 1
+                            ? teamStats.teamServiceErrors
+                            : teamStats.teamServiceErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamReceptionErrors.toString().length > 1
+                            ? teamStats.teamReceptionErrors
+                            : teamStats.teamReceptionErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {isNaN(
+                            teamStats.teamTotalPassValue /
+                              teamStats.teamPassingAttempts
+                          )
+                            ? "0.00"
+                            : (
+                                teamStats.teamTotalPassValue /
+                                teamStats.teamPassingAttempts
+                              ).toFixed(2)}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamDigs.toString().length > 1
+                            ? teamStats.teamDigs
+                            : teamStats.teamDigs + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamBlockSolos.toString().length > 1
+                            ? teamStats.teamBlockSolos
+                            : teamStats.teamBlockSolos + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamBlockAssists.toString().length > 1
+                            ? teamStats.teamBlockAssists
+                            : teamStats.teamBlockAssists + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {teamStats.teamBlockErrors.toString().length > 1
+                            ? teamStats.teamBlockErrors
+                            : teamStats.teamBlockErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryTextEnd2}>
+                          {teamStats.teamPts.toString().length > 1
+                            ? teamStats.teamPts.toFixed(1)
+                            : teamStats.teamPts.toFixed(1)}
+                        </Text>
                       </View>
-                      {rosterStats.map((player) => {
+                    </View>
+                  </View>
+                  <View style={styles.heightSpacer} />
+                  <View style={styles.liveStatsModalHeader2}>
+                    <Text style={styles.liveStatsModalSecondaryHeaderText}>
+                      Passing
+                    </Text>
+                  </View>
+                  <View style={styles.liveStatsModalBody}>
+                    <View style={styles.liveStatsPassingTitleRow}>
+                      <View style={styles.liveStatsStatHeader}>
+                        <Text style={styles.liveStatsPlayerHeader}>
+                          #{"  "}Player
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          ATT
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          P. AVG
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          3s
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          2s
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          1s
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          0s
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          {"  "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          F. ATT
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          F. AVG
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText}>
+                          H. ATT
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryTextEnd}>
+                          H. AVG
+                        </Text>
+                      </View>
+                    </View>
+                    {rosterStats.map((player) => {
+                      if (player.passingAttempts > 0) {
                         return (
                           <View
-                            style={styles.liveStatsTitleRow}
+                            style={styles.liveStatsPassingTitleRow}
                             key={player.playerNumber}
                           >
                             <View style={styles.liveStatsStatHeader}>
@@ -1381,1694 +2196,1529 @@ export default function statGame() {
                                 {player.playerName}
                               </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.setsPlayed.toString().length > 1
-                                  ? player.setsPlayed
-                                  : player.setsPlayed + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.kills.toString().length > 1
-                                  ? player.kills
-                                  : player.kills + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.attackErrors.toString().length > 1
-                                  ? player.attackErrors
-                                  : player.attackErrors + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.attempts.toString().length > 1
-                                  ? player.attempts
-                                  : player.attempts + " "}
+                                {player.passingAttempts.toString().length > 1
+                                  ? player.passingAttempts
+                                  : player.passingAttempts + " "}
                               </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
                                 {isNaN(
-                                  (player.kills - player.attackErrors) /
-                                    player.attempts
+                                  player.totalPassValue / player.passingAttempts
                                 )
-                                  ? "0.000"
+                                  ? "0.00 "
                                   : (
-                                      (player.kills - player.attackErrors) /
-                                      player.attempts
-                                    ).toFixed(3)}
+                                      player.totalPassValue /
+                                      player.passingAttempts
+                                    ).toFixed(2) + " "}
                               </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.assists.toString().length > 1
-                                  ? player.assists
-                                  : player.assists + " "}
+                                {player.threePasses.toString().length > 1
+                                  ? player.threePasses
+                                  : player.threePasses + " "}
                               </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.serviceAces.toString().length > 1
-                                  ? player.serviceAces
-                                  : player.serviceAces + " "}
+                                {player.twoPasses.toString().length > 1
+                                  ? player.twoPasses
+                                  : player.twoPasses + " "}
                               </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.serviceErrors.toString().length > 1
-                                  ? player.serviceErrors
-                                  : player.serviceErrors + " "}
+                                {player.onePasses.toString().length > 1
+                                  ? player.onePasses
+                                  : player.onePasses + " "}
                               </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
                                 {player.receptionErrors.toString().length > 1
                                   ? player.receptionErrors
                                   : player.receptionErrors + " "}
                               </Text>
+                              <Text style={styles.liveStatsModalSecondaryText}>
+                                {"   "}
+                              </Text>
+                              <Text style={styles.liveStatsModalSecondaryText2}>
+                                {player.forearmPassingAttempts.toString()
+                                  .length > 1
+                                  ? " " + player.forearmPassingAttempts + "    "
+                                  : " " +
+                                    player.forearmPassingAttempts +
+                                    "     "}
+                              </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
                                 {isNaN(
-                                  player.totalPassValue / player.passingAttempts
+                                  player.totalForearmPassValue /
+                                    player.forearmPassingAttempts
                                 )
-                                  ? "0.00"
+                                  ? "0.00  "
                                   : (
-                                      player.totalPassValue /
-                                      player.passingAttempts
-                                    ).toFixed(2)}
+                                      player.totalForearmPassValue /
+                                      player.forearmPassingAttempts
+                                    ).toFixed(2) + "   "}
                               </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.digs.toString().length > 1
-                                  ? player.digs
-                                  : player.digs + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.blockSolos.toString().length > 1
-                                  ? player.blockSolos
-                                  : player.blockSolos + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.blockAssists.toString().length > 1
-                                  ? player.blockAssists
-                                  : player.blockAssists + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.blockErrors.toString().length > 1
-                                  ? player.blockErrors
-                                  : player.blockErrors + " "}
+                                {player.handPassingAttempts.toString().length >
+                                1
+                                  ? " " + player.handPassingAttempts + "    "
+                                  : " " + player.handPassingAttempts + "     "}
                               </Text>
                               <Text
                                 style={styles.liveStatsModalSecondaryTextEnd2}
                               >
-                                {player.pts.toString().length > 1
-                                  ? player.pts.toFixed(1)
-                                  : player.pts.toFixed(1)}
+                                {isNaN(
+                                  player.totalHandPassValue /
+                                    player.handPassingAttempts
+                                )
+                                  ? "0.00  "
+                                  : (
+                                      player.totalHandPassValue /
+                                      player.handPassingAttempts
+                                    ).toFixed(2) + "  "}
                               </Text>
                             </View>
                           </View>
                         );
-                      })}
-                      <View style={styles.liveStatsTitleRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <Text style={styles.liveStatsPlayerHeader}>
-                            Team
-                            {"  "}
-                            Total
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamSetsPlayed.toString().length > 1
-                              ? teamStats.teamSetsPlayed
-                              : teamStats.teamSetsPlayed + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamKills.toString().length > 1
-                              ? teamStats.teamKills
-                              : teamStats.teamKills + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamAttackErrors.toString().length > 1
-                              ? teamStats.teamAttackErrors
-                              : teamStats.teamAttackErrors + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamAttempts.toString().length > 1
-                              ? teamStats.teamAttempts
-                              : teamStats.teamAttempts + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {isNaN(
-                              (teamStats.teamKills -
-                                teamStats.teamAttackErrors) /
-                                teamStats.teamAttempts
-                            )
-                              ? "0.000"
-                              : (
-                                  (teamStats.teamKills -
-                                    teamStats.teamAttackErrors) /
-                                  teamStats.teamAttempts
-                                ).toFixed(3)}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamAssists.toString().length > 1
-                              ? teamStats.teamAssists
-                              : teamStats.teamAssists + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamServiceAces.toString().length > 1
-                              ? teamStats.teamServiceAces
-                              : teamStats.teamServiceAces + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamServiceErrors.toString().length > 1
-                              ? teamStats.teamServiceErrors
-                              : teamStats.teamServiceErrors + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamReceptionErrors.toString().length > 1
-                              ? teamStats.teamReceptionErrors
-                              : teamStats.teamReceptionErrors + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {isNaN(
-                              teamStats.teamTotalPassValue /
-                                teamStats.teamPassingAttempts
-                            )
-                              ? "0.00"
-                              : (
-                                  teamStats.teamTotalPassValue /
-                                  teamStats.teamPassingAttempts
-                                ).toFixed(2)}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamDigs.toString().length > 1
-                              ? teamStats.teamDigs
-                              : teamStats.teamDigs + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamBlockSolos.toString().length > 1
-                              ? teamStats.teamBlockSolos
-                              : teamStats.teamBlockSolos + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamBlockAssists.toString().length > 1
-                              ? teamStats.teamBlockAssists
-                              : teamStats.teamBlockAssists + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamBlockErrors.toString().length > 1
-                              ? teamStats.teamBlockErrors
-                              : teamStats.teamBlockErrors + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryTextEnd2}>
-                            {teamStats.teamPts.toString().length > 1
-                              ? teamStats.teamPts.toFixed(1)
-                              : teamStats.teamPts.toFixed(1)}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={styles.heightSpacer} />
+                      }
+                    })}
+                  </View>
+                  {teamStats.teamPassingAttempts === 0 ? (
                     <View style={styles.liveStatsModalHeader2}>
-                      <Text style={styles.liveStatsModalSecondaryHeaderText}>
-                        Passing
+                      <View style={styles.heightSpacer} />
+                      <Text style={styles.liveStatsModalNoDataText}>
+                        No passing data
                       </Text>
+                      <View style={styles.heightSpacer} />
                     </View>
-                    <View style={styles.liveStatsModalBody}>
-                      <View style={styles.liveStatsPassingTitleRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <Text style={styles.liveStatsPlayerHeader}>
-                            #{"  "}Player
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            ATT
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            P. AVG
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            3s
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            2s
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            1s
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            0s
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            {"  "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            F. ATT
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            F. AVG
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            H. ATT
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryTextEnd}>
-                            H. AVG
-                          </Text>
-                        </View>
-                      </View>
-                      {rosterStats.map((player) => {
-                        if (player.passingAttempts > 0) {
-                          return (
-                            <View
-                              style={styles.liveStatsPassingTitleRow}
-                              key={player.playerNumber}
-                            >
-                              <View style={styles.liveStatsStatHeader}>
-                                <Text style={styles.liveStatsPlayerHeader}>
-                                  {/* TODO: validation for length of players name */}
-                                  {player.playerNumber}
-                                  {"  "}
-                                  {player.playerName}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {player.passingAttempts.toString().length > 1
-                                    ? player.passingAttempts
-                                    : player.passingAttempts + " "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {isNaN(
-                                    player.totalPassValue /
-                                      player.passingAttempts
-                                  )
-                                    ? "0.00 "
-                                    : (
-                                        player.totalPassValue /
-                                        player.passingAttempts
-                                      ).toFixed(2) + " "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {player.threePasses.toString().length > 1
-                                    ? player.threePasses
-                                    : player.threePasses + " "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {player.twoPasses.toString().length > 1
-                                    ? player.twoPasses
-                                    : player.twoPasses + " "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {player.onePasses.toString().length > 1
-                                    ? player.onePasses
-                                    : player.onePasses + " "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {player.receptionErrors.toString().length > 1
-                                    ? player.receptionErrors
-                                    : player.receptionErrors + " "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText}
-                                >
-                                  {"   "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {player.forearmPassingAttempts.toString()
-                                    .length > 1
-                                    ? " " +
-                                      player.forearmPassingAttempts +
-                                      "    "
-                                    : " " +
-                                      player.forearmPassingAttempts +
-                                      "     "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {isNaN(
-                                    player.totalForearmPassValue /
-                                      player.forearmPassingAttempts
-                                  )
-                                    ? "0.00  "
-                                    : (
-                                        player.totalForearmPassValue /
-                                        player.forearmPassingAttempts
-                                      ).toFixed(2) + "   "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {player.handPassingAttempts.toString()
-                                    .length > 1
-                                    ? " " + player.handPassingAttempts + "    "
-                                    : " " +
-                                      player.handPassingAttempts +
-                                      "     "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryTextEnd2}
-                                >
-                                  {isNaN(
-                                    player.totalHandPassValue /
-                                      player.handPassingAttempts
-                                  )
-                                    ? "0.00  "
-                                    : (
-                                        player.totalHandPassValue /
-                                        player.handPassingAttempts
-                                      ).toFixed(2) + "  "}
-                                </Text>
-                              </View>
-                            </View>
-                          );
-                        }
-                      })}
-                    </View>
-                    {teamStats.teamPassingAttempts === 0 ? (
-                      <View style={styles.liveStatsModalHeader2}>
-                        <View style={styles.heightSpacer} />
-                        <Text style={styles.liveStatsModalNoDataText}>
-                          No passing data
-                        </Text>
-                        <View style={styles.heightSpacer} />
-                      </View>
-                    ) : (
-                      <View style={styles.heightSpacer2} />
-                    )}
-                    <View style={styles.liveStatsModalHeader2}>
-                      <Text style={styles.liveStatsModalSecondaryHeaderText}>
-                        Team Side Out Percentages
-                      </Text>
-                    </View>
-                    <View style={styles.liveStatsModalBody}>
-                      <View style={styles.liveStatsSideOutTitleRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              Side Out ATT
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              Side Out%
-                            </Text>
-                          </View>
-                          <View style={styles.widthSpacer2} />
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              FBSO ATT
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              FBSO%
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.liveStatsSideOutTitleRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamTotalSideOutAttempts}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulSideOuts /
-                                  teamStats.teamTotalSideOutAttempts
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulSideOuts /
-                                      teamStats.teamTotalSideOutAttempts) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                          <View style={styles.widthSpacer2} />
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamFirstBallSideOutAttempts}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulFirstBallSideOuts /
-                                  teamStats.teamFirstBallSideOutAttempts
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulFirstBallSideOuts /
-                                      teamStats.teamFirstBallSideOutAttempts) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={styles.heightSpacer} />
-                    <View style={styles.liveStatsModalBody}>
-                      <View style={styles.liveStatsRotationsTitleRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              Setter in
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              ATT
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              SO%
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.liveStatsRotationsRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              1
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamTotalSideOutAttemptsPos1}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulSideOutsPos1 /
-                                  teamStats.teamTotalSideOutAttemptsPos1
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulSideOutsPos1 /
-                                      teamStats.teamTotalSideOutAttemptsPos1) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.liveStatsRotationsRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              2
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamTotalSideOutAttemptsPos2}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulSideOutsPos2 /
-                                  teamStats.teamTotalSideOutAttemptsPos2
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulSideOutsPos2 /
-                                      teamStats.teamTotalSideOutAttemptsPos2) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.liveStatsRotationsRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              3
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamTotalSideOutAttemptsPos3}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulSideOutsPos3 /
-                                  teamStats.teamTotalSideOutAttemptsPos3
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulSideOutsPos3 /
-                                      teamStats.teamTotalSideOutAttemptsPos3) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.liveStatsRotationsRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              4
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamTotalSideOutAttemptsPos4}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulSideOutsPos4 /
-                                  teamStats.teamTotalSideOutAttemptsPos4
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulSideOutsPos4 /
-                                      teamStats.teamTotalSideOutAttemptsPos4) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.liveStatsRotationsRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              5
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamTotalSideOutAttemptsPos5}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulSideOutsPos5 /
-                                  teamStats.teamTotalSideOutAttemptsPos5
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulSideOutsPos5 /
-                                      teamStats.teamTotalSideOutAttemptsPos5) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.liveStatsRotationsRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              6
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamTotalSideOutAttemptsPos6}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulSideOutsPos6 /
-                                  teamStats.teamTotalSideOutAttemptsPos6
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulSideOutsPos6 /
-                                      teamStats.teamTotalSideOutAttemptsPos6) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
+                  ) : (
                     <View style={styles.heightSpacer2} />
-                  </ScrollView>
-                </View>
-              </Modal>
-            </View>
-            <View style={styles.widthSpacer2} />
-            <View style={styles.timeOutContainer}>
-              <Text style={styles.timeOutText}>Timeouts:</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setHomeTimeOuts(homeTimeOuts - 1);
-                }}
-                disabled={homeTimeOuts < 1 ? true : false}
-              >
-                <HomeTimeOutsDisplay />
-              </TouchableOpacity>
-              <View style={styles.servingIndicatorContainer}>
-                {serverTracker !== "Opponent" ? (
-                  <FontAwesome6
-                    name="volleyball"
-                    size={RFValue(20)}
-                    color="black"
-                  />
-                ) : (
-                  <View />
-                )}
-              </View>
-            </View>
-            <View style={styles.scoreContainer}>
-              {/* TODO: Inputvalidation to ensure team name is not too long */}
-              <Text style={styles.scoreTeamNameText}>Team Name</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  handleServeAttempts();
-                  handleSideOuts("Home");
-                  handleFBSO("Home");
-                  setHomeScore(homeScore + 1);
-                  if (serverTracker === "Opponent") {
-                    setServerTracker("Home");
-                    handleRotation();
-                  }
-                  setStatStack((oldStack) => [
-                    ...oldStack,
-                    homeScore + 1 + "-" + opponentScore,
-                  ]);
-                }}
-              >
-                <View style={styles.scoreAmountContainer}>
-                  <Text style={styles.scoreText}>{homeScore}</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.scoreSpacer} />
-            <View style={styles.scoreContainer}>
-              <Text style={styles.scoreTeamNameText}>Opponent</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  handleServeAttempts();
-                  handleSideOuts("Opponent");
-                  handleFBSO("Opponent");
-                  setOpponentScore(opponentScore + 1);
-                  if (serverTracker !== "Opponent") {
-                    setServerTracker("Opponent");
-                    setIsFBSO(true);
-                  }
-                  setStatStack((oldStack) => [
-                    ...oldStack,
-                    homeScore + "-" + (opponentScore + 1),
-                  ]);
-                }}
-                delayPressIn={0}
-              >
-                <View style={styles.scoreAmountContainer}>
-                  <Text style={styles.scoreText}>{opponentScore}</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.timeOutContainer}>
-              <Text style={styles.timeOutText}>Timeouts:</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setOpponentTimeOuts(opponentTimeOuts - 1);
-                }}
-                disabled={opponentTimeOuts < 1 ? true : false}
-              >
-                <OpponentTimeOutsDisplay />
-              </TouchableOpacity>
-              <View style={styles.servingIndicatorContainer}>
-                {serverTracker === "Opponent" ? (
-                  <FontAwesome6
-                    name="volleyball"
-                    size={RFValue(20)}
-                    color="black"
-                  />
-                ) : (
-                  <View />
-                )}
-              </View>
-            </View>
-            <View style={styles.widthSpacer2} />
-            <TouchableOpacity onPress={toggleRotationCheckModal}>
-              <View style={styles.rotationCheckContianer}>
-                <Text style={styles.liveStatsRotationText}>Rotation Check</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          {/* TODO: Add undo functionality onPress*/}
-          <View style={styles.undoContainer}>
-            <TouchableOpacity>
-              <View style={styles.undoBtn}>
-                <View style={styles.undoIcon}>
-                  <AntDesign
-                    style={styles.backIcon}
-                    name="back"
-                    size={hp(3.7)}
-                    color={COLORS.white}
-                  />
-                </View>
-                <View style={styles.undoTextContainer}>
-                  <Text style={styles.undoBtnText}>UNDO</Text>
-                  <Text style={styles.undoBtnText}>STAT</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-            <View style={styles.undoLogContainer}>
-              <Text style={styles.undoLogTextTitle}>Stat Log</Text>
-              <Text style={styles.undoLogText}>
-                {statStack[statStack.length - 1]}
-              </Text>
-              <Text style={styles.undoLogText}>
-                {statStack[statStack.length - 2]}
-              </Text>
-              <Text style={styles.undoLogText}>
-                {statStack[statStack.length - 3]}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View style={styles.playerListContainer}>
-          <View style={styles.playerStatsHeader}>
-            <Text style={styles.playerStatsHeaderText}>
-              Offense{" "}
-              {
-                <View style={styles.popUpContainer}>
-                  <Menu>
-                    <MenuTrigger>
-                      <AntDesign
-                        style={styles.questionIcon}
-                        name="questioncircleo"
-                        size={hp(3)}
-                        color={COLORS.white}
-                      />
-                    </MenuTrigger>
-                    <MenuOptions>
-                      <MenuOption>
-                        <Text
-                          style={{ color: COLORS.primary, fontWeight: "bold" }}
-                        >
-                          ATK
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          Attack Attempt. (+1 attempt){" "}
-                        </Text>
-                        <Text
-                          style={{ color: COLORS.primary, fontWeight: "bold" }}
-                        >
-                          K
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          Kill. (+1 attempt, +1 kill, +1 pts){" "}
-                        </Text>
-                        <Text
-                          style={{ color: COLORS.primary, fontWeight: "bold" }}
-                        >
-                          ATK ERR
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          Attack Error. (+1 attempt, +1 attack error){" "}
-                        </Text>
-                        <Text
-                          style={{ color: COLORS.primary, fontWeight: "bold" }}
-                        >
-                          A
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          Assist. (+1 assist)
-                        </Text>
-                      </MenuOption>
-                    </MenuOptions>
-                  </Menu>
-                </View>
-              }
-            </Text>
-
-            <Text style={styles.playerStatsHeaderText}>
-              Defense{" "}
-              {
-                <View style={styles.popUpContainer}>
-                  <Menu>
-                    <MenuTrigger>
-                      <AntDesign
-                        style={styles.questionIcon}
-                        name="questioncircleo"
-                        size={hp(3)}
-                        color={COLORS.white}
-                      />
-                    </MenuTrigger>
-                    <MenuOptions>
-                      <MenuOption>
-                        <Text
-                          style={{ color: COLORS.primary, fontWeight: "bold" }}
-                        >
-                          BS
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          Block Solo. (+1 block solo, +1 pts){" "}
-                        </Text>
-                        <Text
-                          style={{ color: COLORS.primary, fontWeight: "bold" }}
-                        >
-                          BA
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          Block Assist. (+1 block assist and +0.5 pts for both
-                          players){" "}
-                        </Text>
-                        <Text
-                          style={{ color: COLORS.primary, fontWeight: "bold" }}
-                        >
-                          BLK ERR
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          Block Error. (+1 block error){" "}
-                        </Text>
-                        <Text
-                          style={{ color: COLORS.primary, fontWeight: "bold" }}
-                        >
-                          DIG
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          Dig. (+1 dig)
-                        </Text>
-                        <Text
-                          style={{ color: COLORS.primary, fontWeight: "bold" }}
-                        >
-                          DIG ERR
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          Dig Error. (+1 dig error)
-                        </Text>
-                      </MenuOption>
-                    </MenuOptions>
-                  </Menu>
-                </View>
-              }
-            </Text>
-            <Text style={styles.playerStatsHeaderServingText}>
-              Serving{" "}
-              {
-                <View style={styles.popUpContainer}>
-                  <Menu>
-                    <MenuTrigger>
-                      <AntDesign
-                        style={styles.questionIcon}
-                        name="questioncircleo"
-                        size={hp(3)}
-                        color={COLORS.white}
-                      />
-                    </MenuTrigger>
-                    <MenuOptions>
-                      <MenuOption>
-                        <Text style={{ color: COLORS.primary }}>
-                          Service Attempts are automatically tracked.{" "}
-                        </Text>
-                        <Text
-                          style={{ color: COLORS.primary, fontWeight: "bold" }}
-                        >
-                          SA
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          Service Ace. (+1 service ace, +1 pts){" "}
-                        </Text>
-                        <Text
-                          style={{ color: COLORS.primary, fontWeight: "bold" }}
-                        >
-                          SE
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          Service Error. (+1 service error){" "}
-                        </Text>
-                      </MenuOption>
-                    </MenuOptions>
-                  </Menu>
-                </View>
-              }
-            </Text>
-            <Text style={styles.playerStatsHeaderPassingText}>
-              Passing{" "}
-              {
-                <View style={styles.popUpContainer}>
-                  <Menu>
-                    <MenuTrigger>
-                      <AntDesign
-                        style={styles.questionIcon}
-                        name="questioncircleo"
-                        size={hp(3)}
-                        color={COLORS.white}
-                      />
-                    </MenuTrigger>
-                    <MenuOptions>
-                      <MenuOption>
-                        <Text
-                          style={{ color: COLORS.primary, fontWeight: "bold" }}
-                        >
-                          Forearm Pass
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          Player recieves a serve with their forearms.{" "}
-                        </Text>
-                        <Text
-                          style={{ color: COLORS.primary, fontWeight: "bold" }}
-                        >
-                          Hand Pass
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          Player recieves a serve with their hands.{" "}
-                        </Text>
-                        <Text
-                          style={{ color: COLORS.primary, fontWeight: "bold" }}
-                        >
-                          Grading
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          0: Player makes a reception error. (+1 reception
-                          error){" "}
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          1: Player makes an okay pass.{" "}
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          2: Player makes a good pass.{" "}
-                        </Text>
-                        <Text style={{ color: COLORS.primary }}>
-                          3: Player makes a perfect pass.{" "}
-                        </Text>
-                      </MenuOption>
-                    </MenuOptions>
-                  </Menu>
-                </View>
-              }
-            </Text>
-          </View>
-          <ScrollView>
-            {rosterStats.map((player) => {
-              if (
-                player.playerNumber === positionOne ||
-                player.playerNumber === positionTwo ||
-                player.playerNumber === positionThree ||
-                player.playerNumber === positionFour ||
-                player.playerNumber === positionFive ||
-                player.playerNumber === positionSix ||
-                player.playerNumber === firstLibero ||
-                player.playerNumber === secondLibero
-              ) {
-                return (
-                  <View
-                    style={styles.playerContainer}
-                    key={player.playerNumber}
-                  >
-                    <View style={styles.playerNameNumContainer}>
-                      <Text style={styles.playerNumberText}>
-                        {player.playerNumber}
-                      </Text>
-                      {/* TODO: Input validation to keep player name less that 15 chars */}
-                      <Text style={styles.playerNameText}>
-                        {player.playerName}
-                      </Text>
-                    </View>
-                    <View style={styles.widthSpacer1} />
-                    <View style={styles.playerOffenseContainer}>
-                      <View style={styles.offenseSubContainer}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleAttemptIncrement(player.playerNumber);
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamAttempts: teamStats.teamAttempts + 1,
-                            }));
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": ATK",
-                            ]);
-                          }}
-                        >
-                          <View style={styles.statBtn}>
-                            <Text style={styles.btnTextSingleLine}>ATK</Text>
-                          </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleKillsIncrement(player.playerNumber);
-                            handleSideOuts("Home");
-                            handleFBSO("Home");
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamKills: teamStats.teamKills + 1,
-                              teamAttempts: teamStats.teamAttempts + 1,
-                              teamPts: teamStats.teamPts + 1,
-                            }));
-                            handleServeAttempts();
-                            setHomeScore(homeScore + 1);
-                            if (serverTracker === "Opponent") {
-                              setServerTracker("Home");
-                              handleRotation();
-                            }
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": K",
-                            ]);
-                          }}
-                        >
-                          <View style={styles.statBtn}>
-                            <Text style={styles.btnTextSingleLine}>K</Text>
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-                      <View style={styles.offenseSubContainer}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleAttackErrorsIncrement(player.playerNumber);
-                            handleSideOuts("Opponent");
-                            handleFBSO("Home");
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamAttackErrors: teamStats.teamAttackErrors + 1,
-                              teamAttempts: teamStats.teamAttempts + 1,
-                            }));
-                            handleServeAttempts();
-                            setOpponentScore(opponentScore + 1);
-                            if (serverTracker !== "Opponent") {
-                              setServerTracker("Opponent");
-                              setIsFBSO(true);
-                            }
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": ATK ERR",
-                            ]);
-                          }}
-                        >
-                          <View style={styles.statBtn}>
-                            <Text style={styles.btnTextdoubleLine}>ATK</Text>
-                            <Text style={styles.btnTextdoubleLine}>ERR</Text>
-                          </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleAssistsIncrement(player.playerNumber);
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamAssists: teamStats.teamAssists + 1,
-                            }));
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": A",
-                            ]);
-                          }}
-                        >
-                          <View style={styles.statBtn}>
-                            <Text style={styles.btnTextSingleLine}>A</Text>
-                          </View>
-                        </TouchableOpacity>
+                  )}
+                  <View style={styles.liveStatsModalHeader2}>
+                    <Text style={styles.liveStatsModalSecondaryHeaderText}>
+                      Team Side Out Percentages
+                    </Text>
+                  </View>
+                  <View style={styles.liveStatsModalBody}>
+                    <View style={styles.liveStatsSideOutTitleRow}>
+                      <View style={styles.liveStatsStatHeader}>
+                        <View style={styles.liveStatsSideOutBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                            Side Out ATT
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsSideOutBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                            Side Out%
+                          </Text>
+                        </View>
+                        <View style={styles.widthSpacer2} />
+                        <View style={styles.liveStatsSideOutBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                            FBSO ATT
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsSideOutBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                            FBSO%
+                          </Text>
+                        </View>
                       </View>
                     </View>
-                    <View style={styles.seperator} />
-                    <View style={styles.playerDefenseContainer}>
-                      <View style={styles.defenseSubContainer}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleBlockSolosIncrement(player.playerNumber);
-                            handleSideOuts("Home");
-                            handleFBSO("Home");
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamBlockSolos: teamStats.teamBlockSolos + 1,
-                              teamPts: teamStats.teamPts + 1,
-                            }));
-                            handleServeAttempts();
-                            setHomeScore(homeScore + 1);
-                            if (serverTracker === "Opponent") {
-                              setServerTracker("Home");
-                              handleRotation();
-                            }
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": BS",
-                            ]);
-                          }}
-                        >
-                          <View style={styles.statBtn}>
-                            <Text style={styles.btnTextSingleLine}>BS</Text>
-                          </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleBlockErrorsIncrement(player.playerNumber);
-                            handleSideOuts("Opponent");
-                            handleFBSO("Opponent");
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamBlockErrors: teamStats.teamBlockErrors + 1,
-                            }));
-                            handleServeAttempts();
-                            setOpponentScore(opponentScore + 1);
-                            if (serverTracker !== "Opponent") {
-                              setServerTracker("Opponent");
-                              setIsFBSO(true);
-                            }
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": BLK ERR",
-                            ]);
-                          }}
-                        >
-                          <View style={styles.statBtn}>
-                            <Text style={styles.btnTextdoubleLine}>BLK</Text>
-                            <Text style={styles.btnTextdoubleLine}>ERR</Text>
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-                      <View style={styles.defenseSubContainer}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            //Handle All conditions: initial select, deselect, and completion
-                            if (
-                              selectedBlockAssist === false &&
-                              firstBlockAssist === ""
-                            ) {
-                              setSelectedBlockAssist(!selectedBlockAssist);
-                              setFirstBlockAssist(player.playerNumber);
-                            } else if (
-                              selectedBlockAssist === true &&
-                              firstBlockAssist === player.playerNumber
-                            ) {
-                              setSelectedBlockAssist(!selectedBlockAssist);
-                              setFirstBlockAssist("");
-                            } else if (
-                              selectedBlockAssist === true &&
-                              firstBlockAssist !== player.playerNumber
-                            ) {
-                              handleBlockAssistsIncrement(
-                                firstBlockAssist,
-                                player.playerNumber
-                              );
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamBlockAssists:
-                                  teamStats.teamBlockAssists + 1,
-                                teamTotalBlocks: teamStats.teamTotalBlocks + 1,
-                                teamPts: teamStats.teamPts + 1,
-                              }));
-                              //Update the statStack
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                firstBlockAssist + ": BA",
-                              ]);
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                player.playerNumber + ": BA",
-                              ]);
-                              handleSideOuts("Home");
-                              handleFBSO("Home");
-                              //Reset State Hooks
-                              setSelectedBlockAssist(false);
-                              setFirstBlockAssist("");
-                              handleServeAttempts();
-                              setHomeScore(homeScore + 1);
-                              if (serverTracker === "Opponent") {
-                                setServerTracker("Home");
-                                handleRotation();
-                              }
-                            }
-                          }}
-                        >
-                          <View
-                            style={
-                              selectedBlockAssist
-                                ? styles.statBtnSelected
-                                : styles.statBtn
-                            }
-                          >
-                            <Text style={styles.btnTextSingleLine}>BA</Text>
-                          </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleDigErrorsIncrement(player.playerNumber);
-                            handleSideOuts("Opponent");
-                            handleFBSO("Home");
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamDigErrors: teamStats.teamDigErrors + 1,
-                            }));
-                            handleServeAttempts();
-                            setOpponentScore(opponentScore + 1);
-                            if (serverTracker !== "Opponent") {
-                              setServerTracker("Opponent");
-                              setIsFBSO(true);
-                            }
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": DIG ERR",
-                            ]);
-                          }}
-                        >
-                          <View style={styles.statBtn}>
-                            <Text style={styles.btnTextdoubleLine}>DIG</Text>
-                            <Text style={styles.btnTextdoubleLine}>ERR</Text>
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-                      <View style={styles.defenseSubContainerSolo}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleDigIncrement(player.playerNumber);
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamTotalDigs: teamStats.teamTotalDigs + 1,
-                            }));
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": DIG",
-                            ]);
-                          }}
-                        >
-                          <View style={styles.statBtn}>
-                            <Text style={styles.btnTextSingleLine}>DIG</Text>
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                    <View style={styles.seperator} />
-                    <View style={styles.playerServingContainer}>
-                      <View style={styles.defenseSubContainer}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleserviceAcesIncrement(player.playerNumber);
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamServiceAces: teamStats.teamServiceAces + 1,
-                              teamPts: teamStats.teamPts + 1,
-                            }));
-                            handleServeAttempts();
-                            setHomeScore(homeScore + 1);
-                            if (serverTracker === "Opponent") {
-                              setServerTracker("Home");
-                              handleRotation();
-                            }
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": SA",
-                            ]);
-                          }}
-                        >
-                          <View style={styles.statBtn}>
-                            <Text style={styles.btnTextSingleLine}>SA</Text>
-                          </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleServiceErrorsIncrement(player.playerNumber);
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamServiceErrors:
-                                teamStats.teamServiceErrors + 1,
-                            }));
-                            handleServeAttempts();
-                            setOpponentScore(opponentScore + 1);
-                            if (serverTracker !== "Opponent") {
-                              setServerTracker("Opponent");
-                              setIsFBSO(true);
-                            }
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": SE",
-                            ]);
-                          }}
-                        >
-                          <View style={styles.statBtn}>
-                            <Text style={styles.btnTextSingleLine}>SE</Text>
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                    <View style={styles.seperator} />
-                    <View style={styles.playerPassingContainer}>
-                      <View style={styles.defenseSubContainer}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            if (
-                              forearmPassSelected === true &&
-                              forearmPassPlayer == player.playerNumber
-                            ) {
-                              setForearmPassSelected(false);
-                              setForearmPassPlayer(null);
-                            } else {
-                              setForearmPassSelected(true);
-                              setForearmPassPlayer(player.playerNumber);
-                              setHandPassSelected(false);
-                              setHandPassPlayer(null);
-                            }
-                          }}
-                        >
-                          <View
-                            style={
-                              forearmPassSelected &&
-                              player.playerNumber === forearmPassPlayer
-                                ? styles.statBtnSelected
-                                : styles.statBtn
-                            }
-                          >
-                            <Text style={styles.btnTextdoubleLine}>
-                              FOREARM
-                            </Text>
-                            <Text style={styles.btnTextdoubleLine}>PASS</Text>
-                          </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            if (
-                              handPassSelected === true &&
-                              handPassPlayer == player.playerNumber
-                            ) {
-                              setHandPassSelected(false);
-                              setHandPassPlayer(null);
-                            } else {
-                              setHandPassSelected(true);
-                              setHandPassPlayer(player.playerNumber);
-                              setForearmPassSelected(false);
-                              setForearmPassPlayer(null);
-                            }
-                          }}
-                        >
-                          <View
-                            style={
-                              handPassSelected &&
-                              player.playerNumber === handPassPlayer
-                                ? styles.statBtnSelected
-                                : styles.statBtn
-                            }
-                          >
-                            <Text style={styles.btnTextdoubleLine}>HAND</Text>
-                            <Text style={styles.btnTextdoubleLine}>PASS</Text>
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-                      <View style={styles.defenseSubContainer}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleReceptionErrorIncrement(player.playerNumber);
-                            if (handPassSelected === true) {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamReceptionErrors:
-                                  teamStats.teamReceptionErrors + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassingAverage:
-                                  teamStats.teamTotalPassValue /
-                                  teamStats.teamPassingAttempts,
-                                teamHandPassingAttempts:
-                                  teamStats.teamHandPassingAttempts + 1,
-                                teamHandPassingAverage:
-                                  teamStats.teamTotalHandPassValue /
-                                  teamStats.teamHandPassingAttempts,
-                              }));
-                            } else {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamReceptionErrors:
-                                  teamStats.teamReceptionErrors + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassingAverage:
-                                  teamStats.teamTotalPassValue /
-                                  teamStats.teamPassingAttempts,
-                                teamForearmPassingAttempts:
-                                  teamStats.teamForearmPassingAttempts + 1,
-                                teamForearmPassingAverage:
-                                  teamStats.teamTotalForearmPassValue /
-                                  teamStats.teamForearmPassingAttempts,
-                              }));
-                            }
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": RE",
-                            ]);
-                            handleSideOuts("Opponent");
-                            handleFBSO("Opponent");
-                            setForearmPassSelected(false);
-                            setForearmPassPlayer(null);
-                            setHandPassSelected(false);
-                            setHandPassPlayer(null);
-                            handleServeAttempts();
-                            setOpponentScore(opponentScore + 1);
-                            if (serverTracker !== "Opponent") {
-                              setServerTracker("Opponent");
-                              setIsFBSO(true);
-                            }
-                          }}
-                          disabled={
-                            handPassSelected === false &&
-                            forearmPassSelected === false
-                              ? true
-                              : false
-                          }
-                        >
-                          <View
-                            style={
-                              (handPassSelected &&
-                                player.playerNumber === handPassPlayer) ||
-                              (forearmPassSelected &&
-                                player.playerNumber === forearmPassPlayer)
-                                ? styles.statBtnSelected
-                                : styles.statBtn
-                            }
-                          >
-                            <Text style={styles.btnTextSingleLine}>0</Text>
-                          </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleTwoPassIncrement(player.playerNumber);
-                            if (handPassSelected === true) {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamTwoPasses: teamStats.teamTwoPasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 2,
-                                teamTotalPassingAverage:
-                                  teamStats.teamTotalPassValue /
-                                  teamStats.teamPassingAttempts,
-                                teamHandPassingAttempts:
-                                  teamStats.teamHandPassingAttempts + 1,
-                                teamTotalHandPassValue:
-                                  teamStats.teamTotalHandPassValue + 2,
-                                teamHandPassingAverage:
-                                  teamStats.teamTotalHandPassValue /
-                                  teamStats.teamHandPassingAttempts,
-                              }));
-                            } else {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamTwoPasses: teamStats.teamTwoPasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 2,
-                                teamTotalPassingAverage:
-                                  teamStats.teamTotalPassValue /
-                                  teamStats.teamPassingAttempts,
-                                teamForearmPassingAttempts:
-                                  teamStats.teamForearmPassingAttempts + 1,
-                                teamTotalForearmPassValue:
-                                  teamStats.teamTotalForearmPassValue + 2,
-                                teamForearmPassingAverage:
-                                  teamStats.teamTotalForearmPassValue /
-                                  teamStats.teamForearmPassingAttempts,
-                              }));
-                            }
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": 2 Pass",
-                            ]);
-                            setForearmPassSelected(false);
-                            setForearmPassPlayer(null);
-                            setHandPassSelected(false);
-                            setHandPassPlayer(null);
-                          }}
-                          disabled={
-                            handPassSelected === false &&
-                            forearmPassSelected === false
-                              ? true
-                              : false
-                          }
-                        >
-                          <View
-                            style={
-                              (handPassSelected &&
-                                player.playerNumber === handPassPlayer) ||
-                              (forearmPassSelected &&
-                                player.playerNumber === forearmPassPlayer)
-                                ? styles.statBtnSelected
-                                : styles.statBtn
-                            }
-                          >
-                            <Text style={styles.btnTextSingleLine}>2</Text>
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-                      <View style={styles.defenseSubContainer}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleOnePassIncrement(player.playerNumber);
-                            if (handPassSelected === true) {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamOnePasses: teamStats.teamOnePasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 1,
-                                teamTotalPassingAverage:
-                                  teamStats.teamTotalPassValue /
-                                  teamStats.teamPassingAttempts,
-                                teamHandPassingAttempts:
-                                  teamStats.teamHandPassingAttempts + 1,
-                                teamTotalHandPassValue:
-                                  teamStats.teamTotalHandPassValue + 1,
-                                teamHandPassingAverage:
-                                  teamStats.teamTotalHandPassValue /
-                                  teamStats.teamHandPassingAttempts,
-                              }));
-                            } else {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamOnePasses: teamStats.teamOnePasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 1,
-                                teamTotalPassingAverage:
-                                  teamStats.teamTotalPassValue /
-                                  teamStats.teamPassingAttempts,
-                                teamForearmPassingAttempts:
-                                  teamStats.teamForearmPassingAttempts + 1,
-                                teamTotalForearmPassValue:
-                                  teamStats.teamTotalForearmPassValue + 1,
-                                teamForearmPassingAverage:
-                                  teamStats.teamTotalForearmPassValue /
-                                  teamStats.teamForearmPassingAttempts,
-                              }));
-                            }
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": 1 Pass",
-                            ]);
-                            setForearmPassSelected(false);
-                            setForearmPassPlayer(null);
-                            setHandPassSelected(false);
-                            setHandPassPlayer(null);
-                          }}
-                          disabled={
-                            handPassSelected === false &&
-                            forearmPassSelected === false
-                              ? true
-                              : false
-                          }
-                        >
-                          <View
-                            style={
-                              (handPassSelected &&
-                                player.playerNumber === handPassPlayer) ||
-                              (forearmPassSelected &&
-                                player.playerNumber === forearmPassPlayer)
-                                ? styles.statBtnSelected
-                                : styles.statBtn
-                            }
-                          >
-                            <Text style={styles.btnTextSingleLine}>1</Text>
-                          </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            handleThreePassIncrement(player.playerNumber);
-                            if (handPassSelected === true) {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamThreePasses: teamStats.teamThreePasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 3,
-                                teamTotalPassingAverage:
-                                  teamStats.teamTotalPassValue /
-                                  teamStats.teamPassingAttempts,
-                                teamHandPassingAttempts:
-                                  teamStats.teamHandPassingAttempts + 1,
-                                teamTotalHandPassValue:
-                                  teamStats.teamTotalHandPassValue + 3,
-                                teamHandPassingAverage:
-                                  teamStats.teamTotalHandPassValue /
-                                  teamStats.teamHandPassingAttempts,
-                              }));
-                            } else {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamThreePasses: teamStats.teamThreePasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 3,
-                                teamTotalPassingAverage:
-                                  teamStats.teamTotalPassValue /
-                                  teamStats.teamPassingAttempts,
-                                teamForearmPassingAttempts:
-                                  teamStats.teamForearmPassingAttempts + 1,
-                                teamTotalForearmPassValue:
-                                  teamStats.teamTotalForearmPassValue + 3,
-                                teamForearmPassingAverage:
-                                  teamStats.teamTotalForearmPassValue /
-                                  teamStats.teamForearmPassingAttempts,
-                              }));
-                            }
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              player.playerNumber + ": 3 Pass",
-                            ]);
-                            setForearmPassSelected(false);
-                            setForearmPassPlayer(null);
-                            setHandPassSelected(false);
-                            setHandPassPlayer(null);
-                          }}
-                          disabled={
-                            handPassSelected === false &&
-                            forearmPassSelected === false
-                              ? true
-                              : false
-                          }
-                        >
-                          <View
-                            style={
-                              (handPassSelected &&
-                                player.playerNumber === handPassPlayer) ||
-                              (forearmPassSelected &&
-                                player.playerNumber === forearmPassPlayer)
-                                ? styles.statBtnSelected
-                                : styles.statBtn
-                            }
-                          >
-                            <Text style={styles.btnTextSingleLine}>3</Text>
-                          </View>
-                        </TouchableOpacity>
+                    <View style={styles.liveStatsSideOutTitleRow}>
+                      <View style={styles.liveStatsStatHeader}>
+                        <View style={styles.liveStatsSideOutBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {teamStats.teamTotalSideOutAttempts}
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsSideOutBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {isNaN(
+                              teamStats.teamSuccessfulSideOuts /
+                                teamStats.teamTotalSideOutAttempts
+                            )
+                              ? "-"
+                              : (
+                                  (teamStats.teamSuccessfulSideOuts /
+                                    teamStats.teamTotalSideOutAttempts) *
+                                  100
+                                ).toFixed(1) + "%"}
+                          </Text>
+                        </View>
+                        <View style={styles.widthSpacer2} />
+                        <View style={styles.liveStatsSideOutBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {teamStats.teamFirstBallSideOutAttempts}
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsSideOutBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {isNaN(
+                              teamStats.teamSuccessfulFirstBallSideOuts /
+                                teamStats.teamFirstBallSideOutAttempts
+                            )
+                              ? "-"
+                              : (
+                                  (teamStats.teamSuccessfulFirstBallSideOuts /
+                                    teamStats.teamFirstBallSideOutAttempts) *
+                                  100
+                                ).toFixed(1) + "%"}
+                          </Text>
+                        </View>
                       </View>
                     </View>
                   </View>
-                );
-              }
-            })}
-          </ScrollView>
+                  <View style={styles.heightSpacer} />
+                  <View style={styles.liveStatsModalBody}>
+                    <View style={styles.liveStatsRotationsTitleRow}>
+                      <View style={styles.liveStatsStatHeader}>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                            Setter in
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                            ATT
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                            SO%
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <View style={styles.liveStatsRotationsRow}>
+                      <View style={styles.liveStatsStatHeader}>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                            1
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {teamStats.teamTotalSideOutAttemptsPos1}
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {isNaN(
+                              teamStats.teamSuccessfulSideOutsPos1 /
+                                teamStats.teamTotalSideOutAttemptsPos1
+                            )
+                              ? "-"
+                              : (
+                                  (teamStats.teamSuccessfulSideOutsPos1 /
+                                    teamStats.teamTotalSideOutAttemptsPos1) *
+                                  100
+                                ).toFixed(1) + "%"}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <View style={styles.liveStatsRotationsRow}>
+                      <View style={styles.liveStatsStatHeader}>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                            2
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {teamStats.teamTotalSideOutAttemptsPos2}
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {isNaN(
+                              teamStats.teamSuccessfulSideOutsPos2 /
+                                teamStats.teamTotalSideOutAttemptsPos2
+                            )
+                              ? "-"
+                              : (
+                                  (teamStats.teamSuccessfulSideOutsPos2 /
+                                    teamStats.teamTotalSideOutAttemptsPos2) *
+                                  100
+                                ).toFixed(1) + "%"}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <View style={styles.liveStatsRotationsRow}>
+                      <View style={styles.liveStatsStatHeader}>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                            3
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {teamStats.teamTotalSideOutAttemptsPos3}
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {isNaN(
+                              teamStats.teamSuccessfulSideOutsPos3 /
+                                teamStats.teamTotalSideOutAttemptsPos3
+                            )
+                              ? "-"
+                              : (
+                                  (teamStats.teamSuccessfulSideOutsPos3 /
+                                    teamStats.teamTotalSideOutAttemptsPos3) *
+                                  100
+                                ).toFixed(1) + "%"}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <View style={styles.liveStatsRotationsRow}>
+                      <View style={styles.liveStatsStatHeader}>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                            4
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {teamStats.teamTotalSideOutAttemptsPos4}
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {isNaN(
+                              teamStats.teamSuccessfulSideOutsPos4 /
+                                teamStats.teamTotalSideOutAttemptsPos4
+                            )
+                              ? "-"
+                              : (
+                                  (teamStats.teamSuccessfulSideOutsPos4 /
+                                    teamStats.teamTotalSideOutAttemptsPos4) *
+                                  100
+                                ).toFixed(1) + "%"}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <View style={styles.liveStatsRotationsRow}>
+                      <View style={styles.liveStatsStatHeader}>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                            5
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {teamStats.teamTotalSideOutAttemptsPos5}
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {isNaN(
+                              teamStats.teamSuccessfulSideOutsPos5 /
+                                teamStats.teamTotalSideOutAttemptsPos5
+                            )
+                              ? "-"
+                              : (
+                                  (teamStats.teamSuccessfulSideOutsPos5 /
+                                    teamStats.teamTotalSideOutAttemptsPos5) *
+                                  100
+                                ).toFixed(1) + "%"}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <View style={styles.liveStatsRotationsRow}>
+                      <View style={styles.liveStatsStatHeader}>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                            6
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {teamStats.teamTotalSideOutAttemptsPos6}
+                          </Text>
+                        </View>
+                        <View style={styles.liveStatsRotationsBoxContainer}>
+                          <Text style={styles.liveStatsSideOutBoxText}>
+                            {isNaN(
+                              teamStats.teamSuccessfulSideOutsPos6 /
+                                teamStats.teamTotalSideOutAttemptsPos6
+                            )
+                              ? "-"
+                              : (
+                                  (teamStats.teamSuccessfulSideOutsPos6 /
+                                    teamStats.teamTotalSideOutAttemptsPos6) *
+                                  100
+                                ).toFixed(1) + "%"}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={styles.heightSpacer2} />
+                </ScrollView>
+              </View>
+            </Modal>
+          </View>
+          <View style={styles.widthSpacer2} />
+          <View style={styles.timeOutContainer}>
+            <Text style={styles.timeOutText}>Timeouts:</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setHomeTimeOuts(homeTimeOuts - 1);
+              }}
+              disabled={homeTimeOuts < 1 ? true : false}
+            >
+              <HomeTimeOutsDisplay />
+            </TouchableOpacity>
+            <View style={styles.servingIndicatorContainer}>
+              {serverTracker !== "Opponent" ? (
+                <FontAwesome6
+                  name="volleyball"
+                  size={RFValue(20)}
+                  color="black"
+                />
+              ) : (
+                <View />
+              )}
+            </View>
+          </View>
+          <View style={styles.scoreContainer}>
+            {/* TODO: Inputvalidation to ensure team name is not too long */}
+            <Text style={styles.scoreTeamNameText}>Your Team</Text>
+            <TouchableOpacity
+              onPress={() => {
+                handleServeAttempts();
+                handleSideOuts("Home");
+                handleFBSO("Home");
+                setHomeScore(homeScore + 1);
+                //Keep track of prev serve for undo
+                setPrevServerTracker(serverTracker);
+                if (serverTracker === "Opponent") {
+                  setServerTracker("Home");
+                  handleRotation();
+                }
+                setStatStack((oldStack) => [
+                  ...oldStack,
+                  {
+                    playerNumber: "Your Team",
+                    statType: "+1",
+                  },
+                ]);
+                setUndoAvailable(true);
+              }}
+            >
+              <View style={styles.scoreAmountContainer}>
+                <Text style={styles.scoreText}>{homeScore}</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.scoreSpacer} />
+          <View style={styles.scoreContainer}>
+            <Text style={styles.scoreTeamNameText}>Opponent</Text>
+            <TouchableOpacity
+              onPress={() => {
+                handleServeAttempts();
+                handleSideOuts("Opponent");
+                handleFBSO("Opponent");
+                setOpponentScore(opponentScore + 1);
+                //Keep track of prev serve for undo
+                setPrevServerTracker(serverTracker);
+                if (serverTracker !== "Opponent") {
+                  setServerTracker("Opponent");
+                  setIsFBSO(true);
+                }
+                setStatStack((oldStack) => [
+                  ...oldStack,
+                  {
+                    playerNumber: "Opponent",
+                    statType: "+1",
+                  },
+                ]);
+                setUndoAvailable(true);
+              }}
+              delayPressIn={0}
+            >
+              <View style={styles.scoreAmountContainer}>
+                <Text style={styles.scoreText}>{opponentScore}</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.timeOutContainer}>
+            <Text style={styles.timeOutText}>Timeouts:</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setOpponentTimeOuts(opponentTimeOuts - 1);
+              }}
+              disabled={opponentTimeOuts < 1 ? true : false}
+            >
+              <OpponentTimeOutsDisplay />
+            </TouchableOpacity>
+            <View style={styles.servingIndicatorContainer}>
+              {serverTracker === "Opponent" ? (
+                <FontAwesome6
+                  name="volleyball"
+                  size={RFValue(20)}
+                  color="black"
+                />
+              ) : (
+                <View />
+              )}
+            </View>
+          </View>
+          <View style={styles.widthSpacer2} />
+          <TouchableOpacity onPress={toggleRotationCheckModal}>
+            <View style={styles.rotationCheckContianer}>
+              <Text style={styles.liveStatsRotationText}>Rotation Check</Text>
+            </View>
+          </TouchableOpacity>
         </View>
-      </SafeView>
-   
+        {/* TODO: Add undo functionality onPress*/}
+        <View style={styles.undoContainer}>
+          <TouchableOpacity
+            onPress={() => undoLastStat()}
+            disabled={undoAvailable === false ? true : false}
+          >
+            <View
+              style={
+                undoAvailable === false
+                  ? styles.undoBtnDisabled
+                  : styles.undoBtn
+              }
+            >
+              <View style={styles.undoIcon}>
+                <AntDesign
+                  style={styles.backIcon}
+                  name="back"
+                  size={hp(3.7)}
+                  color={COLORS.white}
+                />
+              </View>
+              <View style={styles.undoTextContainer}>
+                <Text style={styles.undoBtnText}>UNDO</Text>
+                <Text style={styles.undoBtnText}>STAT</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+          <View style={styles.undoLogContainer}>
+            <Text style={styles.undoLogTextTitle}>Stat Log</Text>
+            <Text style={styles.undoLogText}>
+              {statStack[statStack.length - 1]
+                ? statStack[statStack.length - 1].playerNumber2
+                  ? statStack[statStack.length - 1].playerNumber +
+                    ", " +
+                    statStack[statStack.length - 1].playerNumber2 +
+                    ": " +
+                    statStack[statStack.length - 1].statType
+                  : statStack[statStack.length - 1].playerNumber +
+                    ": " +
+                    statStack[statStack.length - 1].statType
+                : " "}
+            </Text>
+            <Text style={styles.undoLogText}>
+              {statStack[statStack.length - 2]
+                ? statStack[statStack.length - 2].playerNumber2
+                  ? statStack[statStack.length - 2].playerNumber +
+                    ", " +
+                    statStack[statStack.length - 2].playerNumber2 +
+                    ": " +
+                    statStack[statStack.length - 2].statType
+                  : statStack[statStack.length - 2].playerNumber +
+                    ": " +
+                    statStack[statStack.length - 2].statType
+                : " "}
+            </Text>
+            <Text style={styles.undoLogText}>
+              {statStack[statStack.length - 3]
+                ? statStack[statStack.length - 3].playerNumber2
+                  ? statStack[statStack.length - 3].playerNumber +
+                    ", " +
+                    statStack[statStack.length - 3].playerNumber2 +
+                    ": " +
+                    statStack[statStack.length - 3].statType
+                  : statStack[statStack.length - 3].playerNumber +
+                    ": " +
+                    statStack[statStack.length - 3].statType
+                : " "}
+            </Text>
+          </View>
+        </View>
+      </View>
+      <View style={styles.playerListContainer}>
+        <View style={styles.playerStatsHeader}>
+          <Text style={styles.playerStatsHeaderText}>
+            Offense{" "}
+            {
+              <View style={styles.popUpContainer}>
+                <Menu>
+                  <MenuTrigger>
+                    <AntDesign
+                      style={styles.questionIcon}
+                      name="questioncircleo"
+                      size={hp(3)}
+                      color={COLORS.white}
+                    />
+                  </MenuTrigger>
+                  <MenuOptions>
+                    <MenuOption>
+                      <Text
+                        style={{ color: COLORS.primary, fontWeight: "bold" }}
+                      >
+                        ATK
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        Attack Attempt. (+1 attempt){" "}
+                      </Text>
+                      <Text
+                        style={{ color: COLORS.primary, fontWeight: "bold" }}
+                      >
+                        K
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        Kill. (+1 attempt, +1 kill, +1 pts){" "}
+                      </Text>
+                      <Text
+                        style={{ color: COLORS.primary, fontWeight: "bold" }}
+                      >
+                        ATK ERR
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        Attack Error. (+1 attempt, +1 attack error){" "}
+                      </Text>
+                      <Text
+                        style={{ color: COLORS.primary, fontWeight: "bold" }}
+                      >
+                        A
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        Assist. (+1 assist)
+                      </Text>
+                    </MenuOption>
+                  </MenuOptions>
+                </Menu>
+              </View>
+            }
+          </Text>
+
+          <Text style={styles.playerStatsHeaderText}>
+            Defense{" "}
+            {
+              <View style={styles.popUpContainer}>
+                <Menu>
+                  <MenuTrigger>
+                    <AntDesign
+                      style={styles.questionIcon}
+                      name="questioncircleo"
+                      size={hp(3)}
+                      color={COLORS.white}
+                    />
+                  </MenuTrigger>
+                  <MenuOptions>
+                    <MenuOption>
+                      <Text
+                        style={{ color: COLORS.primary, fontWeight: "bold" }}
+                      >
+                        BS
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        Block Solo. (+1 block solo, +1 pts){" "}
+                      </Text>
+                      <Text
+                        style={{ color: COLORS.primary, fontWeight: "bold" }}
+                      >
+                        BA
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        Block Assist. (+1 block assist and +0.5 pts for both
+                        players){" "}
+                      </Text>
+                      <Text
+                        style={{ color: COLORS.primary, fontWeight: "bold" }}
+                      >
+                        BLK ERR
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        Block Error. (+1 block error){" "}
+                      </Text>
+                      <Text
+                        style={{ color: COLORS.primary, fontWeight: "bold" }}
+                      >
+                        DIG
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        Dig. (+1 dig)
+                      </Text>
+                      <Text
+                        style={{ color: COLORS.primary, fontWeight: "bold" }}
+                      >
+                        DIG ERR
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        Dig Error. (+1 dig error)
+                      </Text>
+                    </MenuOption>
+                  </MenuOptions>
+                </Menu>
+              </View>
+            }
+          </Text>
+          <Text style={styles.playerStatsHeaderServingText}>
+            Serving{" "}
+            {
+              <View style={styles.popUpContainer}>
+                <Menu>
+                  <MenuTrigger>
+                    <AntDesign
+                      style={styles.questionIcon}
+                      name="questioncircleo"
+                      size={hp(3)}
+                      color={COLORS.white}
+                    />
+                  </MenuTrigger>
+                  <MenuOptions>
+                    <MenuOption>
+                      <Text style={{ color: COLORS.primary }}>
+                        Service Attempts are automatically tracked.{" "}
+                      </Text>
+                      <Text
+                        style={{ color: COLORS.primary, fontWeight: "bold" }}
+                      >
+                        SA
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        Service Ace. (+1 service ace, +1 pts){" "}
+                      </Text>
+                      <Text
+                        style={{ color: COLORS.primary, fontWeight: "bold" }}
+                      >
+                        SE
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        Service Error. (+1 service error){" "}
+                      </Text>
+                    </MenuOption>
+                  </MenuOptions>
+                </Menu>
+              </View>
+            }
+          </Text>
+          <Text style={styles.playerStatsHeaderPassingText}>
+            Passing{" "}
+            {
+              <View style={styles.popUpContainer}>
+                <Menu>
+                  <MenuTrigger>
+                    <AntDesign
+                      style={styles.questionIcon}
+                      name="questioncircleo"
+                      size={hp(3)}
+                      color={COLORS.white}
+                    />
+                  </MenuTrigger>
+                  <MenuOptions>
+                    <MenuOption>
+                      <Text
+                        style={{ color: COLORS.primary, fontWeight: "bold" }}
+                      >
+                        Forearm Pass
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        Player recieves a serve with their forearms.{" "}
+                      </Text>
+                      <Text
+                        style={{ color: COLORS.primary, fontWeight: "bold" }}
+                      >
+                        Hand Pass
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        Player recieves a serve with their hands.{" "}
+                      </Text>
+                      <Text
+                        style={{ color: COLORS.primary, fontWeight: "bold" }}
+                      >
+                        Grading
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        0: Player makes a reception error. (+1 reception error){" "}
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        1: Player makes an okay pass.{" "}
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        2: Player makes a good pass.{" "}
+                      </Text>
+                      <Text style={{ color: COLORS.primary }}>
+                        3: Player makes a perfect pass.{" "}
+                      </Text>
+                    </MenuOption>
+                  </MenuOptions>
+                </Menu>
+              </View>
+            }
+          </Text>
+        </View>
+        <ScrollView>
+          {rosterStats.map((player) => {
+            if (
+              player.playerNumber === positionOne ||
+              player.playerNumber === positionTwo ||
+              player.playerNumber === positionThree ||
+              player.playerNumber === positionFour ||
+              player.playerNumber === positionFive ||
+              player.playerNumber === positionSix ||
+              player.playerNumber === firstLibero ||
+              player.playerNumber === secondLibero
+            ) {
+              return (
+                <View style={styles.playerContainer} key={player.playerNumber}>
+                  <View style={styles.playerNameNumContainer}>
+                    <Text style={styles.playerNumberText}>
+                      {player.playerNumber}
+                    </Text>
+                    {/* TODO: Input validation to keep player name less that 15 chars */}
+                    <Text style={styles.playerNameText}>
+                      {player.playerName}
+                    </Text>
+                  </View>
+                  <View style={styles.widthSpacer1} />
+                  <View style={styles.playerOffenseContainer}>
+                    <View style={styles.offenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleAttemptIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamAttempts: teamStats.teamAttempts + 1,
+                          }));
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            {
+                              playerNumber: player.playerNumber,
+                              statType: "ATK",
+                            },
+                          ]);
+                          setUndoAvailable(true);
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>ATK</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleKillsIncrement(player.playerNumber);
+                          handleSideOuts("Home");
+                          handleFBSO("Home");
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamKills: teamStats.teamKills + 1,
+                            teamAttempts: teamStats.teamAttempts + 1,
+                            teamPts: teamStats.teamPts + 1,
+                          }));
+                          handleServeAttempts();
+                          setHomeScore(homeScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
+                          if (serverTracker === "Opponent") {
+                            setServerTracker("Home");
+                            handleRotation();
+                          }
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            {
+                              playerNumber: player.playerNumber,
+                              statType: "K",
+                            },
+                          ]);
+                          setUndoAvailable(true);
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>K</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.offenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleAttackErrorsIncrement(player.playerNumber);
+                          handleSideOuts("Opponent");
+                          handleFBSO("Home");
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamAttackErrors: teamStats.teamAttackErrors + 1,
+                            teamAttempts: teamStats.teamAttempts + 1,
+                          }));
+                          handleServeAttempts();
+                          setOpponentScore(opponentScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
+                          if (serverTracker !== "Opponent") {
+                            setServerTracker("Opponent");
+                            setIsFBSO(true);
+                          }
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            {
+                              playerNumber: player.playerNumber,
+                              statType: "ATK ERR",
+                            },
+                          ]);
+                          setUndoAvailable(true);
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextdoubleLine}>ATK</Text>
+                          <Text style={styles.btnTextdoubleLine}>ERR</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleAssistsIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamAssists: teamStats.teamAssists + 1,
+                          }));
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            {
+                              playerNumber: player.playerNumber,
+                              statType: "A",
+                            },
+                          ]);
+                          setUndoAvailable(true);
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>A</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <View style={styles.seperator} />
+                  <View style={styles.playerDefenseContainer}>
+                    <View style={styles.defenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleBlockSolosIncrement(player.playerNumber);
+                          handleSideOuts("Home");
+                          handleFBSO("Home");
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamBlockSolos: teamStats.teamBlockSolos + 1,
+                            teamTotalBlocks: teamStats.teamTotalBlocks + 1,
+                            teamPts: teamStats.teamPts + 1,
+                          }));
+                          handleServeAttempts();
+                          setHomeScore(homeScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
+                          if (serverTracker === "Opponent") {
+                            setServerTracker("Home");
+                            handleRotation();
+                          }
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            {
+                              playerNumber: player.playerNumber,
+                              statType: "BS",
+                            },
+                          ]);
+                          setUndoAvailable(true);
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>BS</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleBlockErrorsIncrement(player.playerNumber);
+                          handleSideOuts("Opponent");
+                          handleFBSO("Opponent");
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamBlockErrors: teamStats.teamBlockErrors + 1,
+                          }));
+                          handleServeAttempts();
+                          setOpponentScore(opponentScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
+                          if (serverTracker !== "Opponent") {
+                            setServerTracker("Opponent");
+                            setIsFBSO(true);
+                          }
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            {
+                              playerNumber: player.playerNumber,
+                              statType: "BLK ERR",
+                            },
+                          ]);
+                          setUndoAvailable(true);
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextdoubleLine}>BLK</Text>
+                          <Text style={styles.btnTextdoubleLine}>ERR</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.defenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          //Handle All conditions: initial select, deselect, and completion
+                          if (
+                            selectedBlockAssist === false &&
+                            firstBlockAssist === ""
+                          ) {
+                            setSelectedBlockAssist(!selectedBlockAssist);
+                            setFirstBlockAssist(player.playerNumber);
+                          } else if (
+                            selectedBlockAssist === true &&
+                            firstBlockAssist === player.playerNumber
+                          ) {
+                            setSelectedBlockAssist(!selectedBlockAssist);
+                            setFirstBlockAssist("");
+                          } else if (
+                            selectedBlockAssist === true &&
+                            firstBlockAssist !== player.playerNumber
+                          ) {
+                            handleBlockAssistsIncrement(
+                              firstBlockAssist,
+                              player.playerNumber
+                            );
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamBlockAssists: teamStats.teamBlockAssists + 2,
+                              teamTotalBlocks: teamStats.teamTotalBlocks + 1,
+                              teamPts: teamStats.teamPts + 1,
+                            }));
+
+                            //Update the statStack
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                playerNumber2: firstBlockAssist,
+                                statType: "BA",
+                              },
+                            ]);
+                            setUndoAvailable(true);
+
+                            handleSideOuts("Home");
+                            handleFBSO("Home");
+
+                            //Reset State Hooks
+                            setSelectedBlockAssist(false);
+                            setFirstBlockAssist("");
+                            handleServeAttempts();
+                            setHomeScore(homeScore + 1);
+                            //Keep track of prev serve for undo
+                            setPrevServerTracker(serverTracker);
+                            if (serverTracker === "Opponent") {
+                              setServerTracker("Home");
+                              handleRotation();
+                            }
+                          }
+                        }}
+                      >
+                        <View
+                          style={
+                            selectedBlockAssist
+                              ? styles.statBtnSelected
+                              : styles.statBtn
+                          }
+                        >
+                          <Text style={styles.btnTextSingleLine}>BA</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleDigErrorsIncrement(player.playerNumber);
+                          handleSideOuts("Opponent");
+                          handleFBSO("Home");
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamDigErrors: teamStats.teamDigErrors + 1,
+                          }));
+                          handleServeAttempts();
+                          setOpponentScore(opponentScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
+                          if (serverTracker !== "Opponent") {
+                            setServerTracker("Opponent");
+                            setIsFBSO(true);
+                          }
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            {
+                              playerNumber: player.playerNumber,
+                              statType: "DIG ERR",
+                            },
+                          ]);
+                          setUndoAvailable(true);
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextdoubleLine}>DIG</Text>
+                          <Text style={styles.btnTextdoubleLine}>ERR</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.defenseSubContainerSolo}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleDigIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamDigs: teamStats.teamDigs + 1,
+                          }));
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            {
+                              playerNumber: player.playerNumber,
+                              statType: "DIG",
+                            },
+                          ]);
+                          setUndoAvailable(true);
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>DIG</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <View style={styles.seperator} />
+                  <View style={styles.playerServingContainer}>
+                    <View style={styles.defenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleserviceAcesIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamServiceAces: teamStats.teamServiceAces + 1,
+                            teamPts: teamStats.teamPts + 1,
+                          }));
+                          handleServeAttempts();
+                          setHomeScore(homeScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
+                          if (serverTracker === "Opponent") {
+                            setServerTracker("Home");
+                            handleRotation();
+                          }
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            {
+                              playerNumber: player.playerNumber,
+                              statType: "SA",
+                            },
+                          ]);
+                          setUndoAvailable(true);
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>SA</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleServiceErrorsIncrement(player.playerNumber);
+                          setTeamStats((teamStats) => ({
+                            ...teamStats,
+                            teamServiceErrors: teamStats.teamServiceErrors + 1,
+                          }));
+                          handleServeAttempts();
+                          setOpponentScore(opponentScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
+                          if (serverTracker !== "Opponent") {
+                            setServerTracker("Opponent");
+                            setIsFBSO(true);
+                          }
+                          setStatStack((oldStack) => [
+                            ...oldStack,
+                            {
+                              playerNumber: player.playerNumber,
+                              statType: "SE",
+                            },
+                          ]);
+                          setUndoAvailable(true);
+                        }}
+                      >
+                        <View style={styles.statBtn}>
+                          <Text style={styles.btnTextSingleLine}>SE</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <View style={styles.seperator} />
+                  <View style={styles.playerPassingContainer}>
+                    <View style={styles.defenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          if (
+                            forearmPassSelected === true &&
+                            forearmPassPlayer == player.playerNumber
+                          ) {
+                            setForearmPassSelected(false);
+                            setForearmPassPlayer(null);
+                          } else {
+                            setForearmPassSelected(true);
+                            setForearmPassPlayer(player.playerNumber);
+                            setHandPassSelected(false);
+                            setHandPassPlayer(null);
+                          }
+                        }}
+                      >
+                        <View
+                          style={
+                            forearmPassSelected &&
+                            player.playerNumber === forearmPassPlayer
+                              ? styles.statBtnSelected
+                              : styles.statBtn
+                          }
+                        >
+                          <Text style={styles.btnTextdoubleLine}>FOREARM</Text>
+                          <Text style={styles.btnTextdoubleLine}>PASS</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          if (
+                            handPassSelected === true &&
+                            handPassPlayer == player.playerNumber
+                          ) {
+                            setHandPassSelected(false);
+                            setHandPassPlayer(null);
+                          } else {
+                            setHandPassSelected(true);
+                            setHandPassPlayer(player.playerNumber);
+                            setForearmPassSelected(false);
+                            setForearmPassPlayer(null);
+                          }
+                        }}
+                      >
+                        <View
+                          style={
+                            handPassSelected &&
+                            player.playerNumber === handPassPlayer
+                              ? styles.statBtnSelected
+                              : styles.statBtn
+                          }
+                        >
+                          <Text style={styles.btnTextdoubleLine}>HAND</Text>
+                          <Text style={styles.btnTextdoubleLine}>PASS</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.defenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleReceptionErrorIncrement(player.playerNumber);
+                          if (handPassSelected === true) {
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamReceptionErrors:
+                                teamStats.teamReceptionErrors + 1,
+                              teamPassingAttempts:
+                                teamStats.teamPassingAttempts + 1,
+                              teamHandPassingAttempts:
+                                teamStats.teamHandPassingAttempts + 1,
+                            }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "RE",
+                                passType: "Hand",
+                              },
+                            ]);
+                          } else {
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamReceptionErrors:
+                                teamStats.teamReceptionErrors + 1,
+                              teamPassingAttempts:
+                                teamStats.teamPassingAttempts + 1,
+                              teamForearmPassingAttempts:
+                                teamStats.teamForearmPassingAttempts + 1,
+                            }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "RE",
+                                passType: "Forearm",
+                              },
+                            ]);
+                          }
+
+                          handleSideOuts("Opponent");
+                          handleFBSO("Opponent");
+                          setForearmPassSelected(false);
+                          setForearmPassPlayer(null);
+                          setHandPassSelected(false);
+                          setHandPassPlayer(null);
+                          handleServeAttempts();
+                          setOpponentScore(opponentScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
+                          if (serverTracker !== "Opponent") {
+                            setServerTracker("Opponent");
+                            setIsFBSO(true);
+                          }
+                          setUndoAvailable(true);
+                        }}
+                        disabled={
+                          handPassSelected === false &&
+                          forearmPassSelected === false
+                            ? true
+                            : false
+                        }
+                      >
+                        <View
+                          style={
+                            (handPassSelected &&
+                              player.playerNumber === handPassPlayer) ||
+                            (forearmPassSelected &&
+                              player.playerNumber === forearmPassPlayer)
+                              ? styles.statBtnSelected
+                              : styles.statBtn
+                          }
+                        >
+                          <Text style={styles.btnTextSingleLine}>0</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleTwoPassIncrement(player.playerNumber);
+                          if (handPassSelected === true) {
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamTwoPasses: teamStats.teamTwoPasses + 1,
+                              teamPassingAttempts:
+                                teamStats.teamPassingAttempts + 1,
+                              teamTotalPassValue:
+                                teamStats.teamTotalPassValue + 2,
+                              teamHandPassingAttempts:
+                                teamStats.teamHandPassingAttempts + 1,
+                              teamTotalHandPassValue:
+                                teamStats.teamTotalHandPassValue + 2,
+                            }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "2 Pass",
+                                passType: "Hand",
+                              },
+                            ]);
+                          } else {
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamTwoPasses: teamStats.teamTwoPasses + 1,
+                              teamPassingAttempts:
+                                teamStats.teamPassingAttempts + 1,
+                              teamTotalPassValue:
+                                teamStats.teamTotalPassValue + 2,
+                              teamForearmPassingAttempts:
+                                teamStats.teamForearmPassingAttempts + 1,
+                              teamTotalForearmPassValue:
+                                teamStats.teamTotalForearmPassValue + 2,
+                            }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "2 Pass",
+                                passType: "Forearm",
+                              },
+                            ]);
+                          }
+
+                          setForearmPassSelected(false);
+                          setForearmPassPlayer(null);
+                          setHandPassSelected(false);
+                          setHandPassPlayer(null);
+                          setUndoAvailable(true);
+                        }}
+                        disabled={
+                          handPassSelected === false &&
+                          forearmPassSelected === false
+                            ? true
+                            : false
+                        }
+                      >
+                        <View
+                          style={
+                            (handPassSelected &&
+                              player.playerNumber === handPassPlayer) ||
+                            (forearmPassSelected &&
+                              player.playerNumber === forearmPassPlayer)
+                              ? styles.statBtnSelected
+                              : styles.statBtn
+                          }
+                        >
+                          <Text style={styles.btnTextSingleLine}>2</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.defenseSubContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleOnePassIncrement(player.playerNumber);
+                          if (handPassSelected === true) {
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamOnePasses: teamStats.teamOnePasses + 1,
+                              teamPassingAttempts:
+                                teamStats.teamPassingAttempts + 1,
+                              teamTotalPassValue:
+                                teamStats.teamTotalPassValue + 1,
+                              teamHandPassingAttempts:
+                                teamStats.teamHandPassingAttempts + 1,
+                              teamTotalHandPassValue:
+                                teamStats.teamTotalHandPassValue + 1,
+                            }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "1 Pass",
+                                passType: "Hand",
+                              },
+                            ]);
+                          } else {
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamOnePasses: teamStats.teamOnePasses + 1,
+                              teamPassingAttempts:
+                                teamStats.teamPassingAttempts + 1,
+                              teamTotalPassValue:
+                                teamStats.teamTotalPassValue + 1,
+                              teamForearmPassingAttempts:
+                                teamStats.teamForearmPassingAttempts + 1,
+                              teamTotalForearmPassValue:
+                                teamStats.teamTotalForearmPassValue + 1,
+                            }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "1 Pass",
+                                passType: "Forearm",
+                              },
+                            ]);
+                          }
+                          setForearmPassSelected(false);
+                          setForearmPassPlayer(null);
+                          setHandPassSelected(false);
+                          setHandPassPlayer(null);
+                          setUndoAvailable(true);
+                        }}
+                        disabled={
+                          handPassSelected === false &&
+                          forearmPassSelected === false
+                            ? true
+                            : false
+                        }
+                      >
+                        <View
+                          style={
+                            (handPassSelected &&
+                              player.playerNumber === handPassPlayer) ||
+                            (forearmPassSelected &&
+                              player.playerNumber === forearmPassPlayer)
+                              ? styles.statBtnSelected
+                              : styles.statBtn
+                          }
+                        >
+                          <Text style={styles.btnTextSingleLine}>1</Text>
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleThreePassIncrement(player.playerNumber);
+                          if (handPassSelected === true) {
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamThreePasses: teamStats.teamThreePasses + 1,
+                              teamPassingAttempts:
+                                teamStats.teamPassingAttempts + 1,
+                              teamTotalPassValue:
+                                teamStats.teamTotalPassValue + 3,
+                              teamHandPassingAttempts:
+                                teamStats.teamHandPassingAttempts + 1,
+                              teamTotalHandPassValue:
+                                teamStats.teamTotalHandPassValue + 3,
+                            }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "3 Pass",
+                                passType: "Hand",
+                              },
+                            ]);
+                          } else {
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamThreePasses: teamStats.teamThreePasses + 1,
+                              teamPassingAttempts:
+                                teamStats.teamPassingAttempts + 1,
+                              teamTotalPassValue:
+                                teamStats.teamTotalPassValue + 3,
+                              teamForearmPassingAttempts:
+                                teamStats.teamForearmPassingAttempts + 1,
+                              teamTotalForearmPassValue:
+                                teamStats.teamTotalForearmPassValue + 3,
+                            }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "3 Pass",
+                                passType: "Forearm",
+                              },
+                            ]);
+                          }
+
+                          setForearmPassSelected(false);
+                          setForearmPassPlayer(null);
+                          setHandPassSelected(false);
+                          setHandPassPlayer(null);
+                          setUndoAvailable(true);
+                        }}
+                        disabled={
+                          handPassSelected === false &&
+                          forearmPassSelected === false
+                            ? true
+                            : false
+                        }
+                      >
+                        <View
+                          style={
+                            (handPassSelected &&
+                              player.playerNumber === handPassPlayer) ||
+                            (forearmPassSelected &&
+                              player.playerNumber === forearmPassPlayer)
+                              ? styles.statBtnSelected
+                              : styles.statBtn
+                          }
+                        >
+                          <Text style={styles.btnTextSingleLine}>3</Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              );
+            }
+          })}
+        </ScrollView>
+      </View>
+    </SafeView>
   );
 }
 
@@ -3131,6 +3781,26 @@ const styles = StyleSheet.create({
     width: wp(7.5),
     height: hp(7),
     backgroundColor: COLORS.primary,
+    borderRadius: 20,
+    marginHorizontal: 5,
+    marginTop: 5,
+    marginBottom: 7,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
+  undoBtnDisabled: {
+    flexDirection: "row",
+    width: wp(7.5),
+    height: hp(7),
+    backgroundColor: COLORS.darkGrey,
     borderRadius: 20,
     marginHorizontal: 5,
     marginTop: 5,
