@@ -17,7 +17,6 @@ import { useState } from "react";
 import Modal from "react-native-modal";
 import { Dropdown } from "react-native-element-dropdown";
 import {
-  MenuProvider,
   Menu,
   MenuOptions,
   MenuOption,
@@ -50,6 +49,9 @@ export default function statGame() {
 
   //Variable for which team is serving -> TODO: replace with 'firstServe' prop
   const [serverTracker, setServerTracker] = useState("Opponent");
+
+  //Keeps the state of the previous serve for undo functionality
+  const [prevServerTracker, setPrevServerTracker] = useState(null);
 
   //State Hook for the stat Stack
   const [statStack, setStatStack] = useState([]);
@@ -85,6 +87,7 @@ export default function statGame() {
   const [onCourtPositionSix, setOnCourtPositionSix] = useState(positionSix);
   const [onCourtPositionSixSub, setOnCourtPositionSixSub] = useState(null);
 
+  //Function that rotates the players on the court
   const handleRotation = () => {
     let temp = positionOne;
 
@@ -94,6 +97,18 @@ export default function statGame() {
     setPositionFour(positionFive);
     setPositionFive(positionSix);
     setPositionSix(temp);
+  };
+
+  //Function that rotates the players in reverse when the undo button is pressed
+  const handleUndoRotation = () => {
+    let temp = positionOne;
+
+    setPositionOne(positionSix);
+    setPositionSix(positionFive);
+    setPositionFive(positionFour);
+    setPositionFour(positionThree);
+    setPositionThree(positionTwo);
+    setPositionTwo(temp);
   };
 
   //TODO: Uncomment after testing
@@ -117,10 +132,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -141,7 +153,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
     {
@@ -156,10 +167,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -180,7 +188,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
     {
@@ -195,10 +202,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -219,7 +223,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
     {
@@ -234,10 +237,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -258,7 +258,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
     {
@@ -273,10 +272,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -297,7 +293,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
     {
@@ -312,10 +307,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -336,7 +328,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
     {
@@ -351,10 +342,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -375,7 +363,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
     {
@@ -390,10 +377,7 @@ export default function statGame() {
       digs: 0,
       digsPerSet: 0,
       forearmPassingAttempts: 0,
-      forearmPassingAverage: 0,
       handPassingAttempts: 0,
-      handPassingAverage: 0,
-      hittingPercentage: 0,
       kills: 0,
       matchesPlayed: 0,
       onePasses: 0,
@@ -414,7 +398,6 @@ export default function statGame() {
       totalForearmPassValue: 0,
       totalHandPassValue: 0,
       totalPassValue: 0,
-      totalPassingAverage: 0,
       twoPasses: 0,
     },
   ];
@@ -612,7 +595,6 @@ export default function statGame() {
     teamAttempts: 0,
     teamKills: 0,
     teamAttackErrors: 0,
-    teamHittingPercentage: 0,
     teamAssists: 0,
     teamAssistsPerSet: 0.0,
     teamDigs: 0,
@@ -628,12 +610,9 @@ export default function statGame() {
     teamPassingAttempts: 0,
     teamHandPassingAttempts: 0,
     teamForearmPassingAttempts: 0,
-    teamTotalPassingAverage: 0.0,
     teamTotalPassValue: 0,
-    teamHandPassingAverage: 0.0,
     teamTotalHandPassValue: 0,
     teamTotalForearmPassValue: 0,
-    teamForearmPassingAverage: 0.0,
     teamReceptionErrors: 0,
     teamOnePasses: 0,
     teamTwoPasses: 0,
@@ -690,8 +669,16 @@ export default function statGame() {
     setSubModalVisible(!isSubModalVisible);
   };
 
+  //Holds the state of if it's currently FBSO
   const [isFBSO, setIsFBSO] = useState(true);
 
+  //Holds the previous FBSO for undo functionality
+  const [prevFBSO, setPrevFBSO] = useState({
+    FBSO: null,
+    success: null,
+  });
+
+  //Checks if FBSO -> then updates the team stats accordingly
   const handleFBSO = (point) => {
     if (isFBSO) {
       if (point === "Home") {
@@ -701,16 +688,59 @@ export default function statGame() {
           teamSuccessfulFirstBallSideOuts:
             prev.teamSuccessfulFirstBallSideOuts + 1,
         }));
+        setPrevFBSO((prev) => ({
+          FBSO: true,
+          success: true,
+        }));
       } else {
         setTeamStats((prev) => ({
           ...prev,
           teamFirstBallSideOutAttempts: prev.teamFirstBallSideOutAttempts + 1,
         }));
+        setPrevFBSO((prev) => ({
+          FBSO: true,
+          success: false,
+        }));
       }
+    } else {
+      setPrevFBSO((prev) => ({
+        FBSO: false,
+        success: false,
+      }));
     }
     setIsFBSO(false);
   };
 
+  //Handles the Undo event when considering FBSO
+  const handleUndoFBSO = () => {
+    if (prevFBSO.FBSO === true) {
+      if (prevFBSO.success === true) {
+        //reset FBSO success
+        setTeamStats((prev) => ({
+          ...prev,
+          teamFirstBallSideOutAttempts: prev.teamFirstBallSideOutAttempts - 1,
+          teamSuccessfulFirstBallSideOuts:
+            prev.teamSuccessfulFirstBallSideOuts - 1,
+        }));
+      } else {
+        //reset FBSO failure
+        setTeamStats((prev) => ({
+          ...prev,
+          teamFirstBallSideOutAttempts: prev.teamFirstBallSideOutAttempts - 1,
+        }));
+      }
+      setIsFBSO(true);
+    } else {
+      setIsFBSO(false);
+    }
+  };
+
+  const [prevSideOut, setPrevSideOut] = useState({
+    rotation: null,
+    success: null,
+  });
+
+  //Function that handles all side outs (Only occurs when the Opponent is serving)
   const handleSideOuts = (point) => {
     //Handle Team Side Out
     if (serverTracker == "Opponent") {
@@ -735,10 +765,20 @@ export default function statGame() {
             teamTotalSideOutAttemptsPos1: prev.teamTotalSideOutAttemptsPos1 + 1,
             teamSuccessfulSideOutsPos1: prev.teamSuccessfulSideOutsPos1 + 1,
           }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "1",
+            success: true,
+          }));
         } else {
           setTeamStats((prev) => ({
             ...prev,
             teamTotalSideOutAttemptsPos1: prev.teamTotalSideOutAttemptsPos1 + 1,
+          }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "1",
+            success: false,
           }));
         }
       } else if (setter === positionTwo) {
@@ -748,10 +788,20 @@ export default function statGame() {
             teamTotalSideOutAttemptsPos2: prev.teamTotalSideOutAttemptsPos2 + 1,
             teamSuccessfulSideOutsPos2: prev.teamSuccessfulSideOutsPos2 + 1,
           }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "2",
+            success: true,
+          }));
         } else {
           setTeamStats((prev) => ({
             ...prev,
             teamTotalSideOutAttemptsPos2: prev.teamTotalSideOutAttemptsPos2 + 1,
+          }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "2",
+            success: false,
           }));
         }
       } else if (setter === positionThree) {
@@ -761,10 +811,20 @@ export default function statGame() {
             teamTotalSideOutAttemptsPos3: prev.teamTotalSideOutAttemptsPos3 + 1,
             teamSuccessfulSideOutsPos3: prev.teamSuccessfulSideOutsPos3 + 1,
           }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "3",
+            success: true,
+          }));
         } else {
           setTeamStats((prev) => ({
             ...prev,
             teamTotalSideOutAttemptsPos3: prev.teamTotalSideOutAttemptsPos3 + 1,
+          }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "3",
+            success: false,
           }));
         }
       } else if (setter === positionFour) {
@@ -774,10 +834,20 @@ export default function statGame() {
             teamTotalSideOutAttemptsPos4: prev.teamTotalSideOutAttemptsPos4 + 1,
             teamSuccessfulSideOutsPos4: prev.teamSuccessfulSideOutsPos4 + 1,
           }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "4",
+            success: true,
+          }));
         } else {
           setTeamStats((prev) => ({
             ...prev,
             teamTotalSideOutAttemptsPos4: prev.teamTotalSideOutAttemptsPos4 + 1,
+          }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "4",
+            success: false,
           }));
         }
       } else if (setter === positionFive) {
@@ -787,10 +857,20 @@ export default function statGame() {
             teamTotalSideOutAttemptsPos5: prev.teamTotalSideOutAttemptsPos5 + 1,
             teamSuccessfulSideOutsPos5: prev.teamSuccessfulSideOutsPos5 + 1,
           }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "5",
+            success: true,
+          }));
         } else {
           setTeamStats((prev) => ({
             ...prev,
             teamTotalSideOutAttemptsPos5: prev.teamTotalSideOutAttemptsPos5 + 1,
+          }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "5",
+            success: false,
           }));
         }
       } else if (setter === positionSix) {
@@ -800,14 +880,531 @@ export default function statGame() {
             teamTotalSideOutAttemptsPos6: prev.teamTotalSideOutAttemptsPos6 + 1,
             teamSuccessfulSideOutsPos6: prev.teamSuccessfulSideOutsPos6 + 1,
           }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "6",
+            success: true,
+          }));
         } else {
           setTeamStats((prev) => ({
             ...prev,
             teamTotalSideOutAttemptsPos6: prev.teamTotalSideOutAttemptsPos6 + 1,
           }));
+          setPrevSideOut((prev) => ({
+            ...prev,
+            rotation: "6",
+            success: false,
+          }));
         }
       }
     }
+  };
+
+  //function that allows the last side out attempt to be undone
+  const undoLastSideOut = () => {
+    //switch statement that holds each of the 6 rotations as cases
+    switch (prevSideOut.rotation) {
+      case "1":
+        if (prevSideOut.success === true && prevSideOut.rotation === "1") {
+          //undo successful sideout in row 1
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos1: prev.teamTotalSideOutAttemptsPos1 - 1,
+            teamSuccessfulSideOutsPos1: prev.teamSuccessfulSideOutsPos1 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+            teamSuccessfulSideOuts: prev.teamSuccessfulSideOuts - 1,
+          }));
+        } else if (
+          prevSideOut.success === false &&
+          prevSideOut.rotation === "1"
+        ) {
+          //undo unsuccessful sideout in row 1
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos1: prev.teamTotalSideOutAttemptsPos1 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+          }));
+        }
+
+      case "2":
+        if (prevSideOut.success === true && prevSideOut.rotation === "2") {
+          //undo successful sideout in row 2
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos2: prev.teamTotalSideOutAttemptsPos2 - 1,
+            teamSuccessfulSideOutsPos2: prev.teamSuccessfulSideOutsPos2 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+            teamSuccessfulSideOuts: prev.teamSuccessfulSideOuts - 1,
+          }));
+        } else if (
+          prevSideOut.success === false &&
+          prevSideOut.rotation === "2"
+        ) {
+          //undo unsuccessful sideout in row 2
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos2: prev.teamTotalSideOutAttemptsPos2 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+          }));
+        }
+
+      case "3":
+        if (prevSideOut.success === true && prevSideOut.rotation === "3") {
+          //undo successful sideout in row 3
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos3: prev.teamTotalSideOutAttemptsPos3 - 1,
+            teamSuccessfulSideOutsPos3: prev.teamSuccessfulSideOutsPos3 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+            teamSuccessfulSideOuts: prev.teamSuccessfulSideOuts - 1,
+          }));
+        } else if (
+          prevSideOut.success === false &&
+          prevSideOut.rotation === "3"
+        ) {
+          //undo unsuccessful sideout in row 3
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos3: prev.teamTotalSideOutAttemptsPos3 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+          }));
+        }
+
+      case "4":
+        if (prevSideOut.success === true && prevSideOut.rotation === "4") {
+          //undo successful sideout in row 4
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos4: prev.teamTotalSideOutAttemptsPos4 - 1,
+            teamSuccessfulSideOutsPos4: prev.teamSuccessfulSideOutsPos4 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+            teamSuccessfulSideOuts: prev.teamSuccessfulSideOuts - 1,
+          }));
+        } else if (
+          prevSideOut.success === false &&
+          prevSideOut.rotation === "4"
+        ) {
+          //undo unsuccessful sideout in row 4
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos4: prev.teamTotalSideOutAttemptsPos4 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+          }));
+        }
+
+      case "5":
+        if (prevSideOut.success === true && prevSideOut.rotation === "5") {
+          //undo successful sideout in row 5
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos5: prev.teamTotalSideOutAttemptsPos5 - 1,
+            teamSuccessfulSideOutsPos5: prev.teamSuccessfulSideOutsPos5 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+            teamSuccessfulSideOuts: prev.teamSuccessfulSideOuts - 1,
+          }));
+        } else if (
+          prevSideOut.success === false &&
+          prevSideOut.rotation === "5"
+        ) {
+          //undo unsuccessful sideout in row 5
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos5: prev.teamTotalSideOutAttemptsPos5 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+          }));
+        }
+
+      case "6":
+        if (prevSideOut.success === true && prevSideOut.rotation === "6") {
+          //undo successful sideout in row 6
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos6: prev.teamTotalSideOutAttemptsPos6 - 1,
+            teamSuccessfulSideOutsPos6: prev.teamSuccessfulSideOutsPos6 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+            teamSuccessfulSideOuts: prev.teamSuccessfulSideOuts - 1,
+          }));
+        } else if (
+          prevSideOut.success === false &&
+          prevSideOut.rotation === "6"
+        ) {
+          //undo unsuccessful sideout in row 6
+          setTeamStats((prev) => ({
+            ...prev,
+            teamTotalSideOutAttemptsPos6: prev.teamTotalSideOutAttemptsPos6 - 1,
+            teamTotalSideOutAttempts: prev.teamTotalSideOutAttempts - 1,
+          }));
+        }
+    }
+  };
+
+  //Holds the state for the undo button -> Can only undo the last stat
+  const [undoAvailable, setUndoAvailable] = useState(false);
+
+  //Function to handle the undo stat event
+  const undoLastStat = () => {
+    //if prevServerTracker === "Opponent" -> Handle undo Side Outs
+    if (prevServerTracker === "Opponent") {
+      undoLastSideOut();
+      handleUndoFBSO();
+    }
+
+    //If Home team needs to rotate back after undo event
+    if (prevServerTracker !== serverTracker) {
+      setServerTracker(prevServerTracker);
+      handleUndoRotation();
+    }
+
+    //Reset prev point trackers
+    setPrevSideOut((prev) => ({
+      ...prev,
+      rotation: null,
+      success: null,
+    }));
+    setPrevServerTracker(null);
+    setPrevFBSO((prev) => ({
+      FBSO: null,
+      success: null,
+    }));
+
+    setStatStack((oldStack) => {
+      if (oldStack.length === 0) return oldStack;
+
+      const lastStat = oldStack[oldStack.length - 1];
+
+      if (lastStat.playerNumber === "Opponent") {
+        setOpponentScore(opponentScore - 1);
+      } else if (lastStat.playerNumber === "Your Team") {
+        setHomeScore(homeScore - 1);
+      } else {
+        const updatedRoster = rosterStats.map((player) => {
+          if (
+            player.playerNumber === lastStat.playerNumber ||
+            player.playerNumber === lastStat.playerNumber2
+          ) {
+            //Undo Attempt
+            switch (lastStat.statType) {
+              case "ATK":
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamAttempts: prevStats.teamAttempts - 1,
+                }));
+                return {
+                  ...player,
+                  attempts: player.attempts - 1,
+                };
+
+              //Undo Kill
+              case "K":
+                //Handle Rotation
+                setHomeScore(homeScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamKills: prevStats.teamKills - 1,
+                  teamAttempts: prevStats.teamAttempts - 1,
+                  teamPts: prevStats.teamPts - 1,
+                }));
+                return {
+                  ...player,
+                  kills: player.kills - 1,
+                  attempts: player.attempts - 1,
+                  pts: player.pts - 1,
+                };
+
+              //Undo Attack Error
+              case "ATK ERR":
+                //Handle Rotation
+                setOpponentScore(opponentScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamAttempts: prevStats.teamAttempts - 1,
+                  teamAttackErrors: prevStats.teamAttackErrors - 1,
+                }));
+                return {
+                  ...player,
+                  attempts: player.attempts - 1,
+                  attackErrors: player.attackErrors - 1,
+                };
+
+              //Undo Assist
+              case "A":
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamAssists: prevStats.teamAssists - 1,
+                }));
+                return {
+                  ...player,
+                  assists: player.assists - 1,
+                };
+
+              //Undo Block Solo
+              case "BS":
+                //Handle Rotation
+                setHomeScore(homeScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamBlockSolos: prevStats.teamBlockSolos - 1,
+                  teamPts: prevStats.teamPts - 1,
+                }));
+                return {
+                  ...player,
+                  blockSolos: player.blockSolos - 1,
+                  pts: player.pts - 1,
+                };
+
+              //Undo Block assist, will occur twice
+              case "BA":
+                //Handle Rotation
+                setHomeScore(homeScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamBlockAssists: prevStats.teamBlockAssists - 1,
+                  teamPts: prevStats.teamPts - 0.5,
+                }));
+
+                return {
+                  ...player,
+                  blockAssists: player.blockAssists - 1,
+                  pts: player.pts - 0.5, // Decrement player points by 0.5
+                };
+
+              //Undo Block Error
+              case "BLK ERR":
+                //Handle Rotation
+                setOpponentScore(opponentScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamBlockErrors: prevStats.teamBlockErrors - 1,
+                }));
+                return {
+                  ...player,
+                  blockErrors: player.blockErrors - 1,
+                };
+
+              //Undo Dig
+              case "DIG":
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamDigs: prevStats.teamDigs - 1,
+                }));
+                return {
+                  ...player,
+                  digs: player.digs - 1,
+                };
+
+              //Undo Dig Error
+              case "DIG ERR":
+                //Handle Rotation
+                setOpponentScore(opponentScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamDigErrors: prevStats.teamDigErrors - 1,
+                }));
+                return {
+                  ...player,
+                  digErrors: player.digErrors - 1,
+                };
+
+              //Undo Service Ace
+              case "SA":
+                //Handle Rotation
+                setHomeScore(homeScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamServiceAces: prevStats.teamServiceAces - 1,
+                  teamPts: prevStats.teamPts - 1,
+                }));
+                return {
+                  ...player,
+                  serviceAces: player.serviceAces - 1,
+                  pts: player.pts - 1,
+                };
+
+              //Undo Service Error
+              case "SE":
+                //Handle Rotation
+                setOpponentScore(opponentScore - 1);
+                setTeamStats((prevStats) => ({
+                  ...prevStats,
+                  teamServiceErrors: prevStats.teamServiceErrors - 1,
+                }));
+                return {
+                  ...player,
+                  serviceErrors: player.serviceErrors - 1,
+                };
+
+              //Undo Reception Error
+              case "RE":
+                //Handle Rotation
+                setOpponentScore(opponentScore - 1);
+                if (lastStat.passingType === "Hand") {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamReceptionErrors: prevStats.teamReceptionErrors - 1,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamHandPassingAttempts:
+                      prevStats.teamHandPassingAttempts - 1,
+                  }));
+                  return {
+                    ...player,
+                    receptionErrors: player.receptionErrors - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    handPassingAttempts: player.handPassingAttempts - 1,
+                  };
+                } else {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamReceptionErrors: prevStats.teamReceptionErrors - 1,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamForearmPassingAttempts:
+                      prevStats.teamForearmPassingAttempts - 1,
+                  }));
+                  return {
+                    ...player,
+                    receptionErrors: player.receptionErrors - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    forearmPassingAttempts: player.forearmPassingAttempts - 1,
+                  };
+                }
+
+              //Undo 1 Pass
+              case "1 Pass":
+                //Handle Rotation
+
+                if (lastStat.passingType === "Hand") {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamOnePasses: prevStats.teamOnePasses - 1,
+                    teamTotalPassValue: prevStats.teamTotalPassValue - 1,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamHandPassingAttempts:
+                      prevStats.teamHandPassingAttempts - 1,
+                    teamTotalHandPassValue:
+                      prevStats.teamTotalHandPassValue - 1,
+                  }));
+                  return {
+                    ...player,
+                    onePasses: player.onePasses - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    handPassingAttempts: player.handPassingAttempts - 1,
+                    totalPassValue: player.totalPassValue - 1,
+                    totalHandPassValue: player.totalHandPassValue - 1,
+                  };
+                } else {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamOnePasses: prevStats.teamOnePasses - 1,
+                    teamTotalPassValue: prevStats.teamTotalPassValue - 1,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamForearmPassingAttempts:
+                      prevStats.teamForearmPassingAttempts - 1,
+                    teamTotalForearmPassValue:
+                      prevStats.teamTotalForearmPassValue - 1,
+                  }));
+                  return {
+                    ...player,
+                    onePasses: player.onePasses - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    forearmPassingAttempts: player.forearmPassingAttempts - 1,
+                    totalPassValue: player.totalPassValue - 1,
+                    totalForearmPassValue: player.totalForearmPassValue - 1,
+                  };
+                }
+
+              //Undo 2 Pass
+              case "2 Pass":
+                if (lastStat.passingType === "Hand") {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamTwoPasses: prevStats.teamTwoPasses - 1,
+                    teamTotalPassValue: prevStats.teamTotalPassValue - 2,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamHandPassingAttempts:
+                      prevStats.teamHandPassingAttempts - 1,
+                    teamTotalHandPassValue:
+                      prevStats.teamTotalHandPassValue - 2,
+                  }));
+                  return {
+                    ...player,
+                    twoPasses: player.twoPasses - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    handPassingAttempts: player.handPassingAttempts - 1,
+                    totalPassValue: player.totalPassValue - 2,
+                    totalHandPassValue: player.totalHandPassValue - 2,
+                  };
+                } else {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamTwoPasses: prevStats.teamTwoPasses - 1,
+                    teamTotalPassValue: prevStats.teamTotalPassValue - 2,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamForearmPassingAttempts:
+                      prevStats.teamForearmPassingAttempts - 1,
+                    teamTotalForearmPassValue:
+                      prevStats.teamTotalForearmPassValue - 2,
+                  }));
+                  return {
+                    ...player,
+                    twoPasses: player.twoPasses - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    forearmPassingAttempts: player.forearmPassingAttempts - 1,
+                    totalPassValue: player.totalPassValue - 2,
+                    totalForearmPassValue: player.totalForearmPassValue - 2,
+                  };
+                }
+
+              //Undo 3 Pass
+              case "3 Pass":
+                if (lastStat.passingType === "Hand") {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamThreePasses: prevStats.teamThreePasses - 1,
+                    teamTotalPassValue: prevStats.teamTotalPassValue - 3,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamHandPassingAttempts:
+                      prevStats.teamHandPassingAttempts - 1,
+                    teamTotalHandPassValue:
+                      prevStats.teamTotalHandPassValue - 3,
+                  }));
+                  return {
+                    ...player,
+                    threePasses: player.threePasses - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    handPassingAttempts: player.handPassingAttempts - 1,
+                    totalPassValue: player.totalPassValue - 3,
+                    totalHandPassValue: player.totalHandPassValue - 3,
+                  };
+                } else {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamThreePasses: prevStats.teamThreePasses - 1,
+                    teamTotalPassValue: prevStats.teamTotalPassValue - 3,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamForearmPassingAttempts:
+                      prevStats.teamForearmPassingAttempts - 1,
+                    teamTotalForearmPassValue:
+                      prevStats.teamTotalForearmPassValue - 3,
+                  }));
+                  return {
+                    ...player,
+                    threePasses: player.threePasses - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    forearmPassingAttempts: player.forearmPassingAttempts - 1,
+                    totalPassValue: player.totalPassValue - 3,
+                    totalForearmPassValue: player.totalForearmPassValue - 3,
+                  };
+                }
+            }
+          }
+          return player;
+        });
+
+        setRosterStats(updatedRoster);
+      }
+
+      setUndoAvailable(false);
+      return oldStack.slice(0, oldStack.length - 1);
+    });
   };
 
   const handleAttemptIncrement = (playerNumber) => {
@@ -818,9 +1415,6 @@ export default function statGame() {
         return {
           ...player,
           attempts: player.attempts + 1,
-          //TODO: Decide if hitting percentage should be removed
-          hittingPercentage:
-            (player.kills - player.attackErrors) / player.attempts,
         };
       }
       return player; // Return the player object unchanged
@@ -836,8 +1430,6 @@ export default function statGame() {
           kills: player.kills + 1,
           attempts: player.attempts + 1,
           pts: player.pts + 1,
-          hittingPercentage:
-            (player.kills - player.attackErrors) / player.attempts,
         };
       }
       return player;
@@ -852,8 +1444,6 @@ export default function statGame() {
           ...player,
           attackErrors: player.attackErrors + 1,
           attempts: player.attempts + 1,
-          hittingPercentage:
-            (player.kills - player.attackErrors) / player.attempts,
         };
       }
       return player;
@@ -1001,22 +1591,16 @@ export default function statGame() {
             ...player,
             receptionErrors: player.receptionErrors + 1,
             passingAttempts: player.passingAttempts + 1,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             handPassingAttempts: player.handPassingAttempts + 1,
-            handPassingAverage:
-              player.totalHandPassValue / player.handPassingAttempts,
           };
         } else {
           return {
             ...player,
             receptionErrors: player.receptionErrors + 1,
             passingAttempts: player.passingAttempts + 1,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             forearmPassingAttempts: player.forearmPassingAttempts + 1,
-            forearmPassingAverage:
-              player.totalForearmPassValue / player.forearmPassingAttempts,
           };
         }
       }
@@ -1034,12 +1618,9 @@ export default function statGame() {
             onePasses: player.onePasses + 1,
             passingAttempts: player.passingAttempts + 1,
             totalPassValue: player.totalPassValue + 1,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             handPassingAttempts: player.handPassingAttempts + 1,
             totalHandPassValue: player.totalHandPassValue + 1,
-            handPassingAverage:
-              player.totalHandPassValue / player.handPassingAttempts,
           };
         } else {
           return {
@@ -1047,12 +1628,9 @@ export default function statGame() {
             onePasses: player.onePasses + 1,
             passingAttempts: player.passingAttempts + 1,
             totalPassValue: player.totalPassValue + 1,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             forearmPassingAttempts: player.forearmPassingAttempts + 1,
             totalForearmPassValue: player.totalForearmPassValue + 1,
-            forearmPassingAverage:
-              player.totalForearmPassValue / player.forearmPassingAttempts,
           };
         }
       }
@@ -1070,12 +1648,9 @@ export default function statGame() {
             twoPasses: player.twoPasses + 1,
             passingAttempts: player.passingAttempts + 1,
             totalPassValue: player.totalPassValue + 2,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             handPassingAttempts: player.handPassingAttempts + 1,
             totalHandPassValue: player.totalHandPassValue + 2,
-            handPassingAverage:
-              player.totalHandPassValue / player.handPassingAttempts,
           };
         } else {
           return {
@@ -1083,12 +1658,9 @@ export default function statGame() {
             twoPasses: player.twoPasses + 1,
             passingAttempts: player.passingAttempts + 1,
             totalPassValue: player.totalPassValue + 2,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             forearmPassingAttempts: player.forearmPassingAttempts + 1,
             totalForearmPassValue: player.totalForearmPassValue + 2,
-            forearmPassingAverage:
-              player.totalForearmPassValue / player.forearmPassingAttempts,
           };
         }
       }
@@ -1106,12 +1678,9 @@ export default function statGame() {
             threePasses: player.threePasses + 1,
             passingAttempts: player.passingAttempts + 1,
             totalPassValue: player.totalPassValue + 3,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             handPassingAttempts: player.handPassingAttempts + 1,
             totalHandPassValue: player.totalHandPassValue + 3,
-            handPassingAverage:
-              player.totalHandPassValue / player.handPassingAttempts,
           };
         } else {
           return {
@@ -1119,12 +1688,9 @@ export default function statGame() {
             threePasses: player.threePasses + 1,
             passingAttempts: player.passingAttempts + 1,
             totalPassValue: player.totalPassValue + 3,
-            totalPassingAverage: player.totalPassValue / player.passingAttempts,
 
             forearmPassingAttempts: player.forearmPassingAttempts + 1,
             totalForearmPassValue: player.totalForearmPassValue + 3,
-            forearmPassingAverage:
-              player.totalForearmPassValue / player.forearmPassingAttempts,
           };
         }
       }
@@ -2017,13 +2583,15 @@ export default function statGame() {
           </View>
           <View style={styles.scoreContainer}>
             {/* TODO: Inputvalidation to ensure team name is not too long */}
-            <Text style={styles.scoreTeamNameText}>Team Name</Text>
+            <Text style={styles.scoreTeamNameText}>Your Team</Text>
             <TouchableOpacity
               onPress={() => {
                 handleServeAttempts();
                 handleSideOuts("Home");
                 handleFBSO("Home");
                 setHomeScore(homeScore + 1);
+                //Keep track of prev serve for undo
+                setPrevServerTracker(serverTracker);
                 if (serverTracker === "Opponent") {
                   setServerTracker("Home");
                   handleRotation();
@@ -2031,10 +2599,11 @@ export default function statGame() {
                 setStatStack((oldStack) => [
                   ...oldStack,
                   {
-                    playerNumber: "Home",
+                    playerNumber: "Your Team",
                     statType: "+1",
                   },
                 ]);
+                setUndoAvailable(true);
               }}
             >
               <View style={styles.scoreAmountContainer}>
@@ -2051,6 +2620,8 @@ export default function statGame() {
                 handleSideOuts("Opponent");
                 handleFBSO("Opponent");
                 setOpponentScore(opponentScore + 1);
+                //Keep track of prev serve for undo
+                setPrevServerTracker(serverTracker);
                 if (serverTracker !== "Opponent") {
                   setServerTracker("Opponent");
                   setIsFBSO(true);
@@ -2062,6 +2633,7 @@ export default function statGame() {
                     statType: "+1",
                   },
                 ]);
+                setUndoAvailable(true);
               }}
               delayPressIn={0}
             >
@@ -2101,8 +2673,17 @@ export default function statGame() {
         </View>
         {/* TODO: Add undo functionality onPress*/}
         <View style={styles.undoContainer}>
-          <TouchableOpacity>
-            <View style={styles.undoBtn}>
+          <TouchableOpacity
+            onPress={() => undoLastStat()}
+            disabled={undoAvailable === false ? true : false}
+          >
+            <View
+              style={
+                undoAvailable === false
+                  ? styles.undoBtnDisabled
+                  : styles.undoBtn
+              }
+            >
               <View style={styles.undoIcon}>
                 <AntDesign
                   style={styles.backIcon}
@@ -2121,23 +2702,41 @@ export default function statGame() {
             <Text style={styles.undoLogTextTitle}>Stat Log</Text>
             <Text style={styles.undoLogText}>
               {statStack[statStack.length - 1]
-                ? statStack[statStack.length - 1].playerNumber +
-                  ": " +
-                  statStack[statStack.length - 1].statType
+                ? statStack[statStack.length - 1].playerNumber2
+                  ? statStack[statStack.length - 1].playerNumber +
+                    ", " +
+                    statStack[statStack.length - 1].playerNumber2 +
+                    ": " +
+                    statStack[statStack.length - 1].statType
+                  : statStack[statStack.length - 1].playerNumber +
+                    ": " +
+                    statStack[statStack.length - 1].statType
                 : " "}
             </Text>
             <Text style={styles.undoLogText}>
               {statStack[statStack.length - 2]
-                ? statStack[statStack.length - 2].playerNumber +
-                  ": " +
-                  statStack[statStack.length - 2].statType
+                ? statStack[statStack.length - 2].playerNumber2
+                  ? statStack[statStack.length - 2].playerNumber +
+                    ", " +
+                    statStack[statStack.length - 2].playerNumber2 +
+                    ": " +
+                    statStack[statStack.length - 2].statType
+                  : statStack[statStack.length - 2].playerNumber +
+                    ": " +
+                    statStack[statStack.length - 2].statType
                 : " "}
             </Text>
             <Text style={styles.undoLogText}>
               {statStack[statStack.length - 3]
-                ? statStack[statStack.length - 3].playerNumber +
-                  ": " +
-                  statStack[statStack.length - 3].statType
+                ? statStack[statStack.length - 3].playerNumber2
+                  ? statStack[statStack.length - 3].playerNumber +
+                    ", " +
+                    statStack[statStack.length - 3].playerNumber2 +
+                    ": " +
+                    statStack[statStack.length - 3].statType
+                  : statStack[statStack.length - 3].playerNumber +
+                    ": " +
+                    statStack[statStack.length - 3].statType
                 : " "}
             </Text>
           </View>
@@ -2396,6 +2995,7 @@ export default function statGame() {
                               statType: "ATK",
                             },
                           ]);
+                          setUndoAvailable(true);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -2415,6 +3015,8 @@ export default function statGame() {
                           }));
                           handleServeAttempts();
                           setHomeScore(homeScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
                           if (serverTracker === "Opponent") {
                             setServerTracker("Home");
                             handleRotation();
@@ -2426,6 +3028,7 @@ export default function statGame() {
                               statType: "K",
                             },
                           ]);
+                          setUndoAvailable(true);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -2446,6 +3049,8 @@ export default function statGame() {
                           }));
                           handleServeAttempts();
                           setOpponentScore(opponentScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
                             setIsFBSO(true);
@@ -2457,6 +3062,7 @@ export default function statGame() {
                               statType: "ATK ERR",
                             },
                           ]);
+                          setUndoAvailable(true);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -2478,6 +3084,7 @@ export default function statGame() {
                               statType: "A",
                             },
                           ]);
+                          setUndoAvailable(true);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -2497,10 +3104,13 @@ export default function statGame() {
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamBlockSolos: teamStats.teamBlockSolos + 1,
+                            teamTotalBlocks: teamStats.teamTotalBlocks + 1,
                             teamPts: teamStats.teamPts + 1,
                           }));
                           handleServeAttempts();
                           setHomeScore(homeScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
                           if (serverTracker === "Opponent") {
                             setServerTracker("Home");
                             handleRotation();
@@ -2512,6 +3122,7 @@ export default function statGame() {
                               statType: "BS",
                             },
                           ]);
+                          setUndoAvailable(true);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -2529,6 +3140,8 @@ export default function statGame() {
                           }));
                           handleServeAttempts();
                           setOpponentScore(opponentScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
                             setIsFBSO(true);
@@ -2540,6 +3153,7 @@ export default function statGame() {
                               statType: "BLK ERR",
                             },
                           ]);
+                          setUndoAvailable(true);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -2574,7 +3188,7 @@ export default function statGame() {
                             );
                             setTeamStats((teamStats) => ({
                               ...teamStats,
-                              teamBlockAssists: teamStats.teamBlockAssists + 1,
+                              teamBlockAssists: teamStats.teamBlockAssists + 2,
                               teamTotalBlocks: teamStats.teamTotalBlocks + 1,
                               teamPts: teamStats.teamPts + 1,
                             }));
@@ -2584,16 +3198,11 @@ export default function statGame() {
                               ...oldStack,
                               {
                                 playerNumber: player.playerNumber,
+                                playerNumber2: firstBlockAssist,
                                 statType: "BA",
                               },
                             ]);
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "BA",
-                              },
-                            ]);
+                            setUndoAvailable(true);
 
                             handleSideOuts("Home");
                             handleFBSO("Home");
@@ -2603,6 +3212,8 @@ export default function statGame() {
                             setFirstBlockAssist("");
                             handleServeAttempts();
                             setHomeScore(homeScore + 1);
+                            //Keep track of prev serve for undo
+                            setPrevServerTracker(serverTracker);
                             if (serverTracker === "Opponent") {
                               setServerTracker("Home");
                               handleRotation();
@@ -2631,6 +3242,8 @@ export default function statGame() {
                           }));
                           handleServeAttempts();
                           setOpponentScore(opponentScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
                             setIsFBSO(true);
@@ -2642,6 +3255,7 @@ export default function statGame() {
                               statType: "DIG ERR",
                             },
                           ]);
+                          setUndoAvailable(true);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -2656,7 +3270,7 @@ export default function statGame() {
                           handleDigIncrement(player.playerNumber);
                           setTeamStats((teamStats) => ({
                             ...teamStats,
-                            teamTotalDigs: teamStats.teamTotalDigs + 1,
+                            teamDigs: teamStats.teamDigs + 1,
                           }));
                           setStatStack((oldStack) => [
                             ...oldStack,
@@ -2665,6 +3279,7 @@ export default function statGame() {
                               statType: "DIG",
                             },
                           ]);
+                          setUndoAvailable(true);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -2686,6 +3301,8 @@ export default function statGame() {
                           }));
                           handleServeAttempts();
                           setHomeScore(homeScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
                           if (serverTracker === "Opponent") {
                             setServerTracker("Home");
                             handleRotation();
@@ -2697,6 +3314,7 @@ export default function statGame() {
                               statType: "SA",
                             },
                           ]);
+                          setUndoAvailable(true);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -2712,6 +3330,8 @@ export default function statGame() {
                           }));
                           handleServeAttempts();
                           setOpponentScore(opponentScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
                             setIsFBSO(true);
@@ -2723,6 +3343,7 @@ export default function statGame() {
                               statType: "SE",
                             },
                           ]);
+                          setUndoAvailable(true);
                         }}
                       >
                         <View style={styles.statBtn}>
@@ -2802,15 +3423,17 @@ export default function statGame() {
                                 teamStats.teamReceptionErrors + 1,
                               teamPassingAttempts:
                                 teamStats.teamPassingAttempts + 1,
-                              teamTotalPassingAverage:
-                                teamStats.teamTotalPassValue /
-                                teamStats.teamPassingAttempts,
                               teamHandPassingAttempts:
                                 teamStats.teamHandPassingAttempts + 1,
-                              teamHandPassingAverage:
-                                teamStats.teamTotalHandPassValue /
-                                teamStats.teamHandPassingAttempts,
                             }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "RE",
+                                passType: "Hand",
+                              },
+                            ]);
                           } else {
                             setTeamStats((teamStats) => ({
                               ...teamStats,
@@ -2818,23 +3441,19 @@ export default function statGame() {
                                 teamStats.teamReceptionErrors + 1,
                               teamPassingAttempts:
                                 teamStats.teamPassingAttempts + 1,
-                              teamTotalPassingAverage:
-                                teamStats.teamTotalPassValue /
-                                teamStats.teamPassingAttempts,
                               teamForearmPassingAttempts:
                                 teamStats.teamForearmPassingAttempts + 1,
-                              teamForearmPassingAverage:
-                                teamStats.teamTotalForearmPassValue /
-                                teamStats.teamForearmPassingAttempts,
                             }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "RE",
+                                passType: "Forearm",
+                              },
+                            ]);
                           }
-                          setStatStack((oldStack) => [
-                            ...oldStack,
-                            {
-                              playerNumber: player.playerNumber,
-                              statType: "RE",
-                            },
-                          ]);
+
                           handleSideOuts("Opponent");
                           handleFBSO("Opponent");
                           setForearmPassSelected(false);
@@ -2843,10 +3462,13 @@ export default function statGame() {
                           setHandPassPlayer(null);
                           handleServeAttempts();
                           setOpponentScore(opponentScore + 1);
+                          //Keep track of prev serve for undo
+                          setPrevServerTracker(serverTracker);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
                             setIsFBSO(true);
                           }
+                          setUndoAvailable(true);
                         }}
                         disabled={
                           handPassSelected === false &&
@@ -2879,17 +3501,19 @@ export default function statGame() {
                                 teamStats.teamPassingAttempts + 1,
                               teamTotalPassValue:
                                 teamStats.teamTotalPassValue + 2,
-                              teamTotalPassingAverage:
-                                teamStats.teamTotalPassValue /
-                                teamStats.teamPassingAttempts,
                               teamHandPassingAttempts:
                                 teamStats.teamHandPassingAttempts + 1,
                               teamTotalHandPassValue:
                                 teamStats.teamTotalHandPassValue + 2,
-                              teamHandPassingAverage:
-                                teamStats.teamTotalHandPassValue /
-                                teamStats.teamHandPassingAttempts,
                             }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "2 Pass",
+                                passType: "Hand",
+                              },
+                            ]);
                           } else {
                             setTeamStats((teamStats) => ({
                               ...teamStats,
@@ -2898,29 +3522,26 @@ export default function statGame() {
                                 teamStats.teamPassingAttempts + 1,
                               teamTotalPassValue:
                                 teamStats.teamTotalPassValue + 2,
-                              teamTotalPassingAverage:
-                                teamStats.teamTotalPassValue /
-                                teamStats.teamPassingAttempts,
                               teamForearmPassingAttempts:
                                 teamStats.teamForearmPassingAttempts + 1,
                               teamTotalForearmPassValue:
                                 teamStats.teamTotalForearmPassValue + 2,
-                              teamForearmPassingAverage:
-                                teamStats.teamTotalForearmPassValue /
-                                teamStats.teamForearmPassingAttempts,
                             }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "2 Pass",
+                                passType: "Forearm",
+                              },
+                            ]);
                           }
-                          setStatStack((oldStack) => [
-                            ...oldStack,
-                            {
-                              playerNumber: player.playerNumber,
-                              statType: "2 Pass",
-                            },
-                          ]);
+
                           setForearmPassSelected(false);
                           setForearmPassPlayer(null);
                           setHandPassSelected(false);
                           setHandPassPlayer(null);
+                          setUndoAvailable(true);
                         }}
                         disabled={
                           handPassSelected === false &&
@@ -2955,17 +3576,19 @@ export default function statGame() {
                                 teamStats.teamPassingAttempts + 1,
                               teamTotalPassValue:
                                 teamStats.teamTotalPassValue + 1,
-                              teamTotalPassingAverage:
-                                teamStats.teamTotalPassValue /
-                                teamStats.teamPassingAttempts,
                               teamHandPassingAttempts:
                                 teamStats.teamHandPassingAttempts + 1,
                               teamTotalHandPassValue:
                                 teamStats.teamTotalHandPassValue + 1,
-                              teamHandPassingAverage:
-                                teamStats.teamTotalHandPassValue /
-                                teamStats.teamHandPassingAttempts,
                             }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "1 Pass",
+                                passType: "Hand",
+                              },
+                            ]);
                           } else {
                             setTeamStats((teamStats) => ({
                               ...teamStats,
@@ -2974,29 +3597,25 @@ export default function statGame() {
                                 teamStats.teamPassingAttempts + 1,
                               teamTotalPassValue:
                                 teamStats.teamTotalPassValue + 1,
-                              teamTotalPassingAverage:
-                                teamStats.teamTotalPassValue /
-                                teamStats.teamPassingAttempts,
                               teamForearmPassingAttempts:
                                 teamStats.teamForearmPassingAttempts + 1,
                               teamTotalForearmPassValue:
                                 teamStats.teamTotalForearmPassValue + 1,
-                              teamForearmPassingAverage:
-                                teamStats.teamTotalForearmPassValue /
-                                teamStats.teamForearmPassingAttempts,
                             }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "1 Pass",
+                                passType: "Forearm",
+                              },
+                            ]);
                           }
-                          setStatStack((oldStack) => [
-                            ...oldStack,
-                            {
-                              playerNumber: player.playerNumber,
-                              statType: "1 Pass",
-                            },
-                          ]);
                           setForearmPassSelected(false);
                           setForearmPassPlayer(null);
                           setHandPassSelected(false);
                           setHandPassPlayer(null);
+                          setUndoAvailable(true);
                         }}
                         disabled={
                           handPassSelected === false &&
@@ -3029,17 +3648,19 @@ export default function statGame() {
                                 teamStats.teamPassingAttempts + 1,
                               teamTotalPassValue:
                                 teamStats.teamTotalPassValue + 3,
-                              teamTotalPassingAverage:
-                                teamStats.teamTotalPassValue /
-                                teamStats.teamPassingAttempts,
                               teamHandPassingAttempts:
                                 teamStats.teamHandPassingAttempts + 1,
                               teamTotalHandPassValue:
                                 teamStats.teamTotalHandPassValue + 3,
-                              teamHandPassingAverage:
-                                teamStats.teamTotalHandPassValue /
-                                teamStats.teamHandPassingAttempts,
                             }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "3 Pass",
+                                passType: "Hand",
+                              },
+                            ]);
                           } else {
                             setTeamStats((teamStats) => ({
                               ...teamStats,
@@ -3048,29 +3669,26 @@ export default function statGame() {
                                 teamStats.teamPassingAttempts + 1,
                               teamTotalPassValue:
                                 teamStats.teamTotalPassValue + 3,
-                              teamTotalPassingAverage:
-                                teamStats.teamTotalPassValue /
-                                teamStats.teamPassingAttempts,
                               teamForearmPassingAttempts:
                                 teamStats.teamForearmPassingAttempts + 1,
                               teamTotalForearmPassValue:
                                 teamStats.teamTotalForearmPassValue + 3,
-                              teamForearmPassingAverage:
-                                teamStats.teamTotalForearmPassValue /
-                                teamStats.teamForearmPassingAttempts,
                             }));
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "3 Pass",
+                                passType: "Forearm",
+                              },
+                            ]);
                           }
-                          setStatStack((oldStack) => [
-                            ...oldStack,
-                            {
-                              playerNumber: player.playerNumber,
-                              statType: "3 Pass",
-                            },
-                          ]);
+
                           setForearmPassSelected(false);
                           setForearmPassPlayer(null);
                           setHandPassSelected(false);
                           setHandPassPlayer(null);
+                          setUndoAvailable(true);
                         }}
                         disabled={
                           handPassSelected === false &&
@@ -3163,6 +3781,26 @@ const styles = StyleSheet.create({
     width: wp(7.5),
     height: hp(7),
     backgroundColor: COLORS.primary,
+    borderRadius: 20,
+    marginHorizontal: 5,
+    marginTop: 5,
+    marginBottom: 7,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
+  undoBtnDisabled: {
+    flexDirection: "row",
+    width: wp(7.5),
+    height: hp(7),
+    backgroundColor: COLORS.darkGrey,
     borderRadius: 20,
     marginHorizontal: 5,
     marginTop: 5,
