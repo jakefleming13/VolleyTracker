@@ -18,32 +18,7 @@ export default function SeasonSettings() {
   const { seasonID, user, setActiveSeason } = useAuth();
   const [seasonData, setSeasonData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [roster, setRoster] = useState([
-    { playerNumber: '1', value: 'Player 1' },
-    { playerNumber: '2', value: 'Player 2' },
-    { playerNumber: '3', value: 'Player 3' },
-    { playerNumber: '4', value: 'Player 4' },
-    { playerNumber: '5', value: 'Player 5' },
-    { playerNumber: '6', value: 'Player 6' },
-    { playerNumber: '7', value: 'Player 7' },
-    { playerNumber: '8', value: 'Player 8' },
-    { playerNumber: '9', value: 'Player 9' },
-    { playerNumber: '10', value: 'Player 10' },
-    { playerNumber: '11', value: 'Player 11' },
-    { playerNumber: '12', value: 'Player 12' },
-    { playerNumber: '13', value: 'Player 13' },
-    { playerNumber: '14', value: 'Player 14' },
-    { playerNumber: '15', value: 'Player 15' },
-    { playerNumber: '16', value: 'Player 16' },
-    { playerNumber: '17', value: 'Player 17' },
-    { playerNumber: '18', value: 'Player 18' },
-    { playerNumber: '19', value: 'Player 19' },
-    { playerNumber: '20', value: 'Player 20' },
-    { playerNumber: '21', value: 'Player 21' },
-    { playerNumber: '22', value: 'Player 22' },
-    { playerNumber: '23', value: 'Player 23' },
-    { playerNumber: '24', value: 'Player 24' },
-  ]);
+  const [playerStats, setPlayerStats] = useState([]);
 
   useEffect(() => {
     // Grab season by season ID from firebase, then setSeasonData
@@ -69,6 +44,32 @@ export default function SeasonSettings() {
     }
   }, [seasonID, user]);
 
+  useEffect(() => {
+    const fetchPlayerStats = async () => {
+      if (seasonID && user) {
+        try {
+          const playerStatsCollection = firestore()
+            .collection('seasons')
+            .doc(seasonID)
+            .collection('playerStats');
+
+          const snapshot = await playerStatsCollection.get();
+          const stats = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+          setPlayerStats(stats[0]?.roster || []);
+        } catch (error) {
+          console.error('Failed to fetch player stats:', error);
+        }
+        setLoading(false);
+      }
+    };
+
+    fetchPlayerStats();
+  }, [seasonID, user]);
+
   if (loading || !seasonData) {
     if (loading) {
       return (
@@ -87,7 +88,7 @@ export default function SeasonSettings() {
 
   const renderPlayer = ({ item }) => (
     <View style={styles.playerItem}>
-      <Text style={styles.playerText}>{item.value}</Text>
+      <Text style={styles.playerText}>{item.playerName} - #{item.playerNumber}</Text>
     </View>
   );
 
@@ -143,7 +144,7 @@ export default function SeasonSettings() {
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>Roster</Text>
               <FlatList
-                data={roster}
+                data={playerStats}
                 renderItem={renderPlayer}
                 keyExtractor={(item) => item.playerNumber}
                 numColumns={3}
