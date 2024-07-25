@@ -22,6 +22,7 @@ import {
   MenuOption,
   MenuTrigger,
 } from "react-native-popup-menu";
+import { RadioButton } from "react-native-paper";
 
 export default function statGame() {
   //Get game settings
@@ -455,8 +456,8 @@ export default function statGame() {
   //rosterStats variable contains all of the player stats for the current game
   const [rosterStats, setRosterStats] = useState(testingRoster);
 
-  const [homeScore, setHomeScore] = useState(0);
-  const [opponentScore, setOpponentScore] = useState(0);
+  const [homeScore, setHomeScore] = useState(23);
+  const [opponentScore, setOpponentScore] = useState(23);
 
   const [setScores, setSetScores] = useState([]);
 
@@ -512,6 +513,21 @@ export default function statGame() {
             rosterStats[index].playerName,
         });
       }
+    }
+    return dropDownRosterList;
+  };
+
+  const inBetweenSetsRosterList = () => {
+    const dropDownRosterList = [];
+    for (let index = 0; index < rosterStats.length; index++) {
+      dropDownRosterList.push({
+        key: index.toString(),
+        value:
+          rosterStats[index].playerNumber +
+          " - " +
+          rosterStats[index].playerName,
+        playerNumber: rosterStats[index].playerNumber,
+      });
     }
     return dropDownRosterList;
   };
@@ -655,6 +671,9 @@ export default function statGame() {
 
     return <View>{display}</View>;
   };
+
+  //Variable to handles the transition to the inbetweenset screen
+  const [endSet, setEndSet] = useState(false);
 
   //teamStats Variable to keep track of all team stats during the current game
   const [teamStats, setTeamStats] = useState({
@@ -1556,6 +1575,7 @@ export default function statGame() {
   };
 
   const handleServeAttempts = () => {
+    //Increment serve attempt if needed
     setRosterStats((prevRosterStats) =>
       prevRosterStats.map((player) => {
         if (
@@ -1793,172 +1813,274 @@ export default function statGame() {
     setRosterStats(updatedRoster);
   };
 
-  return (
-    <SafeView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={cancelAlert}>
-          <View style={styles.exitBtn}>
-            <AntDesign
-              style={styles.backIcon}
-              name="left"
-              size={hp(3.7)}
-              color={COLORS.white}
-            />
-            <Text style={styles.headerBtnText}>EXIT</Text>
+  if (
+    (homeScore > 24 && homeScore - opponentScore > 1) ||
+    (opponentScore > 24 && opponentScore - homeScore > 1)
+  ) {
+    return (
+      <SafeView style={styles.container}>
+        <View style={styles.inBetweenHeaderContainer}>
+          <TouchableOpacity onPress={cancelAlert}>
+            <View style={styles.exitBtn}>
+              <AntDesign
+                style={styles.backIcon}
+                name="left"
+                size={hp(3.7)}
+                color={COLORS.white}
+              />
+              <Text style={styles.headerBtnText}>EXIT</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setEndSet(false);
+              setStatStack([]);
+              setHomeScore(0);
+              setOpponentScore(0);
+              setCurrentSet(currentSet + 1);
+
+              //TODOs:
+              //reset firstTimeOnCourts for players
+              //Reset onCourtPositionValues and subs to reaspect positions
+              //Save set scores -> Increment sets won/sets lost
+              //Input validation, ensure rotation is proper -> Alert
+              //set Undo to false
+            }}
+          >
+            <View style={styles.exitBtn}>
+              <Text style={styles.inBetweenContinueBtnText}>CONTINUE</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.inBetweenTitleContainer}>
+          <Text style={styles.inBetweenTitleText}>Set {currentSet + 1}</Text>
+        </View>
+        <View style={styles.inBetweenSeperator} />
+        <ScrollView>
+          <View style={styles.inBetweenSecondaryTitleContainer}>
+            <Text style={styles.inBetweenSecondaryTitleText}>
+              Set {currentSet + 1} First Serve:{" "}
+            </Text>
           </View>
-        </TouchableOpacity>
-        <View style={styles.scoreboardContainer}>
-          <View style={styles.liveStatsSubContainer}>
-            <TouchableOpacity onPress={toggleLiveStatsModal}>
-              <View style={styles.liveStatsContainer}>
-                <FontAwesome6
-                  name="chart-bar"
-                  size={RFValue(12)}
+          <View style={styles.radioContainer}>
+            <View style={styles.radioGroup}>
+              <View style={styles.radioButton}>
+                <RadioButton
+                  value="Your Team"
+                  status={serverTracker === "Home" ? "checked" : "unchecked"}
+                  onPress={() => setServerTracker("Home")}
                   color={COLORS.primary}
                 />
-                <Text style={styles.liveStatsRotationText}>Live Stats</Text>
+                <Text style={styles.radioLabel}>Your Team</Text>
               </View>
-            </TouchableOpacity>
-            <View style={styles.subContainer}>
-              <TouchableOpacity onPress={toggleSubModal}>
-                <View style={styles.liveStatsContainer}>
-                  <MaterialIcons
-                    name="swap-horizontal-circle"
-                    size={RFValue(14)}
-                    color={COLORS.primary}
-                  />
-                  <Text style={styles.liveStatsRotationText}>Substitute</Text>
-                </View>
-              </TouchableOpacity>
+              <View style={styles.radioButton}>
+                <RadioButton
+                  value="Opponent"
+                  status={
+                    serverTracker === "Opponent" ? "checked" : "unchecked"
+                  }
+                  onPress={() => setServerTracker("Opponent")}
+                  color={COLORS.primary}
+                />
+                <Text style={styles.radioLabel}>Opponent</Text>
+              </View>
             </View>
           </View>
-          <View
-            style={{
-              flex: 1,
-            }}
-          >
-            <Modal
-              isVisible={isSubModalVisible}
-              onBackdropPress={toggleSubModal}
-            >
-              <View style={styles.subModalContainer}>
-                <View style={styles.subModalHeader}>
-                  <TouchableOpacity onPress={toggleSubModal}>
-                    <AntDesign
-                      name="closesquareo"
-                      size={RFValue(20)}
-                      color={COLORS.black}
+          <View style={styles.inBetweenSecondaryTitleContainer}>
+            <Text style={styles.inBetweenSecondaryTitleText}>Rotation:</Text>
+          </View>
+          <View style={styles.court}>
+            <View style={styles.netIndicator} />
+            <View style={styles.courtRow}>
+              <View style={styles.courtPosition}>
+                <Dropdown
+                  style={styles.courtdropdown}
+                  placeholderStyle={styles.placeholderDropDown}
+                  selectedTextStyle={styles.selectedDropDownText}
+                  itemTextStyle={styles.dropDownText}
+                  data={inBetweenSetsRosterList()}
+                  search={false}
+                  maxHeight={300}
+                  labelField="value"
+                  activeColor={COLORS.grey}
+                  valueField="playerNumber"
+                  placeholder={"Position 4"}
+                  value={positionFour}
+                  onChange={(val) => setPositionFour(val.playerNumber)}
+                />
+              </View>
+              <View style={styles.courtPosition}>
+                <Dropdown
+                  style={styles.courtdropdown}
+                  placeholderStyle={styles.placeholderDropDown}
+                  selectedTextStyle={styles.selectedDropDownText}
+                  itemTextStyle={styles.dropDownText}
+                  data={inBetweenSetsRosterList()}
+                  search={false}
+                  maxHeight={300}
+                  activeColor={COLORS.grey}
+                  labelField="value"
+                  valueField="playerNumber"
+                  placeholder={"Position 3"}
+                  value={positionThree}
+                  onChange={(val) => setPositionThree(val.playerNumber)}
+                />
+              </View>
+              <View style={styles.courtPosition}>
+                <Dropdown
+                  style={styles.courtdropdown}
+                  placeholderStyle={styles.placeholderDropDown}
+                  selectedTextStyle={styles.selectedDropDownText}
+                  itemTextStyle={styles.dropDownText}
+                  data={inBetweenSetsRosterList()}
+                  search={false}
+                  maxHeight={300}
+                  labelField="value"
+                  activeColor={COLORS.grey}
+                  valueField="playerNumber"
+                  placeholder={"Position 2"}
+                  value={positionTwo}
+                  onChange={(val) => {
+                    setPositionTwo(val.playerNumber);
+                  }}
+                />
+              </View>
+            </View>
+            <View style={styles.courtRow}>
+              <View style={styles.courtPosition}>
+                <Dropdown
+                  style={styles.courtdropdown}
+                  placeholderStyle={styles.placeholderDropDown}
+                  selectedTextStyle={styles.selectedDropDownText}
+                  itemTextStyle={styles.dropDownText}
+                  data={inBetweenSetsRosterList()}
+                  search={false}
+                  maxHeight={300}
+                  labelField="value"
+                  activeColor={COLORS.grey}
+                  valueField="playerNumber"
+                  placeholder={"Position 5"}
+                  value={positionFive}
+                  onChange={(val) => setPositionFive(val.playerNumber)}
+                />
+              </View>
+              <View style={styles.courtPosition}>
+                <Dropdown
+                  style={styles.courtdropdown}
+                  placeholderStyle={styles.placeholderDropDown}
+                  selectedTextStyle={styles.selectedDropDownText}
+                  itemTextStyle={styles.dropDownText}
+                  data={inBetweenSetsRosterList()}
+                  search={false}
+                  maxHeight={300}
+                  labelField="value"
+                  valueField="playerNumber"
+                  activeColor={COLORS.grey}
+                  placeholder={"Position 6"}
+                  value={positionSix}
+                  onChange={(val) => setPositionSix(val.playerNumber)}
+                />
+              </View>
+              <View style={styles.courtPosition}>
+                <Dropdown
+                  style={styles.courtdropdown}
+                  placeholderStyle={styles.placeholderDropDown}
+                  selectedTextStyle={styles.selectedDropDownText}
+                  itemTextStyle={styles.dropDownText}
+                  data={inBetweenSetsRosterList()}
+                  search={false}
+                  maxHeight={300}
+                  labelField="value"
+                  activeColor={COLORS.grey}
+                  valueField="playerNumber"
+                  placeholder={"Position 1"}
+                  value={positionOne}
+                  onChange={(val) => setPositionOne(val.playerNumber)}
+                />
+              </View>
+            </View>
+          </View>
+          <View style={styles.setterContainer}>
+            <Text style={styles.setterTitleText}>On Court Setter: </Text>
+            <View style={styles.setterSlot}>
+              <Dropdown
+                style={styles.setterDropDown}
+                placeholderStyle={styles.setterPlaceHolderDropDown}
+                selectedTextStyle={styles.selectedDropDownText}
+                itemTextStyle={styles.dropDownText}
+                //TODO: Ensure selection is only from on court players
+                data={inBetweenSetsRosterList()}
+                search={false}
+                maxHeight={300}
+                labelField="value"
+                valueField="playerNumber"
+                placeholder={"Select Setter"}
+                activeColor={COLORS.grey}
+                dropdownPosition="auto"
+                value={setter}
+                onChange={(val) => setSetter(val.playerNumber)}
+              />
+            </View>
+          </View>
+          <View style={styles.inBetweenSecondaryTitleContainer}>
+            <Text style={styles.inBetweenSecondaryTitleText}>Liberos:</Text>
+          </View>
+          <View style={styles.inBetweenSpacer} />
+        </ScrollView>
+      </SafeView>
+    );
+  } else {
+    return (
+      <SafeView style={styles.container}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={cancelAlert}>
+            <View style={styles.exitBtn}>
+              <AntDesign
+                style={styles.backIcon}
+                name="left"
+                size={hp(3.7)}
+                color={COLORS.white}
+              />
+              <Text style={styles.headerBtnText}>EXIT</Text>
+            </View>
+          </TouchableOpacity>
+          <View style={styles.scoreboardContainer}>
+            <View style={styles.liveStatsSubContainer}>
+              <TouchableOpacity onPress={toggleLiveStatsModal}>
+                <View style={styles.liveStatsContainer}>
+                  <FontAwesome6
+                    name="chart-bar"
+                    size={RFValue(12)}
+                    color={COLORS.primary}
+                  />
+                  <Text style={styles.liveStatsRotationText}>Live Stats</Text>
+                </View>
+              </TouchableOpacity>
+              <View style={styles.subContainer}>
+                <TouchableOpacity onPress={toggleSubModal}>
+                  <View style={styles.liveStatsContainer}>
+                    <MaterialIcons
+                      name="swap-horizontal-circle"
+                      size={RFValue(14)}
+                      color={COLORS.primary}
                     />
-                  </TouchableOpacity>
-                </View>
-                <Text style={styles.subModalText}>Substitute Players</Text>
-                <View style={styles.subDropDownContainer}>
-                  <Dropdown
-                    style={styles.dropdown}
-                    selectedTextStyle={styles.selectedDropDownText}
-                    itemTextStyle={styles.dropDownText}
-                    placeholderStyle={styles.placeholderDropDown}
-                    data={onCourtRoster()}
-                    search={false}
-                    placeholder="Court Player"
-                    maxHeight={300}
-                    labelField={"value"}
-                    activeColor={COLORS.grey}
-                    valueField="key"
-                    value={courtDropDownValue}
-                    onChange={(value) => setCourtDropDownValue(value.key)}
-                  />
-                  <Text style={styles.subModalBodyText}>for</Text>
-                  <Dropdown
-                    style={styles.dropdown}
-                    selectedTextStyle={styles.selectedDropDownText}
-                    itemTextStyle={styles.dropDownText}
-                    placeholderStyle={styles.placeholderDropDown}
-                    data={benchRoster()}
-                    search={false}
-                    placeholder="Bench Player"
-                    maxHeight={300}
-                    labelField={"value"}
-                    activeColor={COLORS.grey}
-                    valueField="key"
-                    value={benchDropDownValue}
-                    onChange={(value) => {
-                      setBenchDropDownValue(value.key);
-                    }}
-                  />
-                </View>
-                <View style={styles.subConfirmContainer}>
-                  <TouchableOpacity onPress={handleSubstitution}>
-                    <View style={styles.liveStatsContainer}>
-                      <Text style={styles.liveStatsRotationText}>Confirm</Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </Modal>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Modal
-              isVisible={isRotationCheckModalVisible}
-              onBackdropPress={toggleRotationCheckModal}
-            >
-              <View style={styles.rotationCheckContainer}>
-                <View style={styles.court}>
-                  <View style={styles.netIndicator} />
-                  <View style={styles.courtRow}>
-                    <View style={styles.courtPosition}>
-                      <Text style={styles.courtPositionText}>
-                        {positionFour}
-                      </Text>
-                    </View>
-                    <View style={styles.courtPosition}>
-                      <Text style={styles.courtPositionText}>
-                        {positionThree}
-                      </Text>
-                    </View>
-                    <View style={styles.courtPosition}>
-                      <Text style={styles.courtPositionText}>
-                        {positionTwo}
-                      </Text>
-                    </View>
+                    <Text style={styles.liveStatsRotationText}>Substitute</Text>
                   </View>
-                  <View style={styles.courtRow}>
-                    <View style={styles.courtPosition}>
-                      <Text style={styles.courtPositionText}>
-                        {positionFive}
-                      </Text>
-                    </View>
-                    <View style={styles.courtPosition}>
-                      <Text style={styles.courtPositionText}>
-                        {positionSix}
-                      </Text>
-                    </View>
-                    <View style={styles.courtPosition}>
-                      <Text style={styles.courtPositionText}>
-                        {positionOne}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
+                </TouchableOpacity>
               </View>
-            </Modal>
-          </View>
-          <View style={{ flex: 1 }}>
-            <Modal
-              isVisible={isLiveStatsModalVisible}
-              onBackdropPress={toggleLiveStatsModal}
-              propagateSwipe={true}
+            </View>
+            <View
+              style={{
+                flex: 1,
+              }}
             >
-              <View style={styles.liveStatsModalContainer}>
-                <ScrollView>
-                  <View style={styles.liveStatsModalHeader}>
-                    <TouchableOpacity onPress={toggleLiveStatsModal}>
+              <Modal
+                isVisible={isSubModalVisible}
+                onBackdropPress={toggleSubModal}
+              >
+                <View style={styles.subModalContainer}>
+                  <View style={styles.subModalHeader}>
+                    <TouchableOpacity onPress={toggleSubModal}>
                       <AntDesign
                         name="closesquareo"
                         size={RFValue(20)}
@@ -1966,320 +2088,186 @@ export default function statGame() {
                       />
                     </TouchableOpacity>
                   </View>
-                  <View style={styles.liveStatsModalHeader2}>
-                    <Text style={styles.liveStatsModalHeaderText}>
-                      Live Stats
-                    </Text>
+                  <Text style={styles.subModalText}>Substitute Players</Text>
+                  <View style={styles.subDropDownContainer}>
+                    <Dropdown
+                      style={styles.dropdown}
+                      selectedTextStyle={styles.selectedDropDownText}
+                      itemTextStyle={styles.dropDownText}
+                      placeholderStyle={styles.placeholderDropDown}
+                      data={onCourtRoster()}
+                      search={false}
+                      placeholder="Court Player"
+                      maxHeight={300}
+                      labelField={"value"}
+                      activeColor={COLORS.grey}
+                      valueField="key"
+                      value={courtDropDownValue}
+                      onChange={(value) => setCourtDropDownValue(value.key)}
+                    />
+                    <Text style={styles.subModalBodyText}>for</Text>
+                    <Dropdown
+                      style={styles.dropdown}
+                      selectedTextStyle={styles.selectedDropDownText}
+                      itemTextStyle={styles.dropDownText}
+                      placeholderStyle={styles.placeholderDropDown}
+                      data={benchRoster()}
+                      search={false}
+                      placeholder="Bench Player"
+                      maxHeight={300}
+                      labelField={"value"}
+                      activeColor={COLORS.grey}
+                      valueField="key"
+                      value={benchDropDownValue}
+                      onChange={(value) => {
+                        setBenchDropDownValue(value.key);
+                      }}
+                    />
                   </View>
-                  <View style={styles.liveStatsModalBody}>
-                    <View style={styles.liveStatsTitleRow}>
-                      <View style={styles.liveStatsStatHeader}>
-                        <Text style={styles.liveStatsPlayerHeader}>
-                          #{"  "}Player
+                  <View style={styles.subConfirmContainer}>
+                    <TouchableOpacity onPress={handleSubstitution}>
+                      <View style={styles.liveStatsContainer}>
+                        <Text style={styles.liveStatsRotationText}>
+                          Confirm
                         </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          SP
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Modal
+                isVisible={isRotationCheckModalVisible}
+                onBackdropPress={toggleRotationCheckModal}
+              >
+                <View style={styles.rotationCheckContainer}>
+                  <View style={styles.court}>
+                    <View style={styles.netIndicator} />
+                    <View style={styles.courtRow}>
+                      <View style={styles.courtPosition}>
+                        <Text style={styles.courtPositionText}>
+                          {positionFour}
                         </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          K{" "}
+                      </View>
+                      <View style={styles.courtPosition}>
+                        <Text style={styles.courtPositionText}>
+                          {positionThree}
                         </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          E{" "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          TA
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          {"    "}
-                          K%{"   "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          A{" "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          SA
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          SE
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          RE
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          P AVG.
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          D
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          BS
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          BA
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          BE
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryTextEnd}>
-                          PTS
+                      </View>
+                      <View style={styles.courtPosition}>
+                        <Text style={styles.courtPositionText}>
+                          {positionTwo}
                         </Text>
                       </View>
                     </View>
-                    {rosterStats.map((player) => {
-                      return (
-                        <View
-                          style={styles.liveStatsTitleRow}
-                          key={player.playerNumber}
-                        >
-                          <View style={styles.liveStatsStatHeader}>
-                            <Text style={styles.liveStatsPlayerHeader}>
-                              {/* TODO: validation for length of players name */}
-                              {player.playerNumber}
-                              {"  "}
-                              {player.playerName}
-                            </Text>
-                            <Text style={styles.liveStatsModalSecondaryText2}>
-                              {player.setsPlayed.toString().length > 1
-                                ? player.setsPlayed
-                                : player.setsPlayed + " "}
-                            </Text>
-                            <Text style={styles.liveStatsModalSecondaryText2}>
-                              {player.kills.toString().length > 1
-                                ? player.kills
-                                : player.kills + " "}
-                            </Text>
-                            <Text style={styles.liveStatsModalSecondaryText2}>
-                              {player.attackErrors.toString().length > 1
-                                ? player.attackErrors
-                                : player.attackErrors + " "}
-                            </Text>
-                            <Text style={styles.liveStatsModalSecondaryText2}>
-                              {player.attempts.toString().length > 1
-                                ? player.attempts
-                                : player.attempts + " "}
-                            </Text>
-                            <Text style={styles.liveStatsModalSecondaryText2}>
-                              {isNaN(
-                                (player.kills - player.attackErrors) /
-                                  player.attempts
-                              )
-                                ? "0.000"
-                                : (
-                                    (player.kills - player.attackErrors) /
-                                    player.attempts
-                                  ).toFixed(3)}
-                            </Text>
-                            <Text style={styles.liveStatsModalSecondaryText2}>
-                              {player.assists.toString().length > 1
-                                ? player.assists
-                                : player.assists + " "}
-                            </Text>
-                            <Text style={styles.liveStatsModalSecondaryText2}>
-                              {player.serviceAces.toString().length > 1
-                                ? player.serviceAces
-                                : player.serviceAces + " "}
-                            </Text>
-                            <Text style={styles.liveStatsModalSecondaryText2}>
-                              {player.serviceErrors.toString().length > 1
-                                ? player.serviceErrors
-                                : player.serviceErrors + " "}
-                            </Text>
-                            <Text style={styles.liveStatsModalSecondaryText2}>
-                              {player.receptionErrors.toString().length > 1
-                                ? player.receptionErrors
-                                : player.receptionErrors + " "}
-                            </Text>
-                            <Text style={styles.liveStatsModalSecondaryText2}>
-                              {isNaN(
-                                player.totalPassValue / player.passingAttempts
-                              )
-                                ? "0.00"
-                                : (
-                                    player.totalPassValue /
-                                    player.passingAttempts
-                                  ).toFixed(2)}
-                            </Text>
-                            <Text style={styles.liveStatsModalSecondaryText2}>
-                              {player.digs.toString().length > 1
-                                ? player.digs
-                                : player.digs + " "}
-                            </Text>
-                            <Text style={styles.liveStatsModalSecondaryText2}>
-                              {player.blockSolos.toString().length > 1
-                                ? player.blockSolos
-                                : player.blockSolos + " "}
-                            </Text>
-                            <Text style={styles.liveStatsModalSecondaryText2}>
-                              {player.blockAssists.toString().length > 1
-                                ? player.blockAssists
-                                : player.blockAssists + " "}
-                            </Text>
-                            <Text style={styles.liveStatsModalSecondaryText2}>
-                              {player.blockErrors.toString().length > 1
-                                ? player.blockErrors
-                                : player.blockErrors + " "}
-                            </Text>
-                            <Text
-                              style={styles.liveStatsModalSecondaryTextEnd2}
-                            >
-                              {player.pts.toString().length > 1
-                                ? player.pts.toFixed(1)
-                                : player.pts.toFixed(1)}
-                            </Text>
-                          </View>
+                    <View style={styles.courtRow}>
+                      <View style={styles.courtPosition}>
+                        <Text style={styles.courtPositionText}>
+                          {positionFive}
+                        </Text>
+                      </View>
+                      <View style={styles.courtPosition}>
+                        <Text style={styles.courtPositionText}>
+                          {positionSix}
+                        </Text>
+                      </View>
+                      <View style={styles.courtPosition}>
+                        <Text style={styles.courtPositionText}>
+                          {positionOne}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </Modal>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Modal
+                isVisible={isLiveStatsModalVisible}
+                onBackdropPress={toggleLiveStatsModal}
+                propagateSwipe={true}
+              >
+                <View style={styles.liveStatsModalContainer}>
+                  <ScrollView>
+                    <View style={styles.liveStatsModalHeader}>
+                      <TouchableOpacity onPress={toggleLiveStatsModal}>
+                        <AntDesign
+                          name="closesquareo"
+                          size={RFValue(20)}
+                          color={COLORS.black}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.liveStatsModalHeader2}>
+                      <Text style={styles.liveStatsModalHeaderText}>
+                        Live Stats
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsModalBody}>
+                      <View style={styles.liveStatsTitleRow}>
+                        <View style={styles.liveStatsStatHeader}>
+                          <Text style={styles.liveStatsPlayerHeader}>
+                            #{"  "}Player
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            SP
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            K{" "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            E{" "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            TA
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            {"    "}
+                            K%{"   "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            A{" "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            SA
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            SE
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            RE
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            P AVG.
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            D
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            BS
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            BA
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            BE
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryTextEnd}>
+                            PTS
+                          </Text>
                         </View>
-                      );
-                    })}
-                    <View style={styles.liveStatsTitleRow}>
-                      <View style={styles.liveStatsStatHeader}>
-                        <Text style={styles.liveStatsPlayerHeader}>
-                          Team
-                          {"  "}
-                          Total
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {teamStats.teamSetsPlayed.toString().length > 1
-                            ? teamStats.teamSetsPlayed
-                            : teamStats.teamSetsPlayed + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {teamStats.teamKills.toString().length > 1
-                            ? teamStats.teamKills
-                            : teamStats.teamKills + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {teamStats.teamAttackErrors.toString().length > 1
-                            ? teamStats.teamAttackErrors
-                            : teamStats.teamAttackErrors + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {teamStats.teamAttempts.toString().length > 1
-                            ? teamStats.teamAttempts
-                            : teamStats.teamAttempts + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {isNaN(
-                            (teamStats.teamKills - teamStats.teamAttackErrors) /
-                              teamStats.teamAttempts
-                          )
-                            ? "0.000"
-                            : (
-                                (teamStats.teamKills -
-                                  teamStats.teamAttackErrors) /
-                                teamStats.teamAttempts
-                              ).toFixed(3)}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {teamStats.teamAssists.toString().length > 1
-                            ? teamStats.teamAssists
-                            : teamStats.teamAssists + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {teamStats.teamServiceAces.toString().length > 1
-                            ? teamStats.teamServiceAces
-                            : teamStats.teamServiceAces + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {teamStats.teamServiceErrors.toString().length > 1
-                            ? teamStats.teamServiceErrors
-                            : teamStats.teamServiceErrors + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {teamStats.teamReceptionErrors.toString().length > 1
-                            ? teamStats.teamReceptionErrors
-                            : teamStats.teamReceptionErrors + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {isNaN(
-                            teamStats.teamTotalPassValue /
-                              teamStats.teamPassingAttempts
-                          )
-                            ? "0.00"
-                            : (
-                                teamStats.teamTotalPassValue /
-                                teamStats.teamPassingAttempts
-                              ).toFixed(2)}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {teamStats.teamDigs.toString().length > 1
-                            ? teamStats.teamDigs
-                            : teamStats.teamDigs + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {teamStats.teamBlockSolos.toString().length > 1
-                            ? teamStats.teamBlockSolos
-                            : teamStats.teamBlockSolos + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {teamStats.teamBlockAssists.toString().length > 1
-                            ? teamStats.teamBlockAssists
-                            : teamStats.teamBlockAssists + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {teamStats.teamBlockErrors.toString().length > 1
-                            ? teamStats.teamBlockErrors
-                            : teamStats.teamBlockErrors + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryTextEnd2}>
-                          {teamStats.teamPts.toString().length > 1
-                            ? teamStats.teamPts.toFixed(1)
-                            : teamStats.teamPts.toFixed(1)}
-                        </Text>
                       </View>
-                    </View>
-                  </View>
-                  <View style={styles.heightSpacer} />
-                  <View style={styles.liveStatsModalHeader2}>
-                    <Text style={styles.liveStatsModalSecondaryHeaderText}>
-                      Passing
-                    </Text>
-                  </View>
-                  <View style={styles.liveStatsModalBody}>
-                    <View style={styles.liveStatsPassingTitleRow}>
-                      <View style={styles.liveStatsStatHeader}>
-                        <Text style={styles.liveStatsPlayerHeader}>
-                          #{"  "}Player
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          ATT
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          P. AVG
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          3s
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          2s
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          1s
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          0s
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          {"  "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          F. ATT
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          F. AVG
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText}>
-                          H. ATT
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryTextEnd}>
-                          H. AVG
-                        </Text>
-                      </View>
-                    </View>
-                    {rosterStats.map((player) => {
-                      if (player.passingAttempts > 0) {
+                      {rosterStats.map((player) => {
                         return (
                           <View
-                            style={styles.liveStatsPassingTitleRow}
+                            style={styles.liveStatsTitleRow}
                             key={player.playerNumber}
                           >
                             <View style={styles.liveStatsStatHeader}>
@@ -2290,1133 +2278,1148 @@ export default function statGame() {
                                 {player.playerName}
                               </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.passingAttempts.toString().length > 1
-                                  ? player.passingAttempts
-                                  : player.passingAttempts + " "}
+                                {player.setsPlayed.toString().length > 1
+                                  ? player.setsPlayed
+                                  : player.setsPlayed + " "}
+                              </Text>
+                              <Text style={styles.liveStatsModalSecondaryText2}>
+                                {player.kills.toString().length > 1
+                                  ? player.kills
+                                  : player.kills + " "}
+                              </Text>
+                              <Text style={styles.liveStatsModalSecondaryText2}>
+                                {player.attackErrors.toString().length > 1
+                                  ? player.attackErrors
+                                  : player.attackErrors + " "}
+                              </Text>
+                              <Text style={styles.liveStatsModalSecondaryText2}>
+                                {player.attempts.toString().length > 1
+                                  ? player.attempts
+                                  : player.attempts + " "}
                               </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
                                 {isNaN(
-                                  player.totalPassValue / player.passingAttempts
+                                  (player.kills - player.attackErrors) /
+                                    player.attempts
                                 )
-                                  ? "0.00 "
+                                  ? "0.000"
                                   : (
-                                      player.totalPassValue /
-                                      player.passingAttempts
-                                    ).toFixed(2) + " "}
+                                      (player.kills - player.attackErrors) /
+                                      player.attempts
+                                    ).toFixed(3)}
                               </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.threePasses.toString().length > 1
-                                  ? player.threePasses
-                                  : player.threePasses + " "}
+                                {player.assists.toString().length > 1
+                                  ? player.assists
+                                  : player.assists + " "}
                               </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.twoPasses.toString().length > 1
-                                  ? player.twoPasses
-                                  : player.twoPasses + " "}
+                                {player.serviceAces.toString().length > 1
+                                  ? player.serviceAces
+                                  : player.serviceAces + " "}
                               </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.onePasses.toString().length > 1
-                                  ? player.onePasses
-                                  : player.onePasses + " "}
+                                {player.serviceErrors.toString().length > 1
+                                  ? player.serviceErrors
+                                  : player.serviceErrors + " "}
                               </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
                                 {player.receptionErrors.toString().length > 1
                                   ? player.receptionErrors
                                   : player.receptionErrors + " "}
                               </Text>
-                              <Text style={styles.liveStatsModalSecondaryText}>
-                                {"   "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.forearmPassingAttempts.toString()
-                                  .length > 1
-                                  ? " " + player.forearmPassingAttempts + "    "
-                                  : " " +
-                                    player.forearmPassingAttempts +
-                                    "     "}
-                              </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
                                 {isNaN(
-                                  player.totalForearmPassValue /
-                                    player.forearmPassingAttempts
+                                  player.totalPassValue / player.passingAttempts
                                 )
-                                  ? "0.00  "
+                                  ? "0.00"
                                   : (
-                                      player.totalForearmPassValue /
-                                      player.forearmPassingAttempts
-                                    ).toFixed(2) + "   "}
+                                      player.totalPassValue /
+                                      player.passingAttempts
+                                    ).toFixed(2)}
                               </Text>
                               <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.handPassingAttempts.toString().length >
-                                1
-                                  ? " " + player.handPassingAttempts + "    "
-                                  : " " + player.handPassingAttempts + "     "}
+                                {player.digs.toString().length > 1
+                                  ? player.digs
+                                  : player.digs + " "}
+                              </Text>
+                              <Text style={styles.liveStatsModalSecondaryText2}>
+                                {player.blockSolos.toString().length > 1
+                                  ? player.blockSolos
+                                  : player.blockSolos + " "}
+                              </Text>
+                              <Text style={styles.liveStatsModalSecondaryText2}>
+                                {player.blockAssists.toString().length > 1
+                                  ? player.blockAssists
+                                  : player.blockAssists + " "}
+                              </Text>
+                              <Text style={styles.liveStatsModalSecondaryText2}>
+                                {player.blockErrors.toString().length > 1
+                                  ? player.blockErrors
+                                  : player.blockErrors + " "}
                               </Text>
                               <Text
                                 style={styles.liveStatsModalSecondaryTextEnd2}
                               >
-                                {isNaN(
-                                  player.totalHandPassValue /
-                                    player.handPassingAttempts
-                                )
-                                  ? "0.00  "
-                                  : (
-                                      player.totalHandPassValue /
-                                      player.handPassingAttempts
-                                    ).toFixed(2) + "  "}
+                                {player.pts.toString().length > 1
+                                  ? player.pts.toFixed(1)
+                                  : player.pts.toFixed(1)}
                               </Text>
                             </View>
                           </View>
                         );
-                      }
-                    })}
-                  </View>
-                  {teamStats.teamPassingAttempts === 0 ? (
+                      })}
+                      <View style={styles.liveStatsTitleRow}>
+                        <View style={styles.liveStatsStatHeader}>
+                          <Text style={styles.liveStatsPlayerHeader}>
+                            Team
+                            {"  "}
+                            Total
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {teamStats.teamSetsPlayed.toString().length > 1
+                              ? teamStats.teamSetsPlayed
+                              : teamStats.teamSetsPlayed + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {teamStats.teamKills.toString().length > 1
+                              ? teamStats.teamKills
+                              : teamStats.teamKills + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {teamStats.teamAttackErrors.toString().length > 1
+                              ? teamStats.teamAttackErrors
+                              : teamStats.teamAttackErrors + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {teamStats.teamAttempts.toString().length > 1
+                              ? teamStats.teamAttempts
+                              : teamStats.teamAttempts + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {isNaN(
+                              (teamStats.teamKills -
+                                teamStats.teamAttackErrors) /
+                                teamStats.teamAttempts
+                            )
+                              ? "0.000"
+                              : (
+                                  (teamStats.teamKills -
+                                    teamStats.teamAttackErrors) /
+                                  teamStats.teamAttempts
+                                ).toFixed(3)}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {teamStats.teamAssists.toString().length > 1
+                              ? teamStats.teamAssists
+                              : teamStats.teamAssists + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {teamStats.teamServiceAces.toString().length > 1
+                              ? teamStats.teamServiceAces
+                              : teamStats.teamServiceAces + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {teamStats.teamServiceErrors.toString().length > 1
+                              ? teamStats.teamServiceErrors
+                              : teamStats.teamServiceErrors + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {teamStats.teamReceptionErrors.toString().length > 1
+                              ? teamStats.teamReceptionErrors
+                              : teamStats.teamReceptionErrors + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {isNaN(
+                              teamStats.teamTotalPassValue /
+                                teamStats.teamPassingAttempts
+                            )
+                              ? "0.00"
+                              : (
+                                  teamStats.teamTotalPassValue /
+                                  teamStats.teamPassingAttempts
+                                ).toFixed(2)}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {teamStats.teamDigs.toString().length > 1
+                              ? teamStats.teamDigs
+                              : teamStats.teamDigs + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {teamStats.teamBlockSolos.toString().length > 1
+                              ? teamStats.teamBlockSolos
+                              : teamStats.teamBlockSolos + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {teamStats.teamBlockAssists.toString().length > 1
+                              ? teamStats.teamBlockAssists
+                              : teamStats.teamBlockAssists + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {teamStats.teamBlockErrors.toString().length > 1
+                              ? teamStats.teamBlockErrors
+                              : teamStats.teamBlockErrors + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryTextEnd2}>
+                            {teamStats.teamPts.toString().length > 1
+                              ? teamStats.teamPts.toFixed(1)
+                              : teamStats.teamPts.toFixed(1)}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <View style={styles.heightSpacer} />
                     <View style={styles.liveStatsModalHeader2}>
-                      <View style={styles.heightSpacer} />
-                      <Text style={styles.liveStatsModalNoDataText}>
-                        No passing data
+                      <Text style={styles.liveStatsModalSecondaryHeaderText}>
+                        Passing
                       </Text>
-                      <View style={styles.heightSpacer} />
                     </View>
-                  ) : (
-                    <View style={styles.heightSpacer2} />
-                  )}
-                  <View style={styles.liveStatsModalHeader2}>
-                    <Text style={styles.liveStatsModalSecondaryHeaderText}>
-                      Team Side Out Percentages
-                    </Text>
-                  </View>
-                  <View style={styles.liveStatsModalBody}>
-                    <View style={styles.liveStatsSideOutTitleRow}>
-                      <View style={styles.liveStatsStatHeader}>
-                        <View style={styles.liveStatsSideOutBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                            Side Out ATT
+                    <View style={styles.liveStatsModalBody}>
+                      <View style={styles.liveStatsPassingTitleRow}>
+                        <View style={styles.liveStatsStatHeader}>
+                          <Text style={styles.liveStatsPlayerHeader}>
+                            #{"  "}Player
                           </Text>
-                        </View>
-                        <View style={styles.liveStatsSideOutBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                            Side Out%
-                          </Text>
-                        </View>
-                        <View style={styles.widthSpacer2} />
-                        <View style={styles.liveStatsSideOutBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                            FBSO ATT
-                          </Text>
-                        </View>
-                        <View style={styles.liveStatsSideOutBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                            FBSO%
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={styles.liveStatsSideOutTitleRow}>
-                      <View style={styles.liveStatsStatHeader}>
-                        <View style={styles.liveStatsSideOutBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {teamStats.teamTotalSideOutAttempts}
-                          </Text>
-                        </View>
-                        <View style={styles.liveStatsSideOutBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {isNaN(
-                              teamStats.teamSuccessfulSideOuts /
-                                teamStats.teamTotalSideOutAttempts
-                            )
-                              ? "-"
-                              : (
-                                  (teamStats.teamSuccessfulSideOuts /
-                                    teamStats.teamTotalSideOutAttempts) *
-                                  100
-                                ).toFixed(1) + "%"}
-                          </Text>
-                        </View>
-                        <View style={styles.widthSpacer2} />
-                        <View style={styles.liveStatsSideOutBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {teamStats.teamFirstBallSideOutAttempts}
-                          </Text>
-                        </View>
-                        <View style={styles.liveStatsSideOutBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {isNaN(
-                              teamStats.teamSuccessfulFirstBallSideOuts /
-                                teamStats.teamFirstBallSideOutAttempts
-                            )
-                              ? "-"
-                              : (
-                                  (teamStats.teamSuccessfulFirstBallSideOuts /
-                                    teamStats.teamFirstBallSideOutAttempts) *
-                                  100
-                                ).toFixed(1) + "%"}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                  <View style={styles.heightSpacer} />
-                  <View style={styles.liveStatsModalBody}>
-                    <View style={styles.liveStatsRotationsTitleRow}>
-                      <View style={styles.liveStatsStatHeader}>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                            Setter in
-                          </Text>
-                        </View>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                          <Text style={styles.liveStatsModalSecondaryText}>
                             ATT
                           </Text>
-                        </View>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                            SO%
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            P. AVG
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            3s
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            2s
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            1s
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            0s
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            {"  "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            F. ATT
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            F. AVG
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            H. ATT
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryTextEnd}>
+                            H. AVG
                           </Text>
                         </View>
                       </View>
+                      {rosterStats.map((player) => {
+                        if (player.passingAttempts > 0) {
+                          return (
+                            <View
+                              style={styles.liveStatsPassingTitleRow}
+                              key={player.playerNumber}
+                            >
+                              <View style={styles.liveStatsStatHeader}>
+                                <Text style={styles.liveStatsPlayerHeader}>
+                                  {/* TODO: validation for length of players name */}
+                                  {player.playerNumber}
+                                  {"  "}
+                                  {player.playerName}
+                                </Text>
+                                <Text
+                                  style={styles.liveStatsModalSecondaryText2}
+                                >
+                                  {player.passingAttempts.toString().length > 1
+                                    ? player.passingAttempts
+                                    : player.passingAttempts + " "}
+                                </Text>
+                                <Text
+                                  style={styles.liveStatsModalSecondaryText2}
+                                >
+                                  {isNaN(
+                                    player.totalPassValue /
+                                      player.passingAttempts
+                                  )
+                                    ? "0.00 "
+                                    : (
+                                        player.totalPassValue /
+                                        player.passingAttempts
+                                      ).toFixed(2) + " "}
+                                </Text>
+                                <Text
+                                  style={styles.liveStatsModalSecondaryText2}
+                                >
+                                  {player.threePasses.toString().length > 1
+                                    ? player.threePasses
+                                    : player.threePasses + " "}
+                                </Text>
+                                <Text
+                                  style={styles.liveStatsModalSecondaryText2}
+                                >
+                                  {player.twoPasses.toString().length > 1
+                                    ? player.twoPasses
+                                    : player.twoPasses + " "}
+                                </Text>
+                                <Text
+                                  style={styles.liveStatsModalSecondaryText2}
+                                >
+                                  {player.onePasses.toString().length > 1
+                                    ? player.onePasses
+                                    : player.onePasses + " "}
+                                </Text>
+                                <Text
+                                  style={styles.liveStatsModalSecondaryText2}
+                                >
+                                  {player.receptionErrors.toString().length > 1
+                                    ? player.receptionErrors
+                                    : player.receptionErrors + " "}
+                                </Text>
+                                <Text
+                                  style={styles.liveStatsModalSecondaryText}
+                                >
+                                  {"   "}
+                                </Text>
+                                <Text
+                                  style={styles.liveStatsModalSecondaryText2}
+                                >
+                                  {player.forearmPassingAttempts.toString()
+                                    .length > 1
+                                    ? " " +
+                                      player.forearmPassingAttempts +
+                                      "    "
+                                    : " " +
+                                      player.forearmPassingAttempts +
+                                      "     "}
+                                </Text>
+                                <Text
+                                  style={styles.liveStatsModalSecondaryText2}
+                                >
+                                  {isNaN(
+                                    player.totalForearmPassValue /
+                                      player.forearmPassingAttempts
+                                  )
+                                    ? "0.00  "
+                                    : (
+                                        player.totalForearmPassValue /
+                                        player.forearmPassingAttempts
+                                      ).toFixed(2) + "   "}
+                                </Text>
+                                <Text
+                                  style={styles.liveStatsModalSecondaryText2}
+                                >
+                                  {player.handPassingAttempts.toString()
+                                    .length > 1
+                                    ? " " + player.handPassingAttempts + "    "
+                                    : " " +
+                                      player.handPassingAttempts +
+                                      "     "}
+                                </Text>
+                                <Text
+                                  style={styles.liveStatsModalSecondaryTextEnd2}
+                                >
+                                  {isNaN(
+                                    player.totalHandPassValue /
+                                      player.handPassingAttempts
+                                  )
+                                    ? "0.00  "
+                                    : (
+                                        player.totalHandPassValue /
+                                        player.handPassingAttempts
+                                      ).toFixed(2) + "  "}
+                                </Text>
+                              </View>
+                            </View>
+                          );
+                        }
+                      })}
                     </View>
-                    <View style={styles.liveStatsRotationsRow}>
-                      <View style={styles.liveStatsStatHeader}>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                            1
-                          </Text>
+                    {teamStats.teamPassingAttempts === 0 ? (
+                      <View style={styles.liveStatsModalHeader2}>
+                        <View style={styles.heightSpacer} />
+                        <Text style={styles.liveStatsModalNoDataText}>
+                          No passing data
+                        </Text>
+                        <View style={styles.heightSpacer} />
+                      </View>
+                    ) : (
+                      <View style={styles.heightSpacer2} />
+                    )}
+                    <View style={styles.liveStatsModalHeader2}>
+                      <Text style={styles.liveStatsModalSecondaryHeaderText}>
+                        Team Side Out Percentages
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsModalBody}>
+                      <View style={styles.liveStatsSideOutTitleRow}>
+                        <View style={styles.liveStatsStatHeader}>
+                          <View style={styles.liveStatsSideOutBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                              Side Out ATT
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsSideOutBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                              Side Out%
+                            </Text>
+                          </View>
+                          <View style={styles.widthSpacer2} />
+                          <View style={styles.liveStatsSideOutBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                              FBSO ATT
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsSideOutBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                              FBSO%
+                            </Text>
+                          </View>
                         </View>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {teamStats.teamTotalSideOutAttemptsPos1}
-                          </Text>
-                        </View>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {isNaN(
-                              teamStats.teamSuccessfulSideOutsPos1 /
-                                teamStats.teamTotalSideOutAttemptsPos1
-                            )
-                              ? "-"
-                              : (
-                                  (teamStats.teamSuccessfulSideOutsPos1 /
-                                    teamStats.teamTotalSideOutAttemptsPos1) *
-                                  100
-                                ).toFixed(1) + "%"}
-                          </Text>
+                      </View>
+                      <View style={styles.liveStatsSideOutTitleRow}>
+                        <View style={styles.liveStatsStatHeader}>
+                          <View style={styles.liveStatsSideOutBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {teamStats.teamTotalSideOutAttempts}
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsSideOutBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {isNaN(
+                                teamStats.teamSuccessfulSideOuts /
+                                  teamStats.teamTotalSideOutAttempts
+                              )
+                                ? "-"
+                                : (
+                                    (teamStats.teamSuccessfulSideOuts /
+                                      teamStats.teamTotalSideOutAttempts) *
+                                    100
+                                  ).toFixed(1) + "%"}
+                            </Text>
+                          </View>
+                          <View style={styles.widthSpacer2} />
+                          <View style={styles.liveStatsSideOutBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {teamStats.teamFirstBallSideOutAttempts}
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsSideOutBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {isNaN(
+                                teamStats.teamSuccessfulFirstBallSideOuts /
+                                  teamStats.teamFirstBallSideOutAttempts
+                              )
+                                ? "-"
+                                : (
+                                    (teamStats.teamSuccessfulFirstBallSideOuts /
+                                      teamStats.teamFirstBallSideOutAttempts) *
+                                    100
+                                  ).toFixed(1) + "%"}
+                            </Text>
+                          </View>
                         </View>
                       </View>
                     </View>
-                    <View style={styles.liveStatsRotationsRow}>
-                      <View style={styles.liveStatsStatHeader}>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                            2
-                          </Text>
+                    <View style={styles.heightSpacer} />
+                    <View style={styles.liveStatsModalBody}>
+                      <View style={styles.liveStatsRotationsTitleRow}>
+                        <View style={styles.liveStatsStatHeader}>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                              Setter in
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                              ATT
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                              SO%
+                            </Text>
+                          </View>
                         </View>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {teamStats.teamTotalSideOutAttemptsPos2}
-                          </Text>
+                      </View>
+                      <View style={styles.liveStatsRotationsRow}>
+                        <View style={styles.liveStatsStatHeader}>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                              1
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {teamStats.teamTotalSideOutAttemptsPos1}
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {isNaN(
+                                teamStats.teamSuccessfulSideOutsPos1 /
+                                  teamStats.teamTotalSideOutAttemptsPos1
+                              )
+                                ? "-"
+                                : (
+                                    (teamStats.teamSuccessfulSideOutsPos1 /
+                                      teamStats.teamTotalSideOutAttemptsPos1) *
+                                    100
+                                  ).toFixed(1) + "%"}
+                            </Text>
+                          </View>
                         </View>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {isNaN(
-                              teamStats.teamSuccessfulSideOutsPos2 /
-                                teamStats.teamTotalSideOutAttemptsPos2
-                            )
-                              ? "-"
-                              : (
-                                  (teamStats.teamSuccessfulSideOutsPos2 /
-                                    teamStats.teamTotalSideOutAttemptsPos2) *
-                                  100
-                                ).toFixed(1) + "%"}
-                          </Text>
+                      </View>
+                      <View style={styles.liveStatsRotationsRow}>
+                        <View style={styles.liveStatsStatHeader}>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                              2
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {teamStats.teamTotalSideOutAttemptsPos2}
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {isNaN(
+                                teamStats.teamSuccessfulSideOutsPos2 /
+                                  teamStats.teamTotalSideOutAttemptsPos2
+                              )
+                                ? "-"
+                                : (
+                                    (teamStats.teamSuccessfulSideOutsPos2 /
+                                      teamStats.teamTotalSideOutAttemptsPos2) *
+                                    100
+                                  ).toFixed(1) + "%"}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={styles.liveStatsRotationsRow}>
+                        <View style={styles.liveStatsStatHeader}>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                              3
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {teamStats.teamTotalSideOutAttemptsPos3}
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {isNaN(
+                                teamStats.teamSuccessfulSideOutsPos3 /
+                                  teamStats.teamTotalSideOutAttemptsPos3
+                              )
+                                ? "-"
+                                : (
+                                    (teamStats.teamSuccessfulSideOutsPos3 /
+                                      teamStats.teamTotalSideOutAttemptsPos3) *
+                                    100
+                                  ).toFixed(1) + "%"}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={styles.liveStatsRotationsRow}>
+                        <View style={styles.liveStatsStatHeader}>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                              4
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {teamStats.teamTotalSideOutAttemptsPos4}
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {isNaN(
+                                teamStats.teamSuccessfulSideOutsPos4 /
+                                  teamStats.teamTotalSideOutAttemptsPos4
+                              )
+                                ? "-"
+                                : (
+                                    (teamStats.teamSuccessfulSideOutsPos4 /
+                                      teamStats.teamTotalSideOutAttemptsPos4) *
+                                    100
+                                  ).toFixed(1) + "%"}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={styles.liveStatsRotationsRow}>
+                        <View style={styles.liveStatsStatHeader}>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                              5
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {teamStats.teamTotalSideOutAttemptsPos5}
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {isNaN(
+                                teamStats.teamSuccessfulSideOutsPos5 /
+                                  teamStats.teamTotalSideOutAttemptsPos5
+                              )
+                                ? "-"
+                                : (
+                                    (teamStats.teamSuccessfulSideOutsPos5 /
+                                      teamStats.teamTotalSideOutAttemptsPos5) *
+                                    100
+                                  ).toFixed(1) + "%"}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={styles.liveStatsRotationsRow}>
+                        <View style={styles.liveStatsStatHeader}>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                              6
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {teamStats.teamTotalSideOutAttemptsPos6}
+                            </Text>
+                          </View>
+                          <View style={styles.liveStatsRotationsBoxContainer}>
+                            <Text style={styles.liveStatsSideOutBoxText}>
+                              {isNaN(
+                                teamStats.teamSuccessfulSideOutsPos6 /
+                                  teamStats.teamTotalSideOutAttemptsPos6
+                              )
+                                ? "-"
+                                : (
+                                    (teamStats.teamSuccessfulSideOutsPos6 /
+                                      teamStats.teamTotalSideOutAttemptsPos6) *
+                                    100
+                                  ).toFixed(1) + "%"}
+                            </Text>
+                          </View>
                         </View>
                       </View>
                     </View>
-                    <View style={styles.liveStatsRotationsRow}>
-                      <View style={styles.liveStatsStatHeader}>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                            3
-                          </Text>
-                        </View>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {teamStats.teamTotalSideOutAttemptsPos3}
-                          </Text>
-                        </View>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {isNaN(
-                              teamStats.teamSuccessfulSideOutsPos3 /
-                                teamStats.teamTotalSideOutAttemptsPos3
-                            )
-                              ? "-"
-                              : (
-                                  (teamStats.teamSuccessfulSideOutsPos3 /
-                                    teamStats.teamTotalSideOutAttemptsPos3) *
-                                  100
-                                ).toFixed(1) + "%"}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={styles.liveStatsRotationsRow}>
-                      <View style={styles.liveStatsStatHeader}>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                            4
-                          </Text>
-                        </View>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {teamStats.teamTotalSideOutAttemptsPos4}
-                          </Text>
-                        </View>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {isNaN(
-                              teamStats.teamSuccessfulSideOutsPos4 /
-                                teamStats.teamTotalSideOutAttemptsPos4
-                            )
-                              ? "-"
-                              : (
-                                  (teamStats.teamSuccessfulSideOutsPos4 /
-                                    teamStats.teamTotalSideOutAttemptsPos4) *
-                                  100
-                                ).toFixed(1) + "%"}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={styles.liveStatsRotationsRow}>
-                      <View style={styles.liveStatsStatHeader}>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                            5
-                          </Text>
-                        </View>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {teamStats.teamTotalSideOutAttemptsPos5}
-                          </Text>
-                        </View>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {isNaN(
-                              teamStats.teamSuccessfulSideOutsPos5 /
-                                teamStats.teamTotalSideOutAttemptsPos5
-                            )
-                              ? "-"
-                              : (
-                                  (teamStats.teamSuccessfulSideOutsPos5 /
-                                    teamStats.teamTotalSideOutAttemptsPos5) *
-                                  100
-                                ).toFixed(1) + "%"}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={styles.liveStatsRotationsRow}>
-                      <View style={styles.liveStatsStatHeader}>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                            6
-                          </Text>
-                        </View>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {teamStats.teamTotalSideOutAttemptsPos6}
-                          </Text>
-                        </View>
-                        <View style={styles.liveStatsRotationsBoxContainer}>
-                          <Text style={styles.liveStatsSideOutBoxText}>
-                            {isNaN(
-                              teamStats.teamSuccessfulSideOutsPos6 /
-                                teamStats.teamTotalSideOutAttemptsPos6
-                            )
-                              ? "-"
-                              : (
-                                  (teamStats.teamSuccessfulSideOutsPos6 /
-                                    teamStats.teamTotalSideOutAttemptsPos6) *
-                                  100
-                                ).toFixed(1) + "%"}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                  <View style={styles.heightSpacer2} />
-                </ScrollView>
+                    <View style={styles.heightSpacer2} />
+                  </ScrollView>
+                </View>
+              </Modal>
+            </View>
+            <View style={styles.widthSpacer2} />
+            <View style={styles.timeOutContainer}>
+              <Text style={styles.timeOutText}>Timeouts:</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setHomeTimeOuts(homeTimeOuts - 1);
+                }}
+                disabled={homeTimeOuts < 1 ? true : false}
+              >
+                <HomeTimeOutsDisplay />
+              </TouchableOpacity>
+              <View style={styles.servingIndicatorContainer}>
+                {serverTracker !== "Opponent" ? (
+                  <FontAwesome6
+                    name="volleyball"
+                    size={RFValue(20)}
+                    color="black"
+                  />
+                ) : (
+                  <View />
+                )}
               </View>
-            </Modal>
-          </View>
-          <View style={styles.widthSpacer2} />
-          <View style={styles.timeOutContainer}>
-            <Text style={styles.timeOutText}>Timeouts:</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setHomeTimeOuts(homeTimeOuts - 1);
-              }}
-              disabled={homeTimeOuts < 1 ? true : false}
-            >
-              <HomeTimeOutsDisplay />
+            </View>
+            <View style={styles.scoreContainer}>
+              {/* TODO: Inputvalidation to ensure team name is not too long */}
+              <Text style={styles.scoreTeamNameText}>Your Team</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  //Increment Server attempts
+                  handleServeAttempts();
+
+                  //Increment sets played if it's the start of the set
+                  if (startOfSet === true) {
+                    handleSetsPlayed();
+                  }
+
+                  //Handle sideouts
+                  handleSideOuts("Home");
+                  handleFBSO("Home");
+
+                  //Increment Home Score
+                  setHomeScore(homeScore + 1);
+
+                  //Keep track of prev serve for undo
+                  setPrevServerTracker(serverTracker);
+                  if (serverTracker === "Opponent") {
+                    setServerTracker("Home");
+                    handleRotation();
+                  }
+                  //Add recent stat to the stat log
+                  setStatStack((oldStack) => [
+                    ...oldStack,
+                    {
+                      playerNumber: "Your Team",
+                      statType: "+1",
+                    },
+                  ]);
+                  setUndoAvailable(true);
+                }}
+              >
+                <View style={styles.scoreAmountContainer}>
+                  <Text style={styles.scoreText}>{homeScore}</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.scoreSpacer} />
+            <View style={styles.scoreContainer}>
+              <Text style={styles.scoreTeamNameText}>Opponent</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  //Increment Server attempts
+                  handleServeAttempts();
+
+                  //Increment sets played if it's the start of the set
+                  if (startOfSet === true) {
+                    handleSetsPlayed();
+                  }
+
+                  //Handle sideouts
+                  handleSideOuts("Opponent");
+                  handleFBSO("Opponent");
+
+                  //Increment Opponent Score
+                  setOpponentScore(opponentScore + 1);
+
+                  //Keep track of prev serve for undo
+                  setPrevServerTracker(serverTracker);
+                  if (serverTracker !== "Opponent") {
+                    setServerTracker("Opponent");
+                    setIsFBSO(true);
+                  }
+                  //Add recent stat to the stat log
+                  setStatStack((oldStack) => [
+                    ...oldStack,
+                    {
+                      playerNumber: "Opponent",
+                      statType: "+1",
+                    },
+                  ]);
+                  setUndoAvailable(true);
+                }}
+                delayPressIn={0}
+              >
+                <View style={styles.scoreAmountContainer}>
+                  <Text style={styles.scoreText}>{opponentScore}</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.timeOutContainer}>
+              <Text style={styles.timeOutText}>Timeouts:</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setOpponentTimeOuts(opponentTimeOuts - 1);
+                }}
+                disabled={opponentTimeOuts < 1 ? true : false}
+              >
+                <OpponentTimeOutsDisplay />
+              </TouchableOpacity>
+              <View style={styles.servingIndicatorContainer}>
+                {serverTracker === "Opponent" ? (
+                  <FontAwesome6
+                    name="volleyball"
+                    size={RFValue(20)}
+                    color="black"
+                  />
+                ) : (
+                  <View />
+                )}
+              </View>
+            </View>
+            <View style={styles.widthSpacer2} />
+            <TouchableOpacity onPress={toggleRotationCheckModal}>
+              <View style={styles.rotationCheckContianer}>
+                <Text style={styles.liveStatsRotationText}>Rotation Check</Text>
+              </View>
             </TouchableOpacity>
-            <View style={styles.servingIndicatorContainer}>
-              {serverTracker !== "Opponent" ? (
-                <FontAwesome6
-                  name="volleyball"
-                  size={RFValue(20)}
-                  color="black"
-                />
-              ) : (
-                <View />
-              )}
+          </View>
+          {/* TODO: Add undo functionality onPress*/}
+          <View style={styles.undoContainer}>
+            <TouchableOpacity
+              onPress={() => undoLastStat()}
+              disabled={undoAvailable === false ? true : false}
+            >
+              <View
+                style={
+                  undoAvailable === false
+                    ? styles.undoBtnDisabled
+                    : styles.undoBtn
+                }
+              >
+                <View style={styles.undoIcon}>
+                  <AntDesign
+                    style={styles.backIcon}
+                    name="back"
+                    size={hp(3.7)}
+                    color={COLORS.white}
+                  />
+                </View>
+                <View style={styles.undoTextContainer}>
+                  <Text style={styles.undoBtnText}>UNDO</Text>
+                  <Text style={styles.undoBtnText}>STAT</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+            <View style={styles.undoLogContainer}>
+              <Text style={styles.undoLogTextTitle}>Stat Log</Text>
+              <Text style={styles.undoLogText}>
+                {statStack[statStack.length - 1]
+                  ? statStack[statStack.length - 1].playerNumber2
+                    ? statStack[statStack.length - 1].playerNumber +
+                      ", " +
+                      statStack[statStack.length - 1].playerNumber2 +
+                      ": " +
+                      statStack[statStack.length - 1].statType
+                    : statStack[statStack.length - 1].playerNumber +
+                      ": " +
+                      statStack[statStack.length - 1].statType
+                  : " "}
+              </Text>
+              <Text style={styles.undoLogText}>
+                {statStack[statStack.length - 2]
+                  ? statStack[statStack.length - 2].playerNumber2
+                    ? statStack[statStack.length - 2].playerNumber +
+                      ", " +
+                      statStack[statStack.length - 2].playerNumber2 +
+                      ": " +
+                      statStack[statStack.length - 2].statType
+                    : statStack[statStack.length - 2].playerNumber +
+                      ": " +
+                      statStack[statStack.length - 2].statType
+                  : " "}
+              </Text>
+              <Text style={styles.undoLogText}>
+                {statStack[statStack.length - 3]
+                  ? statStack[statStack.length - 3].playerNumber2
+                    ? statStack[statStack.length - 3].playerNumber +
+                      ", " +
+                      statStack[statStack.length - 3].playerNumber2 +
+                      ": " +
+                      statStack[statStack.length - 3].statType
+                    : statStack[statStack.length - 3].playerNumber +
+                      ": " +
+                      statStack[statStack.length - 3].statType
+                  : " "}
+              </Text>
             </View>
           </View>
-          <View style={styles.scoreContainer}>
-            {/* TODO: Inputvalidation to ensure team name is not too long */}
-            <Text style={styles.scoreTeamNameText}>Your Team</Text>
-            <TouchableOpacity
-              onPress={() => {
-                //Increment Server attempts
-                handleServeAttempts();
-
-                //Increment sets played if it's the start of the set
-                if (startOfSet === true) {
-                  handleSetsPlayed();
-                }
-
-                //Handle sideouts
-                handleSideOuts("Home");
-                handleFBSO("Home");
-
-                //Increment Home Score
-                setHomeScore(homeScore + 1);
-
-                //Keep track of prev serve for undo
-                setPrevServerTracker(serverTracker);
-                if (serverTracker === "Opponent") {
-                  setServerTracker("Home");
-                  handleRotation();
-                }
-                //Add recent stat to the stat log
-                setStatStack((oldStack) => [
-                  ...oldStack,
-                  {
-                    playerNumber: "Your Team",
-                    statType: "+1",
-                  },
-                ]);
-                setUndoAvailable(true);
-              }}
-            >
-              <View style={styles.scoreAmountContainer}>
-                <Text style={styles.scoreText}>{homeScore}</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.scoreSpacer} />
-          <View style={styles.scoreContainer}>
-            <Text style={styles.scoreTeamNameText}>Opponent</Text>
-            <TouchableOpacity
-              onPress={() => {
-                //Increment Server attempts
-                handleServeAttempts();
-
-                //Increment sets played if it's the start of the set
-                if (startOfSet === true) {
-                  handleSetsPlayed();
-                }
-
-                //Handle sideouts
-                handleSideOuts("Opponent");
-                handleFBSO("Opponent");
-
-                //Increment Opponent Score
-                setOpponentScore(opponentScore + 1);
-
-                //Keep track of prev serve for undo
-                setPrevServerTracker(serverTracker);
-                if (serverTracker !== "Opponent") {
-                  setServerTracker("Opponent");
-                  setIsFBSO(true);
-                }
-                //Add recent stat to the stat log
-                setStatStack((oldStack) => [
-                  ...oldStack,
-                  {
-                    playerNumber: "Opponent",
-                    statType: "+1",
-                  },
-                ]);
-                setUndoAvailable(true);
-              }}
-              delayPressIn={0}
-            >
-              <View style={styles.scoreAmountContainer}>
-                <Text style={styles.scoreText}>{opponentScore}</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.timeOutContainer}>
-            <Text style={styles.timeOutText}>Timeouts:</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setOpponentTimeOuts(opponentTimeOuts - 1);
-              }}
-              disabled={opponentTimeOuts < 1 ? true : false}
-            >
-              <OpponentTimeOutsDisplay />
-            </TouchableOpacity>
-            <View style={styles.servingIndicatorContainer}>
-              {serverTracker === "Opponent" ? (
-                <FontAwesome6
-                  name="volleyball"
-                  size={RFValue(20)}
-                  color="black"
-                />
-              ) : (
-                <View />
-              )}
-            </View>
-          </View>
-          <View style={styles.widthSpacer2} />
-          <TouchableOpacity onPress={toggleRotationCheckModal}>
-            <View style={styles.rotationCheckContianer}>
-              <Text style={styles.liveStatsRotationText}>Rotation Check</Text>
-            </View>
-          </TouchableOpacity>
         </View>
-        {/* TODO: Add undo functionality onPress*/}
-        <View style={styles.undoContainer}>
-          <TouchableOpacity
-            onPress={() => undoLastStat()}
-            disabled={undoAvailable === false ? true : false}
-          >
-            <View
-              style={
-                undoAvailable === false
-                  ? styles.undoBtnDisabled
-                  : styles.undoBtn
+        <View style={styles.playerListContainer}>
+          <View style={styles.playerStatsHeader}>
+            <Text style={styles.playerStatsHeaderText}>
+              Offense{" "}
+              {
+                <View style={styles.popUpContainer}>
+                  <Menu>
+                    <MenuTrigger>
+                      <AntDesign
+                        style={styles.questionIcon}
+                        name="questioncircleo"
+                        size={hp(3)}
+                        color={COLORS.white}
+                      />
+                    </MenuTrigger>
+                    <MenuOptions>
+                      <MenuOption>
+                        <Text
+                          style={{ color: COLORS.primary, fontWeight: "bold" }}
+                        >
+                          ATK
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          Attack Attempt. (+1 attempt){" "}
+                        </Text>
+                        <Text
+                          style={{ color: COLORS.primary, fontWeight: "bold" }}
+                        >
+                          K
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          Kill. (+1 attempt, +1 kill, +1 pts){" "}
+                        </Text>
+                        <Text
+                          style={{ color: COLORS.primary, fontWeight: "bold" }}
+                        >
+                          ATK ERR
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          Attack Error. (+1 attempt, +1 attack error){" "}
+                        </Text>
+                        <Text
+                          style={{ color: COLORS.primary, fontWeight: "bold" }}
+                        >
+                          A
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          Assist. (+1 assist)
+                        </Text>
+                      </MenuOption>
+                    </MenuOptions>
+                  </Menu>
+                </View>
               }
-            >
-              <View style={styles.undoIcon}>
-                <AntDesign
-                  style={styles.backIcon}
-                  name="back"
-                  size={hp(3.7)}
-                  color={COLORS.white}
-                />
-              </View>
-              <View style={styles.undoTextContainer}>
-                <Text style={styles.undoBtnText}>UNDO</Text>
-                <Text style={styles.undoBtnText}>STAT</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-          <View style={styles.undoLogContainer}>
-            <Text style={styles.undoLogTextTitle}>Stat Log</Text>
-            <Text style={styles.undoLogText}>
-              {statStack[statStack.length - 1]
-                ? statStack[statStack.length - 1].playerNumber2
-                  ? statStack[statStack.length - 1].playerNumber +
-                    ", " +
-                    statStack[statStack.length - 1].playerNumber2 +
-                    ": " +
-                    statStack[statStack.length - 1].statType
-                  : statStack[statStack.length - 1].playerNumber +
-                    ": " +
-                    statStack[statStack.length - 1].statType
-                : " "}
             </Text>
-            <Text style={styles.undoLogText}>
-              {statStack[statStack.length - 2]
-                ? statStack[statStack.length - 2].playerNumber2
-                  ? statStack[statStack.length - 2].playerNumber +
-                    ", " +
-                    statStack[statStack.length - 2].playerNumber2 +
-                    ": " +
-                    statStack[statStack.length - 2].statType
-                  : statStack[statStack.length - 2].playerNumber +
-                    ": " +
-                    statStack[statStack.length - 2].statType
-                : " "}
+
+            <Text style={styles.playerStatsHeaderText}>
+              Defense{" "}
+              {
+                <View style={styles.popUpContainer}>
+                  <Menu>
+                    <MenuTrigger>
+                      <AntDesign
+                        style={styles.questionIcon}
+                        name="questioncircleo"
+                        size={hp(3)}
+                        color={COLORS.white}
+                      />
+                    </MenuTrigger>
+                    <MenuOptions>
+                      <MenuOption>
+                        <Text
+                          style={{ color: COLORS.primary, fontWeight: "bold" }}
+                        >
+                          BS
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          Block Solo. (+1 block solo, +1 pts){" "}
+                        </Text>
+                        <Text
+                          style={{ color: COLORS.primary, fontWeight: "bold" }}
+                        >
+                          BA
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          Block Assist. (+1 block assist and +0.5 pts for both
+                          players){" "}
+                        </Text>
+                        <Text
+                          style={{ color: COLORS.primary, fontWeight: "bold" }}
+                        >
+                          BLK ERR
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          Block Error. (+1 block error){" "}
+                        </Text>
+                        <Text
+                          style={{ color: COLORS.primary, fontWeight: "bold" }}
+                        >
+                          DIG
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          Dig. (+1 dig)
+                        </Text>
+                        <Text
+                          style={{ color: COLORS.primary, fontWeight: "bold" }}
+                        >
+                          DIG ERR
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          Dig Error. (+1 dig error)
+                        </Text>
+                      </MenuOption>
+                    </MenuOptions>
+                  </Menu>
+                </View>
+              }
             </Text>
-            <Text style={styles.undoLogText}>
-              {statStack[statStack.length - 3]
-                ? statStack[statStack.length - 3].playerNumber2
-                  ? statStack[statStack.length - 3].playerNumber +
-                    ", " +
-                    statStack[statStack.length - 3].playerNumber2 +
-                    ": " +
-                    statStack[statStack.length - 3].statType
-                  : statStack[statStack.length - 3].playerNumber +
-                    ": " +
-                    statStack[statStack.length - 3].statType
-                : " "}
+            <Text style={styles.playerStatsHeaderServingText}>
+              Serving{" "}
+              {
+                <View style={styles.popUpContainer}>
+                  <Menu>
+                    <MenuTrigger>
+                      <AntDesign
+                        style={styles.questionIcon}
+                        name="questioncircleo"
+                        size={hp(3)}
+                        color={COLORS.white}
+                      />
+                    </MenuTrigger>
+                    <MenuOptions>
+                      <MenuOption>
+                        <Text style={{ color: COLORS.primary }}>
+                          Service Attempts are automatically tracked.{" "}
+                        </Text>
+                        <Text
+                          style={{ color: COLORS.primary, fontWeight: "bold" }}
+                        >
+                          SA
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          Service Ace. (+1 service ace, +1 pts){" "}
+                        </Text>
+                        <Text
+                          style={{ color: COLORS.primary, fontWeight: "bold" }}
+                        >
+                          SE
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          Service Error. (+1 service error){" "}
+                        </Text>
+                      </MenuOption>
+                    </MenuOptions>
+                  </Menu>
+                </View>
+              }
+            </Text>
+            <Text style={styles.playerStatsHeaderPassingText}>
+              Passing{" "}
+              {
+                <View style={styles.popUpContainer}>
+                  <Menu>
+                    <MenuTrigger>
+                      <AntDesign
+                        style={styles.questionIcon}
+                        name="questioncircleo"
+                        size={hp(3)}
+                        color={COLORS.white}
+                      />
+                    </MenuTrigger>
+                    <MenuOptions>
+                      <MenuOption>
+                        <Text
+                          style={{ color: COLORS.primary, fontWeight: "bold" }}
+                        >
+                          Forearm Pass
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          Player recieves a serve with their forearms.{" "}
+                        </Text>
+                        <Text
+                          style={{ color: COLORS.primary, fontWeight: "bold" }}
+                        >
+                          Hand Pass
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          Player recieves a serve with their hands.{" "}
+                        </Text>
+                        <Text
+                          style={{ color: COLORS.primary, fontWeight: "bold" }}
+                        >
+                          Grading
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          0: Player makes a reception error. (+1 reception
+                          error){" "}
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          1: Player makes an okay pass.{" "}
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          2: Player makes a good pass.{" "}
+                        </Text>
+                        <Text style={{ color: COLORS.primary }}>
+                          3: Player makes a perfect pass.{" "}
+                        </Text>
+                      </MenuOption>
+                    </MenuOptions>
+                  </Menu>
+                </View>
+              }
             </Text>
           </View>
-        </View>
-      </View>
-      <View style={styles.playerListContainer}>
-        <View style={styles.playerStatsHeader}>
-          <Text style={styles.playerStatsHeaderText}>
-            Offense{" "}
-            {
-              <View style={styles.popUpContainer}>
-                <Menu>
-                  <MenuTrigger>
-                    <AntDesign
-                      style={styles.questionIcon}
-                      name="questioncircleo"
-                      size={hp(3)}
-                      color={COLORS.white}
-                    />
-                  </MenuTrigger>
-                  <MenuOptions>
-                    <MenuOption>
-                      <Text
-                        style={{ color: COLORS.primary, fontWeight: "bold" }}
-                      >
-                        ATK
+          <ScrollView>
+            {rosterStats.map((player) => {
+              if (
+                player.playerNumber === positionOne ||
+                player.playerNumber === positionTwo ||
+                player.playerNumber === positionThree ||
+                player.playerNumber === positionFour ||
+                player.playerNumber === positionFive ||
+                player.playerNumber === positionSix ||
+                player.playerNumber === firstLibero ||
+                player.playerNumber === secondLibero
+              ) {
+                return (
+                  <View
+                    style={styles.playerContainer}
+                    key={player.playerNumber}
+                  >
+                    <View style={styles.playerNameNumContainer}>
+                      <Text style={styles.playerNumberText}>
+                        {player.playerNumber}
                       </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        Attack Attempt. (+1 attempt){" "}
+                      {/* TODO: Input validation to keep player name less that 15 chars */}
+                      <Text style={styles.playerNameText}>
+                        {player.playerName}
                       </Text>
-                      <Text
-                        style={{ color: COLORS.primary, fontWeight: "bold" }}
-                      >
-                        K
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        Kill. (+1 attempt, +1 kill, +1 pts){" "}
-                      </Text>
-                      <Text
-                        style={{ color: COLORS.primary, fontWeight: "bold" }}
-                      >
-                        ATK ERR
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        Attack Error. (+1 attempt, +1 attack error){" "}
-                      </Text>
-                      <Text
-                        style={{ color: COLORS.primary, fontWeight: "bold" }}
-                      >
-                        A
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        Assist. (+1 assist)
-                      </Text>
-                    </MenuOption>
-                  </MenuOptions>
-                </Menu>
-              </View>
-            }
-          </Text>
-
-          <Text style={styles.playerStatsHeaderText}>
-            Defense{" "}
-            {
-              <View style={styles.popUpContainer}>
-                <Menu>
-                  <MenuTrigger>
-                    <AntDesign
-                      style={styles.questionIcon}
-                      name="questioncircleo"
-                      size={hp(3)}
-                      color={COLORS.white}
-                    />
-                  </MenuTrigger>
-                  <MenuOptions>
-                    <MenuOption>
-                      <Text
-                        style={{ color: COLORS.primary, fontWeight: "bold" }}
-                      >
-                        BS
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        Block Solo. (+1 block solo, +1 pts){" "}
-                      </Text>
-                      <Text
-                        style={{ color: COLORS.primary, fontWeight: "bold" }}
-                      >
-                        BA
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        Block Assist. (+1 block assist and +0.5 pts for both
-                        players){" "}
-                      </Text>
-                      <Text
-                        style={{ color: COLORS.primary, fontWeight: "bold" }}
-                      >
-                        BLK ERR
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        Block Error. (+1 block error){" "}
-                      </Text>
-                      <Text
-                        style={{ color: COLORS.primary, fontWeight: "bold" }}
-                      >
-                        DIG
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        Dig. (+1 dig)
-                      </Text>
-                      <Text
-                        style={{ color: COLORS.primary, fontWeight: "bold" }}
-                      >
-                        DIG ERR
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        Dig Error. (+1 dig error)
-                      </Text>
-                    </MenuOption>
-                  </MenuOptions>
-                </Menu>
-              </View>
-            }
-          </Text>
-          <Text style={styles.playerStatsHeaderServingText}>
-            Serving{" "}
-            {
-              <View style={styles.popUpContainer}>
-                <Menu>
-                  <MenuTrigger>
-                    <AntDesign
-                      style={styles.questionIcon}
-                      name="questioncircleo"
-                      size={hp(3)}
-                      color={COLORS.white}
-                    />
-                  </MenuTrigger>
-                  <MenuOptions>
-                    <MenuOption>
-                      <Text style={{ color: COLORS.primary }}>
-                        Service Attempts are automatically tracked.{" "}
-                      </Text>
-                      <Text
-                        style={{ color: COLORS.primary, fontWeight: "bold" }}
-                      >
-                        SA
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        Service Ace. (+1 service ace, +1 pts){" "}
-                      </Text>
-                      <Text
-                        style={{ color: COLORS.primary, fontWeight: "bold" }}
-                      >
-                        SE
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        Service Error. (+1 service error){" "}
-                      </Text>
-                    </MenuOption>
-                  </MenuOptions>
-                </Menu>
-              </View>
-            }
-          </Text>
-          <Text style={styles.playerStatsHeaderPassingText}>
-            Passing{" "}
-            {
-              <View style={styles.popUpContainer}>
-                <Menu>
-                  <MenuTrigger>
-                    <AntDesign
-                      style={styles.questionIcon}
-                      name="questioncircleo"
-                      size={hp(3)}
-                      color={COLORS.white}
-                    />
-                  </MenuTrigger>
-                  <MenuOptions>
-                    <MenuOption>
-                      <Text
-                        style={{ color: COLORS.primary, fontWeight: "bold" }}
-                      >
-                        Forearm Pass
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        Player recieves a serve with their forearms.{" "}
-                      </Text>
-                      <Text
-                        style={{ color: COLORS.primary, fontWeight: "bold" }}
-                      >
-                        Hand Pass
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        Player recieves a serve with their hands.{" "}
-                      </Text>
-                      <Text
-                        style={{ color: COLORS.primary, fontWeight: "bold" }}
-                      >
-                        Grading
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        0: Player makes a reception error. (+1 reception error){" "}
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        1: Player makes an okay pass.{" "}
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        2: Player makes a good pass.{" "}
-                      </Text>
-                      <Text style={{ color: COLORS.primary }}>
-                        3: Player makes a perfect pass.{" "}
-                      </Text>
-                    </MenuOption>
-                  </MenuOptions>
-                </Menu>
-              </View>
-            }
-          </Text>
-        </View>
-        <ScrollView>
-          {rosterStats.map((player) => {
-            if (
-              player.playerNumber === positionOne ||
-              player.playerNumber === positionTwo ||
-              player.playerNumber === positionThree ||
-              player.playerNumber === positionFour ||
-              player.playerNumber === positionFive ||
-              player.playerNumber === positionSix ||
-              player.playerNumber === firstLibero ||
-              player.playerNumber === secondLibero
-            ) {
-              return (
-                <View style={styles.playerContainer} key={player.playerNumber}>
-                  <View style={styles.playerNameNumContainer}>
-                    <Text style={styles.playerNumberText}>
-                      {player.playerNumber}
-                    </Text>
-                    {/* TODO: Input validation to keep player name less that 15 chars */}
-                    <Text style={styles.playerNameText}>
-                      {player.playerName}
-                    </Text>
-                  </View>
-                  <View style={styles.widthSpacer1} />
-                  <View style={styles.playerOffenseContainer}>
-                    <View style={styles.offenseSubContainer}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Increment attempts
-                          handleAttemptIncrement(player.playerNumber);
-
-                          //Increment Team attempts
-                          setTeamStats((teamStats) => ({
-                            ...teamStats,
-                            teamAttempts: teamStats.teamAttempts + 1,
-                          }));
-
-                          //Add stat to stat log
-                          setStatStack((oldStack) => [
-                            ...oldStack,
-                            {
-                              playerNumber: player.playerNumber,
-                              statType: "ATK",
-                            },
-                          ]);
-                          setUndoAvailable(true);
-                        }}
-                      >
-                        <View style={styles.statBtn}>
-                          <Text style={styles.btnTextSingleLine}>ATK</Text>
-                        </View>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Increment kills
-                          handleKillsIncrement(player.playerNumber);
-
-                          //Increment sets played if it's the start of the set
-                          if (startOfSet === true) {
-                            handleSetsPlayed();
-                          }
-
-                          //Handle Side outs
-                          handleSideOuts("Home");
-                          handleFBSO("Home");
-
-                          //Increment team stats
-                          setTeamStats((teamStats) => ({
-                            ...teamStats,
-                            teamKills: teamStats.teamKills + 1,
-                            teamAttempts: teamStats.teamAttempts + 1,
-                            teamPts: teamStats.teamPts + 1,
-                          }));
-
-                          //incrment serve attempts if home team is serving
-                          handleServeAttempts();
-
-                          //Increment Home score
-                          setHomeScore(homeScore + 1);
-
-                          //Keep track of prev serve for undo
-                          setPrevServerTracker(serverTracker);
-                          if (serverTracker === "Opponent") {
-                            setServerTracker("Home");
-                            handleRotation();
-                          }
-
-                          //Add stat to stat log
-                          setStatStack((oldStack) => [
-                            ...oldStack,
-                            {
-                              playerNumber: player.playerNumber,
-                              statType: "K",
-                            },
-                          ]);
-                          setUndoAvailable(true);
-                        }}
-                      >
-                        <View style={styles.statBtn}>
-                          <Text style={styles.btnTextSingleLine}>K</Text>
-                        </View>
-                      </TouchableOpacity>
                     </View>
-                    <View style={styles.offenseSubContainer}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Increment attack error
-                          handleAttackErrorsIncrement(player.playerNumber);
+                    <View style={styles.widthSpacer1} />
+                    <View style={styles.playerOffenseContainer}>
+                      <View style={styles.offenseSubContainer}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Increment attempts
+                            handleAttemptIncrement(player.playerNumber);
 
-                          //Increment sets played if it's the start of the set
-                          if (startOfSet === true) {
-                            handleSetsPlayed();
-                          }
-
-                          //Handle Side outs
-                          handleSideOuts("Opponent");
-                          handleFBSO("Home");
-
-                          //Increment Team Stats
-                          setTeamStats((teamStats) => ({
-                            ...teamStats,
-                            teamAttackErrors: teamStats.teamAttackErrors + 1,
-                            teamAttempts: teamStats.teamAttempts + 1,
-                          }));
-
-                          //handle serve attempts
-                          handleServeAttempts();
-
-                          //Increment Opponent score
-                          setOpponentScore(opponentScore + 1);
-
-                          //Keep track of prev serve for undo
-                          setPrevServerTracker(serverTracker);
-                          if (serverTracker !== "Opponent") {
-                            setServerTracker("Opponent");
-                            setIsFBSO(true);
-                          }
-
-                          //Add stat to the statStack
-                          setStatStack((oldStack) => [
-                            ...oldStack,
-                            {
-                              playerNumber: player.playerNumber,
-                              statType: "ATK ERR",
-                            },
-                          ]);
-                          setUndoAvailable(true);
-                        }}
-                      >
-                        <View style={styles.statBtn}>
-                          <Text style={styles.btnTextdoubleLine}>ATK</Text>
-                          <Text style={styles.btnTextdoubleLine}>ERR</Text>
-                        </View>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Incrcement assists
-                          handleAssistsIncrement(player.playerNumber);
-
-                          //Increment team stats
-                          setTeamStats((teamStats) => ({
-                            ...teamStats,
-                            teamAssists: teamStats.teamAssists + 1,
-                          }));
-
-                          //Add stat to the stat log
-                          setStatStack((oldStack) => [
-                            ...oldStack,
-                            {
-                              playerNumber: player.playerNumber,
-                              statType: "A",
-                            },
-                          ]);
-                          setUndoAvailable(true);
-                        }}
-                      >
-                        <View style={styles.statBtn}>
-                          <Text style={styles.btnTextSingleLine}>A</Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.seperator} />
-                  <View style={styles.playerDefenseContainer}>
-                    <View style={styles.defenseSubContainer}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Increment player block solos
-                          handleBlockSolosIncrement(player.playerNumber);
-
-                          //Increment sets played if it's the start of the set
-                          if (startOfSet === true) {
-                            handleSetsPlayed();
-                          }
-
-                          //Handle sideouts
-                          handleSideOuts("Home");
-                          handleFBSO("Home");
-
-                          //Increment team stats
-                          setTeamStats((teamStats) => ({
-                            ...teamStats,
-                            teamBlockSolos: teamStats.teamBlockSolos + 1,
-                            teamTotalBlocks: teamStats.teamTotalBlocks + 1,
-                            teamPts: teamStats.teamPts + 1,
-                          }));
-
-                          //Handle serve attempts if needed
-                          handleServeAttempts();
-
-                          //Increment home score
-                          setHomeScore(homeScore + 1);
-
-                          //Keep track of prev serve for undo
-                          setPrevServerTracker(serverTracker);
-                          if (serverTracker === "Opponent") {
-                            setServerTracker("Home");
-                            handleRotation();
-                          }
-
-                          //Add stat to the stat log
-                          setStatStack((oldStack) => [
-                            ...oldStack,
-                            {
-                              playerNumber: player.playerNumber,
-                              statType: "BS",
-                            },
-                          ]);
-                          setUndoAvailable(true);
-                        }}
-                      >
-                        <View style={styles.statBtn}>
-                          <Text style={styles.btnTextSingleLine}>BS</Text>
-                        </View>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Increment block errors
-                          handleBlockErrorsIncrement(player.playerNumber);
-
-                          //Increment sets played if it's the start of the set
-                          if (startOfSet === true) {
-                            handleSetsPlayed();
-                          }
-
-                          //Handle Sideouts
-                          handleSideOuts("Opponent");
-                          handleFBSO("Opponent");
-
-                          //Increment team stats
-                          setTeamStats((teamStats) => ({
-                            ...teamStats,
-                            teamBlockErrors: teamStats.teamBlockErrors + 1,
-                          }));
-
-                          //handle serve attempts if needed
-                          handleServeAttempts();
-
-                          //Increment opponent score
-                          setOpponentScore(opponentScore + 1);
-
-                          //Keep track of prev serve for undo
-                          setPrevServerTracker(serverTracker);
-                          if (serverTracker !== "Opponent") {
-                            setServerTracker("Opponent");
-                            setIsFBSO(true);
-                          }
-
-                          //add stat to stat log
-                          setStatStack((oldStack) => [
-                            ...oldStack,
-                            {
-                              playerNumber: player.playerNumber,
-                              statType: "BLK ERR",
-                            },
-                          ]);
-                          setUndoAvailable(true);
-                        }}
-                      >
-                        <View style={styles.statBtn}>
-                          <Text style={styles.btnTextdoubleLine}>BLK</Text>
-                          <Text style={styles.btnTextdoubleLine}>ERR</Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                    <View style={styles.defenseSubContainer}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Handle All conditions: initial select, deselect, or completion
-                          if (
-                            selectedBlockAssist === false &&
-                            firstBlockAssist === ""
-                          ) {
-                            setSelectedBlockAssist(!selectedBlockAssist);
-                            setFirstBlockAssist(player.playerNumber);
-                          } else if (
-                            selectedBlockAssist === true &&
-                            firstBlockAssist === player.playerNumber
-                          ) {
-                            setSelectedBlockAssist(!selectedBlockAssist);
-                            setFirstBlockAssist("");
-                          } else if (
-                            selectedBlockAssist === true &&
-                            firstBlockAssist !== player.playerNumber
-                          ) {
-                            handleBlockAssistsIncrement(
-                              firstBlockAssist,
-                              player.playerNumber
-                            );
+                            //Increment Team attempts
                             setTeamStats((teamStats) => ({
                               ...teamStats,
-                              teamBlockAssists: teamStats.teamBlockAssists + 2,
-                              teamTotalBlocks: teamStats.teamTotalBlocks + 1,
-                              teamPts: teamStats.teamPts + 1,
+                              teamAttempts: teamStats.teamAttempts + 1,
                             }));
+
+                            //Add stat to stat log
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "ATK",
+                              },
+                            ]);
+                            setUndoAvailable(true);
+                          }}
+                        >
+                          <View style={styles.statBtn}>
+                            <Text style={styles.btnTextSingleLine}>ATK</Text>
+                          </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Increment kills
+                            handleKillsIncrement(player.playerNumber);
 
                             //Increment sets played if it's the start of the set
                             if (startOfSet === true) {
                               handleSetsPlayed();
                             }
 
-                            //Update the statStack
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                playerNumber2: firstBlockAssist,
-                                statType: "BA",
-                              },
-                            ]);
-                            setUndoAvailable(true);
-
-                            //handle side outs
+                            //Handle Side outs
                             handleSideOuts("Home");
                             handleFBSO("Home");
 
-                            //Reset State Hooks
-                            setSelectedBlockAssist(false);
-                            setFirstBlockAssist("");
+                            //Increment team stats
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamKills: teamStats.teamKills + 1,
+                              teamAttempts: teamStats.teamAttempts + 1,
+                              teamPts: teamStats.teamPts + 1,
+                            }));
 
-                            //handle serve attempts if needed
+                            //incrment serve attempts if home team is serving
                             handleServeAttempts();
 
-                            //Increment Home Score
+                            //Increment Home score
                             setHomeScore(homeScore + 1);
 
                             //Keep track of prev serve for undo
@@ -3425,580 +3428,851 @@ export default function statGame() {
                               setServerTracker("Home");
                               handleRotation();
                             }
-                          }
-                        }}
-                      >
-                        <View
-                          style={
-                            selectedBlockAssist
-                              ? styles.statBtnSelected
-                              : styles.statBtn
-                          }
+
+                            //Add stat to stat log
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "K",
+                              },
+                            ]);
+                            setUndoAvailable(true);
+                          }}
                         >
-                          <Text style={styles.btnTextSingleLine}>BA</Text>
-                        </View>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Increment dig errors
-                          handleDigErrorsIncrement(player.playerNumber);
+                          <View style={styles.statBtn}>
+                            <Text style={styles.btnTextSingleLine}>K</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.offenseSubContainer}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Increment attack error
+                            handleAttackErrorsIncrement(player.playerNumber);
 
-                          //Increment sets played if it's the start of the set
-                          if (startOfSet === true) {
-                            handleSetsPlayed();
-                          }
+                            //Increment sets played if it's the start of the set
+                            if (startOfSet === true) {
+                              handleSetsPlayed();
+                            }
 
-                          //handle side outs
-                          handleSideOuts("Opponent");
-                          handleFBSO("Home");
+                            //Handle Side outs
+                            handleSideOuts("Opponent");
+                            handleFBSO("Home");
 
-                          //Increment team Stats
-                          setTeamStats((teamStats) => ({
-                            ...teamStats,
-                            teamDigErrors: teamStats.teamDigErrors + 1,
-                          }));
+                            //Increment Team Stats
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamAttackErrors: teamStats.teamAttackErrors + 1,
+                              teamAttempts: teamStats.teamAttempts + 1,
+                            }));
 
-                          //handle serve attempts if needed
-                          handleServeAttempts();
+                            //handle serve attempts
+                            handleServeAttempts();
 
-                          //Increment opponent score
-                          setOpponentScore(opponentScore + 1);
+                            //Increment Opponent score
+                            setOpponentScore(opponentScore + 1);
 
-                          //Keep track of prev serve for undo
-                          setPrevServerTracker(serverTracker);
-                          if (serverTracker !== "Opponent") {
-                            setServerTracker("Opponent");
-                            setIsFBSO(true);
-                          }
+                            //Keep track of prev serve for undo
+                            setPrevServerTracker(serverTracker);
+                            if (serverTracker !== "Opponent") {
+                              setServerTracker("Opponent");
+                              setIsFBSO(true);
+                            }
 
-                          //add stat to stat log
-                          setStatStack((oldStack) => [
-                            ...oldStack,
-                            {
-                              playerNumber: player.playerNumber,
-                              statType: "DIG ERR",
-                            },
-                          ]);
-                          setUndoAvailable(true);
-                        }}
-                      >
-                        <View style={styles.statBtn}>
-                          <Text style={styles.btnTextdoubleLine}>DIG</Text>
-                          <Text style={styles.btnTextdoubleLine}>ERR</Text>
-                        </View>
-                      </TouchableOpacity>
+                            //Add stat to the statStack
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "ATK ERR",
+                              },
+                            ]);
+                            setUndoAvailable(true);
+                          }}
+                        >
+                          <View style={styles.statBtn}>
+                            <Text style={styles.btnTextdoubleLine}>ATK</Text>
+                            <Text style={styles.btnTextdoubleLine}>ERR</Text>
+                          </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Incrcement assists
+                            handleAssistsIncrement(player.playerNumber);
+
+                            //Increment team stats
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamAssists: teamStats.teamAssists + 1,
+                            }));
+
+                            //Add stat to the stat log
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "A",
+                              },
+                            ]);
+                            setUndoAvailable(true);
+                          }}
+                        >
+                          <View style={styles.statBtn}>
+                            <Text style={styles.btnTextSingleLine}>A</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                    <View style={styles.defenseSubContainerSolo}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Increment dig
-                          handleDigIncrement(player.playerNumber);
+                    <View style={styles.seperator} />
+                    <View style={styles.playerDefenseContainer}>
+                      <View style={styles.defenseSubContainer}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Increment player block solos
+                            handleBlockSolosIncrement(player.playerNumber);
 
-                          //Increment player stats
-                          setTeamStats((teamStats) => ({
-                            ...teamStats,
-                            teamDigs: teamStats.teamDigs + 1,
-                          }));
+                            //Increment sets played if it's the start of the set
+                            if (startOfSet === true) {
+                              handleSetsPlayed();
+                            }
 
-                          //add stat to stat log
-                          setStatStack((oldStack) => [
-                            ...oldStack,
-                            {
-                              playerNumber: player.playerNumber,
-                              statType: "DIG",
-                            },
-                          ]);
-                          setUndoAvailable(true);
-                        }}
-                      >
-                        <View style={styles.statBtn}>
-                          <Text style={styles.btnTextSingleLine}>DIG</Text>
-                        </View>
-                      </TouchableOpacity>
+                            //Handle sideouts
+                            handleSideOuts("Home");
+                            handleFBSO("Home");
+
+                            //Increment team stats
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamBlockSolos: teamStats.teamBlockSolos + 1,
+                              teamTotalBlocks: teamStats.teamTotalBlocks + 1,
+                              teamPts: teamStats.teamPts + 1,
+                            }));
+
+                            //Handle serve attempts if needed
+                            handleServeAttempts();
+
+                            //Increment home score
+                            setHomeScore(homeScore + 1);
+
+                            //Keep track of prev serve for undo
+                            setPrevServerTracker(serverTracker);
+                            if (serverTracker === "Opponent") {
+                              setServerTracker("Home");
+                              handleRotation();
+                            }
+
+                            //Add stat to the stat log
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "BS",
+                              },
+                            ]);
+                            setUndoAvailable(true);
+                          }}
+                        >
+                          <View style={styles.statBtn}>
+                            <Text style={styles.btnTextSingleLine}>BS</Text>
+                          </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Increment block errors
+                            handleBlockErrorsIncrement(player.playerNumber);
+
+                            //Increment sets played if it's the start of the set
+                            if (startOfSet === true) {
+                              handleSetsPlayed();
+                            }
+
+                            //Handle Sideouts
+                            handleSideOuts("Opponent");
+                            handleFBSO("Opponent");
+
+                            //Increment team stats
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamBlockErrors: teamStats.teamBlockErrors + 1,
+                            }));
+
+                            //handle serve attempts if needed
+                            handleServeAttempts();
+
+                            //Increment opponent score
+                            setOpponentScore(opponentScore + 1);
+
+                            //Keep track of prev serve for undo
+                            setPrevServerTracker(serverTracker);
+                            if (serverTracker !== "Opponent") {
+                              setServerTracker("Opponent");
+                              setIsFBSO(true);
+                            }
+
+                            //add stat to stat log
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "BLK ERR",
+                              },
+                            ]);
+                            setUndoAvailable(true);
+                          }}
+                        >
+                          <View style={styles.statBtn}>
+                            <Text style={styles.btnTextdoubleLine}>BLK</Text>
+                            <Text style={styles.btnTextdoubleLine}>ERR</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.defenseSubContainer}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Handle All conditions: initial select, deselect, or completion
+                            if (
+                              selectedBlockAssist === false &&
+                              firstBlockAssist === ""
+                            ) {
+                              setSelectedBlockAssist(!selectedBlockAssist);
+                              setFirstBlockAssist(player.playerNumber);
+                            } else if (
+                              selectedBlockAssist === true &&
+                              firstBlockAssist === player.playerNumber
+                            ) {
+                              setSelectedBlockAssist(!selectedBlockAssist);
+                              setFirstBlockAssist("");
+                            } else if (
+                              selectedBlockAssist === true &&
+                              firstBlockAssist !== player.playerNumber
+                            ) {
+                              handleBlockAssistsIncrement(
+                                firstBlockAssist,
+                                player.playerNumber
+                              );
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamBlockAssists:
+                                  teamStats.teamBlockAssists + 2,
+                                teamTotalBlocks: teamStats.teamTotalBlocks + 1,
+                                teamPts: teamStats.teamPts + 1,
+                              }));
+
+                              //Increment sets played if it's the start of the set
+                              if (startOfSet === true) {
+                                handleSetsPlayed();
+                              }
+
+                              //Update the statStack
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  playerNumber2: firstBlockAssist,
+                                  statType: "BA",
+                                },
+                              ]);
+                              setUndoAvailable(true);
+
+                              //handle side outs
+                              handleSideOuts("Home");
+                              handleFBSO("Home");
+
+                              //Reset State Hooks
+                              setSelectedBlockAssist(false);
+                              setFirstBlockAssist("");
+
+                              //handle serve attempts if needed
+                              handleServeAttempts();
+
+                              //Increment Home Score
+                              setHomeScore(homeScore + 1);
+
+                              //Keep track of prev serve for undo
+                              setPrevServerTracker(serverTracker);
+                              if (serverTracker === "Opponent") {
+                                setServerTracker("Home");
+                                handleRotation();
+                              }
+                            }
+                          }}
+                        >
+                          <View
+                            style={
+                              selectedBlockAssist
+                                ? styles.statBtnSelected
+                                : styles.statBtn
+                            }
+                          >
+                            <Text style={styles.btnTextSingleLine}>BA</Text>
+                          </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Increment dig errors
+                            handleDigErrorsIncrement(player.playerNumber);
+
+                            //Increment sets played if it's the start of the set
+                            if (startOfSet === true) {
+                              handleSetsPlayed();
+                            }
+
+                            //handle side outs
+                            handleSideOuts("Opponent");
+                            handleFBSO("Home");
+
+                            //Increment team Stats
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamDigErrors: teamStats.teamDigErrors + 1,
+                            }));
+
+                            //handle serve attempts if needed
+                            handleServeAttempts();
+
+                            //Increment opponent score
+                            setOpponentScore(opponentScore + 1);
+
+                            //Keep track of prev serve for undo
+                            setPrevServerTracker(serverTracker);
+                            if (serverTracker !== "Opponent") {
+                              setServerTracker("Opponent");
+                              setIsFBSO(true);
+                            }
+
+                            //add stat to stat log
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "DIG ERR",
+                              },
+                            ]);
+                            setUndoAvailable(true);
+                          }}
+                        >
+                          <View style={styles.statBtn}>
+                            <Text style={styles.btnTextdoubleLine}>DIG</Text>
+                            <Text style={styles.btnTextdoubleLine}>ERR</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.defenseSubContainerSolo}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Increment dig
+                            handleDigIncrement(player.playerNumber);
+
+                            //Increment player stats
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamDigs: teamStats.teamDigs + 1,
+                            }));
+
+                            //add stat to stat log
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "DIG",
+                              },
+                            ]);
+                            setUndoAvailable(true);
+                          }}
+                        >
+                          <View style={styles.statBtn}>
+                            <Text style={styles.btnTextSingleLine}>DIG</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                  </View>
-                  <View style={styles.seperator} />
-                  <View style={styles.playerServingContainer}>
-                    <View style={styles.defenseSubContainer}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Increment player aces
-                          handleserviceAcesIncrement(player.playerNumber);
+                    <View style={styles.seperator} />
+                    <View style={styles.playerServingContainer}>
+                      <View style={styles.defenseSubContainer}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Increment player aces
+                            handleserviceAcesIncrement(player.playerNumber);
 
-                          //Increment sets played if it's the start of the set
-                          if (startOfSet === true) {
-                            handleSetsPlayed();
-                          }
+                            //Increment sets played if it's the start of the set
+                            if (startOfSet === true) {
+                              handleSetsPlayed();
+                            }
 
-                          //Increment team stats
-                          setTeamStats((teamStats) => ({
-                            ...teamStats,
-                            teamServiceAces: teamStats.teamServiceAces + 1,
-                            teamPts: teamStats.teamPts + 1,
-                          }));
+                            //Increment team stats
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamServiceAces: teamStats.teamServiceAces + 1,
+                              teamPts: teamStats.teamPts + 1,
+                            }));
 
-                          //handle serve attempts if needed
-                          handleServeAttempts();
+                            //handle serve attempts if needed
+                            handleServeAttempts();
 
-                          //increment home score
-                          setHomeScore(homeScore + 1);
+                            //increment home score
+                            setHomeScore(homeScore + 1);
 
-                          //Keep track of prev serve for undo
-                          setPrevServerTracker(serverTracker);
-                          if (serverTracker === "Opponent") {
-                            setServerTracker("Home");
-                            handleRotation();
-                          }
+                            //Keep track of prev serve for undo
+                            setPrevServerTracker(serverTracker);
+                            if (serverTracker === "Opponent") {
+                              setServerTracker("Home");
+                              handleRotation();
+                            }
 
-                          //Add stat to stat log
-                          setStatStack((oldStack) => [
-                            ...oldStack,
-                            {
-                              playerNumber: player.playerNumber,
-                              statType: "SA",
-                            },
-                          ]);
-                          setUndoAvailable(true);
-                        }}
-                      >
-                        <View style={styles.statBtn}>
-                          <Text style={styles.btnTextSingleLine}>SA</Text>
-                        </View>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Increment player service errors
-                          handleServiceErrorsIncrement(player.playerNumber);
+                            //Add stat to stat log
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "SA",
+                              },
+                            ]);
+                            setUndoAvailable(true);
+                          }}
+                        >
+                          <View style={styles.statBtn}>
+                            <Text style={styles.btnTextSingleLine}>SA</Text>
+                          </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Increment player service errors
+                            handleServiceErrorsIncrement(player.playerNumber);
 
-                          //Increment sets played if it's the start of the set
-                          if (startOfSet === true) {
-                            handleSetsPlayed();
-                          }
+                            //Increment sets played if it's the start of the set
+                            if (startOfSet === true) {
+                              handleSetsPlayed();
+                            }
 
-                          //Increment team stats
-                          setTeamStats((teamStats) => ({
-                            ...teamStats,
-                            teamServiceErrors: teamStats.teamServiceErrors + 1,
-                          }));
+                            //Increment team stats
+                            setTeamStats((teamStats) => ({
+                              ...teamStats,
+                              teamServiceErrors:
+                                teamStats.teamServiceErrors + 1,
+                            }));
 
-                          //handle serve attempts
-                          handleServeAttempts();
+                            //handle serve attempts
+                            handleServeAttempts();
 
-                          //increment opponent score
-                          setOpponentScore(opponentScore + 1);
+                            //increment opponent score
+                            setOpponentScore(opponentScore + 1);
 
-                          //Keep track of prev serve for undo
-                          setPrevServerTracker(serverTracker);
-                          if (serverTracker !== "Opponent") {
-                            setServerTracker("Opponent");
-                            setIsFBSO(true);
-                          }
+                            //Keep track of prev serve for undo
+                            setPrevServerTracker(serverTracker);
+                            if (serverTracker !== "Opponent") {
+                              setServerTracker("Opponent");
+                              setIsFBSO(true);
+                            }
 
-                          //Add stat to stat log
-                          setStatStack((oldStack) => [
-                            ...oldStack,
-                            {
-                              playerNumber: player.playerNumber,
-                              statType: "SE",
-                            },
-                          ]);
-                          setUndoAvailable(true);
-                        }}
-                      >
-                        <View style={styles.statBtn}>
-                          <Text style={styles.btnTextSingleLine}>SE</Text>
-                        </View>
-                      </TouchableOpacity>
+                            //Add stat to stat log
+                            setStatStack((oldStack) => [
+                              ...oldStack,
+                              {
+                                playerNumber: player.playerNumber,
+                                statType: "SE",
+                              },
+                            ]);
+                            setUndoAvailable(true);
+                          }}
+                        >
+                          <View style={styles.statBtn}>
+                            <Text style={styles.btnTextSingleLine}>SE</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                  </View>
-                  <View style={styles.seperator} />
-                  <View style={styles.playerPassingContainer}>
-                    <View style={styles.defenseSubContainer}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          if (
-                            forearmPassSelected === true &&
-                            forearmPassPlayer == player.playerNumber
-                          ) {
+                    <View style={styles.seperator} />
+                    <View style={styles.playerPassingContainer}>
+                      <View style={styles.defenseSubContainer}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            if (
+                              forearmPassSelected === true &&
+                              forearmPassPlayer == player.playerNumber
+                            ) {
+                              setForearmPassSelected(false);
+                              setForearmPassPlayer(null);
+                            } else {
+                              setForearmPassSelected(true);
+                              setForearmPassPlayer(player.playerNumber);
+                              setHandPassSelected(false);
+                              setHandPassPlayer(null);
+                            }
+                          }}
+                        >
+                          <View
+                            style={
+                              forearmPassSelected &&
+                              player.playerNumber === forearmPassPlayer
+                                ? styles.statBtnSelected
+                                : styles.statBtn
+                            }
+                          >
+                            <Text style={styles.btnTextdoubleLine}>
+                              FOREARM
+                            </Text>
+                            <Text style={styles.btnTextdoubleLine}>PASS</Text>
+                          </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            if (
+                              handPassSelected === true &&
+                              handPassPlayer == player.playerNumber
+                            ) {
+                              setHandPassSelected(false);
+                              setHandPassPlayer(null);
+                            } else {
+                              setHandPassSelected(true);
+                              setHandPassPlayer(player.playerNumber);
+                              setForearmPassSelected(false);
+                              setForearmPassPlayer(null);
+                            }
+                          }}
+                        >
+                          <View
+                            style={
+                              handPassSelected &&
+                              player.playerNumber === handPassPlayer
+                                ? styles.statBtnSelected
+                                : styles.statBtn
+                            }
+                          >
+                            <Text style={styles.btnTextdoubleLine}>HAND</Text>
+                            <Text style={styles.btnTextdoubleLine}>PASS</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.defenseSubContainer}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Increment player reception errors
+                            handleReceptionErrorIncrement(player.playerNumber);
+                            if (handPassSelected === true) {
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamReceptionErrors:
+                                  teamStats.teamReceptionErrors + 1,
+                                teamPassingAttempts:
+                                  teamStats.teamPassingAttempts + 1,
+                                teamHandPassingAttempts:
+                                  teamStats.teamHandPassingAttempts + 1,
+                              }));
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  statType: "RE",
+                                  passType: "Hand",
+                                },
+                              ]);
+                            } else {
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamReceptionErrors:
+                                  teamStats.teamReceptionErrors + 1,
+                                teamPassingAttempts:
+                                  teamStats.teamPassingAttempts + 1,
+                                teamForearmPassingAttempts:
+                                  teamStats.teamForearmPassingAttempts + 1,
+                              }));
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  statType: "RE",
+                                  passType: "Forearm",
+                                },
+                              ]);
+                            }
+
+                            //Increment sets played if it's the start of the set
+                            if (startOfSet === true) {
+                              handleSetsPlayed();
+                            }
+
+                            //Handle side outs
+                            handleSideOuts("Opponent");
+                            handleFBSO("Opponent");
+
+                            //reset passing trackers
                             setForearmPassSelected(false);
                             setForearmPassPlayer(null);
-                          } else {
-                            setForearmPassSelected(true);
-                            setForearmPassPlayer(player.playerNumber);
                             setHandPassSelected(false);
                             setHandPassPlayer(null);
-                          }
-                        }}
-                      >
-                        <View
-                          style={
-                            forearmPassSelected &&
-                            player.playerNumber === forearmPassPlayer
-                              ? styles.statBtnSelected
-                              : styles.statBtn
+
+                            //handle serve attempts if needed
+                            handleServeAttempts();
+
+                            //Increment opponent score
+                            setOpponentScore(opponentScore + 1);
+
+                            //Keep track of prev serve for undo
+                            setPrevServerTracker(serverTracker);
+                            if (serverTracker !== "Opponent") {
+                              setServerTracker("Opponent");
+                              setIsFBSO(true);
+                            }
+                            setUndoAvailable(true);
+                          }}
+                          disabled={
+                            handPassSelected === false &&
+                            forearmPassSelected === false
+                              ? true
+                              : false
                           }
                         >
-                          <Text style={styles.btnTextdoubleLine}>FOREARM</Text>
-                          <Text style={styles.btnTextdoubleLine}>PASS</Text>
-                        </View>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => {
-                          if (
-                            handPassSelected === true &&
-                            handPassPlayer == player.playerNumber
-                          ) {
-                            setHandPassSelected(false);
-                            setHandPassPlayer(null);
-                          } else {
-                            setHandPassSelected(true);
-                            setHandPassPlayer(player.playerNumber);
+                          <View
+                            style={
+                              (handPassSelected &&
+                                player.playerNumber === handPassPlayer) ||
+                              (forearmPassSelected &&
+                                player.playerNumber === forearmPassPlayer)
+                                ? styles.statBtnSelected
+                                : styles.statBtn
+                            }
+                          >
+                            <Text style={styles.btnTextSingleLine}>0</Text>
+                          </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Increment player two pass
+                            handleTwoPassIncrement(player.playerNumber);
+                            if (handPassSelected === true) {
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamTwoPasses: teamStats.teamTwoPasses + 1,
+                                teamPassingAttempts:
+                                  teamStats.teamPassingAttempts + 1,
+                                teamTotalPassValue:
+                                  teamStats.teamTotalPassValue + 2,
+                                teamHandPassingAttempts:
+                                  teamStats.teamHandPassingAttempts + 1,
+                                teamTotalHandPassValue:
+                                  teamStats.teamTotalHandPassValue + 2,
+                              }));
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  statType: "2 Pass",
+                                  passType: "Hand",
+                                },
+                              ]);
+                            } else {
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamTwoPasses: teamStats.teamTwoPasses + 1,
+                                teamPassingAttempts:
+                                  teamStats.teamPassingAttempts + 1,
+                                teamTotalPassValue:
+                                  teamStats.teamTotalPassValue + 2,
+                                teamForearmPassingAttempts:
+                                  teamStats.teamForearmPassingAttempts + 1,
+                                teamTotalForearmPassValue:
+                                  teamStats.teamTotalForearmPassValue + 2,
+                              }));
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  statType: "2 Pass",
+                                  passType: "Forearm",
+                                },
+                              ]);
+                            }
+
+                            //reset passing trackers
                             setForearmPassSelected(false);
                             setForearmPassPlayer(null);
-                          }
-                        }}
-                      >
-                        <View
-                          style={
-                            handPassSelected &&
-                            player.playerNumber === handPassPlayer
-                              ? styles.statBtnSelected
-                              : styles.statBtn
-                          }
-                        >
-                          <Text style={styles.btnTextdoubleLine}>HAND</Text>
-                          <Text style={styles.btnTextdoubleLine}>PASS</Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                    <View style={styles.defenseSubContainer}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Increment player reception errors
-                          handleReceptionErrorIncrement(player.playerNumber);
-                          if (handPassSelected === true) {
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamReceptionErrors:
-                                teamStats.teamReceptionErrors + 1,
-                              teamPassingAttempts:
-                                teamStats.teamPassingAttempts + 1,
-                              teamHandPassingAttempts:
-                                teamStats.teamHandPassingAttempts + 1,
-                            }));
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "RE",
-                                passType: "Hand",
-                              },
-                            ]);
-                          } else {
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamReceptionErrors:
-                                teamStats.teamReceptionErrors + 1,
-                              teamPassingAttempts:
-                                teamStats.teamPassingAttempts + 1,
-                              teamForearmPassingAttempts:
-                                teamStats.teamForearmPassingAttempts + 1,
-                            }));
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "RE",
-                                passType: "Forearm",
-                              },
-                            ]);
-                          }
-
-                          //Increment sets played if it's the start of the set
-                          if (startOfSet === true) {
-                            handleSetsPlayed();
-                          }
-
-                          //Handle side outs
-                          handleSideOuts("Opponent");
-                          handleFBSO("Opponent");
-
-                          //reset passing trackers
-                          setForearmPassSelected(false);
-                          setForearmPassPlayer(null);
-                          setHandPassSelected(false);
-                          setHandPassPlayer(null);
-
-                          //handle serve attempts if needed
-                          handleServeAttempts();
-
-                          //Increment opponent score
-                          setOpponentScore(opponentScore + 1);
-
-                          //Keep track of prev serve for undo
-                          setPrevServerTracker(serverTracker);
-                          if (serverTracker !== "Opponent") {
-                            setServerTracker("Opponent");
-                            setIsFBSO(true);
-                          }
-                          setUndoAvailable(true);
-                        }}
-                        disabled={
-                          handPassSelected === false &&
-                          forearmPassSelected === false
-                            ? true
-                            : false
-                        }
-                      >
-                        <View
-                          style={
-                            (handPassSelected &&
-                              player.playerNumber === handPassPlayer) ||
-                            (forearmPassSelected &&
-                              player.playerNumber === forearmPassPlayer)
-                              ? styles.statBtnSelected
-                              : styles.statBtn
+                            setHandPassSelected(false);
+                            setHandPassPlayer(null);
+                            setUndoAvailable(true);
+                          }}
+                          disabled={
+                            handPassSelected === false &&
+                            forearmPassSelected === false
+                              ? true
+                              : false
                           }
                         >
-                          <Text style={styles.btnTextSingleLine}>0</Text>
-                        </View>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Increment player two pass
-                          handleTwoPassIncrement(player.playerNumber);
-                          if (handPassSelected === true) {
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamTwoPasses: teamStats.teamTwoPasses + 1,
-                              teamPassingAttempts:
-                                teamStats.teamPassingAttempts + 1,
-                              teamTotalPassValue:
-                                teamStats.teamTotalPassValue + 2,
-                              teamHandPassingAttempts:
-                                teamStats.teamHandPassingAttempts + 1,
-                              teamTotalHandPassValue:
-                                teamStats.teamTotalHandPassValue + 2,
-                            }));
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "2 Pass",
-                                passType: "Hand",
-                              },
-                            ]);
-                          } else {
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamTwoPasses: teamStats.teamTwoPasses + 1,
-                              teamPassingAttempts:
-                                teamStats.teamPassingAttempts + 1,
-                              teamTotalPassValue:
-                                teamStats.teamTotalPassValue + 2,
-                              teamForearmPassingAttempts:
-                                teamStats.teamForearmPassingAttempts + 1,
-                              teamTotalForearmPassValue:
-                                teamStats.teamTotalForearmPassValue + 2,
-                            }));
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "2 Pass",
-                                passType: "Forearm",
-                              },
-                            ]);
+                          <View
+                            style={
+                              (handPassSelected &&
+                                player.playerNumber === handPassPlayer) ||
+                              (forearmPassSelected &&
+                                player.playerNumber === forearmPassPlayer)
+                                ? styles.statBtnSelected
+                                : styles.statBtn
+                            }
+                          >
+                            <Text style={styles.btnTextSingleLine}>2</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.defenseSubContainer}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Increment player one pass
+                            handleOnePassIncrement(player.playerNumber);
+                            if (handPassSelected === true) {
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamOnePasses: teamStats.teamOnePasses + 1,
+                                teamPassingAttempts:
+                                  teamStats.teamPassingAttempts + 1,
+                                teamTotalPassValue:
+                                  teamStats.teamTotalPassValue + 1,
+                                teamHandPassingAttempts:
+                                  teamStats.teamHandPassingAttempts + 1,
+                                teamTotalHandPassValue:
+                                  teamStats.teamTotalHandPassValue + 1,
+                              }));
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  statType: "1 Pass",
+                                  passType: "Hand",
+                                },
+                              ]);
+                            } else {
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamOnePasses: teamStats.teamOnePasses + 1,
+                                teamPassingAttempts:
+                                  teamStats.teamPassingAttempts + 1,
+                                teamTotalPassValue:
+                                  teamStats.teamTotalPassValue + 1,
+                                teamForearmPassingAttempts:
+                                  teamStats.teamForearmPassingAttempts + 1,
+                                teamTotalForearmPassValue:
+                                  teamStats.teamTotalForearmPassValue + 1,
+                              }));
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  statType: "1 Pass",
+                                  passType: "Forearm",
+                                },
+                              ]);
+                            }
+                            //Reset passing trackers
+                            setForearmPassSelected(false);
+                            setForearmPassPlayer(null);
+                            setHandPassSelected(false);
+                            setHandPassPlayer(null);
+                            setUndoAvailable(true);
+                          }}
+                          disabled={
+                            handPassSelected === false &&
+                            forearmPassSelected === false
+                              ? true
+                              : false
                           }
+                        >
+                          <View
+                            style={
+                              (handPassSelected &&
+                                player.playerNumber === handPassPlayer) ||
+                              (forearmPassSelected &&
+                                player.playerNumber === forearmPassPlayer)
+                                ? styles.statBtnSelected
+                                : styles.statBtn
+                            }
+                          >
+                            <Text style={styles.btnTextSingleLine}>1</Text>
+                          </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            //Increment player three passes
+                            handleThreePassIncrement(player.playerNumber);
+                            if (handPassSelected === true) {
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamThreePasses: teamStats.teamThreePasses + 1,
+                                teamPassingAttempts:
+                                  teamStats.teamPassingAttempts + 1,
+                                teamTotalPassValue:
+                                  teamStats.teamTotalPassValue + 3,
+                                teamHandPassingAttempts:
+                                  teamStats.teamHandPassingAttempts + 1,
+                                teamTotalHandPassValue:
+                                  teamStats.teamTotalHandPassValue + 3,
+                              }));
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  statType: "3 Pass",
+                                  passType: "Hand",
+                                },
+                              ]);
+                            } else {
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamThreePasses: teamStats.teamThreePasses + 1,
+                                teamPassingAttempts:
+                                  teamStats.teamPassingAttempts + 1,
+                                teamTotalPassValue:
+                                  teamStats.teamTotalPassValue + 3,
+                                teamForearmPassingAttempts:
+                                  teamStats.teamForearmPassingAttempts + 1,
+                                teamTotalForearmPassValue:
+                                  teamStats.teamTotalForearmPassValue + 3,
+                              }));
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  statType: "3 Pass",
+                                  passType: "Forearm",
+                                },
+                              ]);
+                            }
 
-                          //reset passing trackers
-                          setForearmPassSelected(false);
-                          setForearmPassPlayer(null);
-                          setHandPassSelected(false);
-                          setHandPassPlayer(null);
-                          setUndoAvailable(true);
-                        }}
-                        disabled={
-                          handPassSelected === false &&
-                          forearmPassSelected === false
-                            ? true
-                            : false
-                        }
-                      >
-                        <View
-                          style={
-                            (handPassSelected &&
-                              player.playerNumber === handPassPlayer) ||
-                            (forearmPassSelected &&
-                              player.playerNumber === forearmPassPlayer)
-                              ? styles.statBtnSelected
-                              : styles.statBtn
+                            //Reset passing trackers
+                            setForearmPassSelected(false);
+                            setForearmPassPlayer(null);
+                            setHandPassSelected(false);
+                            setHandPassPlayer(null);
+                            setUndoAvailable(true);
+                          }}
+                          disabled={
+                            handPassSelected === false &&
+                            forearmPassSelected === false
+                              ? true
+                              : false
                           }
                         >
-                          <Text style={styles.btnTextSingleLine}>2</Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                    <View style={styles.defenseSubContainer}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Increment player one pass
-                          handleOnePassIncrement(player.playerNumber);
-                          if (handPassSelected === true) {
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamOnePasses: teamStats.teamOnePasses + 1,
-                              teamPassingAttempts:
-                                teamStats.teamPassingAttempts + 1,
-                              teamTotalPassValue:
-                                teamStats.teamTotalPassValue + 1,
-                              teamHandPassingAttempts:
-                                teamStats.teamHandPassingAttempts + 1,
-                              teamTotalHandPassValue:
-                                teamStats.teamTotalHandPassValue + 1,
-                            }));
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "1 Pass",
-                                passType: "Hand",
-                              },
-                            ]);
-                          } else {
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamOnePasses: teamStats.teamOnePasses + 1,
-                              teamPassingAttempts:
-                                teamStats.teamPassingAttempts + 1,
-                              teamTotalPassValue:
-                                teamStats.teamTotalPassValue + 1,
-                              teamForearmPassingAttempts:
-                                teamStats.teamForearmPassingAttempts + 1,
-                              teamTotalForearmPassValue:
-                                teamStats.teamTotalForearmPassValue + 1,
-                            }));
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "1 Pass",
-                                passType: "Forearm",
-                              },
-                            ]);
-                          }
-                          //Reset passing trackers
-                          setForearmPassSelected(false);
-                          setForearmPassPlayer(null);
-                          setHandPassSelected(false);
-                          setHandPassPlayer(null);
-                          setUndoAvailable(true);
-                        }}
-                        disabled={
-                          handPassSelected === false &&
-                          forearmPassSelected === false
-                            ? true
-                            : false
-                        }
-                      >
-                        <View
-                          style={
-                            (handPassSelected &&
-                              player.playerNumber === handPassPlayer) ||
-                            (forearmPassSelected &&
-                              player.playerNumber === forearmPassPlayer)
-                              ? styles.statBtnSelected
-                              : styles.statBtn
-                          }
-                        >
-                          <Text style={styles.btnTextSingleLine}>1</Text>
-                        </View>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => {
-                          //Increment player three passes
-                          handleThreePassIncrement(player.playerNumber);
-                          if (handPassSelected === true) {
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamThreePasses: teamStats.teamThreePasses + 1,
-                              teamPassingAttempts:
-                                teamStats.teamPassingAttempts + 1,
-                              teamTotalPassValue:
-                                teamStats.teamTotalPassValue + 3,
-                              teamHandPassingAttempts:
-                                teamStats.teamHandPassingAttempts + 1,
-                              teamTotalHandPassValue:
-                                teamStats.teamTotalHandPassValue + 3,
-                            }));
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "3 Pass",
-                                passType: "Hand",
-                              },
-                            ]);
-                          } else {
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamThreePasses: teamStats.teamThreePasses + 1,
-                              teamPassingAttempts:
-                                teamStats.teamPassingAttempts + 1,
-                              teamTotalPassValue:
-                                teamStats.teamTotalPassValue + 3,
-                              teamForearmPassingAttempts:
-                                teamStats.teamForearmPassingAttempts + 1,
-                              teamTotalForearmPassValue:
-                                teamStats.teamTotalForearmPassValue + 3,
-                            }));
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "3 Pass",
-                                passType: "Forearm",
-                              },
-                            ]);
-                          }
-
-                          //Reset passing trackers
-                          setForearmPassSelected(false);
-                          setForearmPassPlayer(null);
-                          setHandPassSelected(false);
-                          setHandPassPlayer(null);
-                          setUndoAvailable(true);
-                        }}
-                        disabled={
-                          handPassSelected === false &&
-                          forearmPassSelected === false
-                            ? true
-                            : false
-                        }
-                      >
-                        <View
-                          style={
-                            (handPassSelected &&
-                              player.playerNumber === handPassPlayer) ||
-                            (forearmPassSelected &&
-                              player.playerNumber === forearmPassPlayer)
-                              ? styles.statBtnSelected
-                              : styles.statBtn
-                          }
-                        >
-                          <Text style={styles.btnTextSingleLine}>3</Text>
-                        </View>
-                      </TouchableOpacity>
+                          <View
+                            style={
+                              (handPassSelected &&
+                                player.playerNumber === handPassPlayer) ||
+                              (forearmPassSelected &&
+                                player.playerNumber === forearmPassPlayer)
+                                ? styles.statBtnSelected
+                                : styles.statBtn
+                            }
+                          >
+                            <Text style={styles.btnTextSingleLine}>3</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
                     </View>
                   </View>
-                </View>
-              );
-            }
-          })}
-        </ScrollView>
-      </View>
-    </SafeView>
-  );
+                );
+              }
+            })}
+          </ScrollView>
+        </View>
+      </SafeView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -4006,6 +4280,209 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
   },
+  inBetweenHeaderContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    height: hp(10),
+    backgroundColor: COLORS.secondary,
+  },
+  inBetweenBodyContainer: {
+    flex: 1,
+    flexDirection: "column",
+    alignItems: "center",
+    backgroundColor: COLORS.grey,
+  },
+  inBetweenHeaderText: {
+    fontSize: RFValue(18),
+  },
+  inBetweenTitleText: {
+    fontSize: RFValue(30),
+    color: COLORS.primary,
+    marginBottom: 35,
+  },
+  inBetweenTitleContainer: {
+    alignItems: "center",
+  },
+  inBetweenSeperator: {
+    borderBottomColor: COLORS.primary,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    width: "60%",
+    alignSelf: "center",
+  },
+  inBetweenContinueBtnText: {
+    fontSize: RFValue(8),
+    paddingLeft: 3,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: COLORS.white,
+  },
+  inBetweenSpacer: {
+    marginTop: 30,
+  },
+  inBetweenSecondaryTitleContainer: {
+    flexDirection: "row",
+    alignItems: "left",
+    marginHorizontal: wp(12.5),
+    marginTop: hp(3),
+  },
+  inBetweenSecondaryTitleText: {
+    fontSize: RFValue(18),
+    color: COLORS.primary,
+  },
+  radioContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 30,
+  },
+  radioGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    padding: 16,
+    width: "60%",
+  },
+  radioButton: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  radioLabel: {
+    marginLeft: 6,
+    fontSize: RFValue(12),
+  },
+  court: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  netIndicator: {
+    borderBottomColor: COLORS.black,
+    borderBottomWidth: hp(0.8),
+    width: wp(45),
+    alignSelf: "center",
+    marginTop: 20,
+  },
+  courtRow: {
+    flexDirection: "row",
+    alignSelf: "center",
+    justifyContent: "center",
+    width: "50%",
+    height: hp(15),
+  },
+  courtPosition: {
+    backgroundColor: COLORS.secondary,
+    height: hp(15),
+    width: wp(15),
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: COLORS.black,
+    borderWidth: 1,
+    zIndex: 99,
+    paddingHorizontal: wp(1.7),
+  },
+  courtPositionText: {
+    fontSize: RFValue(12),
+    color: COLORS.white,
+  },
+  setterContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 55,
+    height: hp(13),
+  },
+  setterTitleText: {
+    fontSize: RFValue(12),
+    color: COLORS.primary,
+  },
+  setterSlot: {
+    backgroundColor: COLORS.secondary,
+    height: hp(6),
+    width: wp(14),
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 5,
+    borderRadius: 20,
+  },
+  setterDropDown: {
+    height: hp(6),
+    width: wp(15),
+    borderColor: COLORS.darkGrey,
+    backgroundColor: COLORS.secondary,
+    borderRadius: 20,
+    paddingHorizontal: wp(1.7),
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
+  setterPlaceHolderDropDown: {
+    color: COLORS.white,
+    fontSize: RFValue(9.5),
+  },
+  liberoContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 40,
+    marginTop: 30,
+  },
+  liberoSlot: {
+    backgroundColor: COLORS.secondary,
+    height: hp(8),
+    width: wp(18),
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: 45,
+    borderRadius: 20,
+  },
+  liberoText: {
+    fontSize: RFValue(10),
+    color: COLORS.white,
+  },
+
+  // DropDown
+  courtdropdown: {
+    height: hp(14),
+    width: wp(14),
+    borderColor: COLORS.darkGrey,
+    backgroundColor: COLORS.secondary,
+    zIndex: 999,
+    paddingHorizontal: wp(1.5),
+  },
+  liberoDropDown: {
+    height: hp(8),
+    width: wp(18),
+    borderColor: COLORS.darkGrey,
+    backgroundColor: COLORS.secondary,
+    borderRadius: 20,
+    paddingHorizontal: wp(1.7),
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
+  placeholderDropDown: {
+    color: COLORS.white,
+    fontSize: RFValue(11),
+  },
+  selectedDropDownText: {
+    fontSize: RFValue(11),
+    color: COLORS.black,
+  },
+  dropDownText: {
+    fontSize: RFValue(10),
+    color: COLORS.black,
+  },
+
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
