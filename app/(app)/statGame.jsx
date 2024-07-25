@@ -456,8 +456,8 @@ export default function statGame() {
   //rosterStats variable contains all of the player stats for the current game
   const [rosterStats, setRosterStats] = useState(testingRoster);
 
-  const [homeScore, setHomeScore] = useState(23);
-  const [opponentScore, setOpponentScore] = useState(23);
+  const [homeScore, setHomeScore] = useState(20);
+  const [opponentScore, setOpponentScore] = useState(20);
 
   const [setScores, setSetScores] = useState([]);
 
@@ -1128,30 +1128,6 @@ export default function statGame() {
 
   //Function to handle the undo stat event
   const undoLastStat = () => {
-    //if prevServerTracker === "Opponent" -> Handle undo Side Outs
-    if (prevServerTracker === "Opponent") {
-      undoLastSideOut();
-      handleUndoFBSO();
-    }
-
-    //If Home team needs to rotate back after undo event
-    if (prevServerTracker !== serverTracker) {
-      setServerTracker(prevServerTracker);
-      handleUndoRotation();
-    }
-
-    //Reset prev point trackers
-    setPrevSideOut((prev) => ({
-      ...prev,
-      rotation: null,
-      success: null,
-    }));
-    setPrevServerTracker(null);
-    setPrevFBSO((prev) => ({
-      FBSO: null,
-      success: null,
-    }));
-
     setStatStack((oldStack) => {
       if (oldStack.length === 0) return oldStack;
 
@@ -1159,8 +1135,30 @@ export default function statGame() {
 
       if (lastStat.playerNumber === "Opponent") {
         setOpponentScore(opponentScore - 1);
+        //if prevServerTracker === "Opponent" -> Handle undo Side Outs
+        if (prevServerTracker === "Opponent") {
+          undoLastSideOut();
+          handleUndoFBSO();
+        }
+
+        //If Home team needs to rotate back after undo event
+        if (prevServerTracker !== serverTracker) {
+          setServerTracker(prevServerTracker);
+          handleUndoRotation();
+        }
       } else if (lastStat.playerNumber === "Your Team") {
         setHomeScore(homeScore - 1);
+        //if prevServerTracker === "Opponent" -> Handle undo Side Outs
+        if (prevServerTracker === "Opponent") {
+          undoLastSideOut();
+          handleUndoFBSO();
+        }
+
+        //If Home team needs to rotate back after undo event
+        if (prevServerTracker !== serverTracker) {
+          setServerTracker(prevServerTracker);
+          handleUndoRotation();
+        }
       } else {
         const updatedRoster = rosterStats.map((player) => {
           if (
@@ -1181,7 +1179,18 @@ export default function statGame() {
 
               //Undo Kill
               case "K":
-                //Handle Rotation
+                //if prevServerTracker === "Opponent" -> Handle undo Side Outs
+                if (prevServerTracker === "Opponent") {
+                  undoLastSideOut();
+                  handleUndoFBSO();
+                }
+
+                //If Home team needs to rotate back after undo event
+                if (prevServerTracker !== serverTracker) {
+                  setServerTracker(prevServerTracker);
+                  handleUndoRotation();
+                }
+
                 setHomeScore(homeScore - 1);
                 setTeamStats((prevStats) => ({
                   ...prevStats,
@@ -1198,7 +1207,17 @@ export default function statGame() {
 
               //Undo Attack Error
               case "ATK ERR":
-                //Handle Rotation
+                //if prevServerTracker === "Opponent" -> Handle undo Side Outs
+                if (prevServerTracker === "Opponent") {
+                  undoLastSideOut();
+                  handleUndoFBSO();
+                }
+
+                //If Home team needs to rotate back after undo event
+                if (prevServerTracker !== serverTracker) {
+                  setServerTracker(prevServerTracker);
+                  handleUndoRotation();
+                }
                 setOpponentScore(opponentScore - 1);
                 setTeamStats((prevStats) => ({
                   ...prevStats,
@@ -1222,9 +1241,19 @@ export default function statGame() {
                   assists: player.assists - 1,
                 };
 
-              //Undo Block Solo
+              //Undo Block Solo//
               case "BS":
-                //Handle Rotation
+                //if prevServerTracker === "Opponent" -> Handle undo Side Outs
+                if (prevServerTracker === "Opponent") {
+                  undoLastSideOut();
+                  handleUndoFBSO();
+                }
+
+                //If Home team needs to rotate back after undo event
+                if (prevServerTracker !== serverTracker) {
+                  setServerTracker(prevServerTracker);
+                  handleUndoRotation();
+                }
                 setHomeScore(homeScore - 1);
                 setTeamStats((prevStats) => ({
                   ...prevStats,
@@ -1239,7 +1268,17 @@ export default function statGame() {
 
               //Undo Block assist, will occur twice
               case "BA":
-                //Handle Rotation
+                //if prevServerTracker === "Opponent" -> Handle undo Side Outs
+                if (prevServerTracker === "Opponent") {
+                  undoLastSideOut();
+                  handleUndoFBSO();
+                }
+
+                //If Home team needs to rotate back after undo event
+                if (prevServerTracker !== serverTracker) {
+                  setServerTracker(prevServerTracker);
+                  handleUndoRotation();
+                }
                 setHomeScore(homeScore - 1);
                 setTeamStats((prevStats) => ({
                   ...prevStats,
@@ -1255,7 +1294,17 @@ export default function statGame() {
 
               //Undo Block Error
               case "BLK ERR":
-                //Handle Rotation
+                //if prevServerTracker === "Opponent" -> Handle undo Side Outs
+                if (prevServerTracker === "Opponent") {
+                  undoLastSideOut();
+                  handleUndoFBSO();
+                }
+
+                //If Home team needs to rotate back after undo event
+                if (prevServerTracker !== serverTracker) {
+                  setServerTracker(prevServerTracker);
+                  handleUndoRotation();
+                }
                 setOpponentScore(opponentScore - 1);
                 setTeamStats((prevStats) => ({
                   ...prevStats,
@@ -1279,7 +1328,17 @@ export default function statGame() {
 
               //Undo Dig Error
               case "DIG ERR":
-                //Handle Rotation
+                //if prevServerTracker === "Opponent" -> Handle undo Side Outs
+                if (prevServerTracker === "Opponent") {
+                  undoLastSideOut();
+                  handleUndoFBSO();
+                }
+
+                //If Home team needs to rotate back after undo event
+                if (prevServerTracker !== serverTracker) {
+                  setServerTracker(prevServerTracker);
+                  handleUndoRotation();
+                }
                 setOpponentScore(opponentScore - 1);
                 setTeamStats((prevStats) => ({
                   ...prevStats,
@@ -1292,7 +1351,17 @@ export default function statGame() {
 
               //Undo Service Ace
               case "SA":
-                //Handle Rotation
+                //if prevServerTracker === "Opponent" -> Handle undo Side Outs
+                if (prevServerTracker === "Opponent") {
+                  undoLastSideOut();
+                  handleUndoFBSO();
+                }
+
+                //If Home team needs to rotate back after undo event
+                if (prevServerTracker !== serverTracker) {
+                  setServerTracker(prevServerTracker);
+                  handleUndoRotation();
+                }
                 setHomeScore(homeScore - 1);
                 setTeamStats((prevStats) => ({
                   ...prevStats,
@@ -1307,7 +1376,17 @@ export default function statGame() {
 
               //Undo Service Error
               case "SE":
-                //Handle Rotation
+                //if prevServerTracker === "Opponent" -> Handle undo Side Outs
+                if (prevServerTracker === "Opponent") {
+                  undoLastSideOut();
+                  handleUndoFBSO();
+                }
+
+                //If Home team needs to rotate back after undo event
+                if (prevServerTracker !== serverTracker) {
+                  setServerTracker(prevServerTracker);
+                  handleUndoRotation();
+                }
                 setOpponentScore(opponentScore - 1);
                 setTeamStats((prevStats) => ({
                   ...prevStats,
@@ -1320,7 +1399,17 @@ export default function statGame() {
 
               //Undo Reception Error
               case "RE":
-                //Handle Rotation
+                //if prevServerTracker === "Opponent" -> Handle undo Side Outs
+                if (prevServerTracker === "Opponent") {
+                  undoLastSideOut();
+                  handleUndoFBSO();
+                }
+
+                //If Home team needs to rotate back after undo event
+                if (prevServerTracker !== serverTracker) {
+                  setServerTracker(prevServerTracker);
+                  handleUndoRotation();
+                }
                 setOpponentScore(opponentScore - 1);
                 if (lastStat.passingType === "Hand") {
                   setTeamStats((prevStats) => ({
@@ -1354,8 +1443,6 @@ export default function statGame() {
 
               //Undo 1 Pass
               case "1 Pass":
-                //Handle Rotation
-
                 if (lastStat.passingType === "Hand") {
                   setTeamStats((prevStats) => ({
                     ...prevStats,
@@ -1487,7 +1574,20 @@ export default function statGame() {
         setRosterStats(updatedRoster);
       }
 
+      //Reset prev point trackers
+      setPrevSideOut((prev) => ({
+        ...prev,
+        rotation: null,
+        success: null,
+      }));
+      setPrevServerTracker(null);
+      setPrevFBSO((prev) => ({
+        FBSO: null,
+        success: null,
+      }));
+
       setUndoAvailable(false);
+
       return oldStack.slice(0, oldStack.length - 1);
     });
   };
@@ -1855,6 +1955,7 @@ export default function statGame() {
     );
   };
 
+  //resusable LiveStatsModel
   const LiveStatsModel = () => {
     return (
       <View style={{ flex: 1 }}>
@@ -1883,9 +1984,8 @@ export default function statGame() {
                     <Text style={styles.liveStatsPlayerHeader}>
                       #{"  "}Player
                     </Text>
-                    <Text style={styles.liveStatsModalSecondaryText}>SP</Text>
                     <Text style={styles.liveStatsModalSecondaryText}>K </Text>
-                    <Text style={styles.liveStatsModalSecondaryText}>E </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>E</Text>
                     <Text style={styles.liveStatsModalSecondaryText}>TA</Text>
                     <Text style={styles.liveStatsModalSecondaryText}>
                       {"    "}
@@ -1919,11 +2019,6 @@ export default function statGame() {
                           {player.playerNumber}
                           {"  "}
                           {player.playerName}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.setsPlayed.toString().length > 1
-                            ? player.setsPlayed
-                            : player.setsPlayed + " "}
                         </Text>
                         <Text style={styles.liveStatsModalSecondaryText2}>
                           {player.kills.toString().length > 1
@@ -2013,11 +2108,6 @@ export default function statGame() {
                       Team
                       {"  "}
                       Total
-                    </Text>
-                    <Text style={styles.liveStatsModalSecondaryText2}>
-                      {teamStats.teamSetsPlayed.toString().length > 1
-                        ? teamStats.teamSetsPlayed
-                        : teamStats.teamSetsPlayed + " "}
                     </Text>
                     <Text style={styles.liveStatsModalSecondaryText2}>
                       {teamStats.teamKills.toString().length > 1
@@ -2557,7 +2647,8 @@ export default function statGame() {
               //reset firstTimeOnCourts for players
               //Reset onCourtPositionValues and subs to reaspect positions
               //Save set scores -> Increment sets won/sets lost
-              //Input validation, ensure rotation is proper -> Alert
+              //Input validation, ensure rotation is proper ->
+              //Increment sets played for starters and libs
               setUndoAvailable(false);
             }}
           >
@@ -2932,11 +3023,6 @@ export default function statGame() {
                   //Increment Server attempts
                   handleServeAttempts();
 
-                  //Increment sets played if it's the start of the set
-                  if (startOfSet === true) {
-                    handleSetsPlayed();
-                  }
-
                   //Handle sideouts
                   handleSideOuts("Home");
                   handleFBSO("Home");
@@ -2973,11 +3059,6 @@ export default function statGame() {
                 onPress={() => {
                   //Increment Server attempts
                   handleServeAttempts();
-
-                  //Increment sets played if it's the start of the set
-                  if (startOfSet === true) {
-                    handleSetsPlayed();
-                  }
 
                   //Handle sideouts
                   handleSideOuts("Opponent");
@@ -3383,11 +3464,6 @@ export default function statGame() {
                             //Increment kills
                             handleKillsIncrement(player.playerNumber);
 
-                            //Increment sets played if it's the start of the set
-                            if (startOfSet === true) {
-                              handleSetsPlayed();
-                            }
-
                             //Handle Side outs
                             handleSideOuts("Home");
                             handleFBSO("Home");
@@ -3434,11 +3510,6 @@ export default function statGame() {
                           onPress={() => {
                             //Increment attack error
                             handleAttackErrorsIncrement(player.playerNumber);
-
-                            //Increment sets played if it's the start of the set
-                            if (startOfSet === true) {
-                              handleSetsPlayed();
-                            }
 
                             //Handle Side outs
                             handleSideOuts("Opponent");
@@ -3516,11 +3587,6 @@ export default function statGame() {
                             //Increment player block solos
                             handleBlockSolosIncrement(player.playerNumber);
 
-                            //Increment sets played if it's the start of the set
-                            if (startOfSet === true) {
-                              handleSetsPlayed();
-                            }
-
                             //Handle sideouts
                             handleSideOuts("Home");
                             handleFBSO("Home");
@@ -3565,11 +3631,6 @@ export default function statGame() {
                           onPress={() => {
                             //Increment block errors
                             handleBlockErrorsIncrement(player.playerNumber);
-
-                            //Increment sets played if it's the start of the set
-                            if (startOfSet === true) {
-                              handleSetsPlayed();
-                            }
 
                             //Handle Sideouts
                             handleSideOuts("Opponent");
@@ -3643,11 +3704,6 @@ export default function statGame() {
                                 teamPts: teamStats.teamPts + 1,
                               }));
 
-                              //Increment sets played if it's the start of the set
-                              if (startOfSet === true) {
-                                handleSetsPlayed();
-                              }
-
                               //Update the statStack
                               setStatStack((oldStack) => [
                                 ...oldStack,
@@ -3696,11 +3752,6 @@ export default function statGame() {
                           onPress={() => {
                             //Increment dig errors
                             handleDigErrorsIncrement(player.playerNumber);
-
-                            //Increment sets played if it's the start of the set
-                            if (startOfSet === true) {
-                              handleSetsPlayed();
-                            }
 
                             //handle side outs
                             handleSideOuts("Opponent");
@@ -3779,11 +3830,6 @@ export default function statGame() {
                             //Increment player aces
                             handleserviceAcesIncrement(player.playerNumber);
 
-                            //Increment sets played if it's the start of the set
-                            if (startOfSet === true) {
-                              handleSetsPlayed();
-                            }
-
                             //Increment team stats
                             setTeamStats((teamStats) => ({
                               ...teamStats,
@@ -3823,11 +3869,6 @@ export default function statGame() {
                           onPress={() => {
                             //Increment player service errors
                             handleServiceErrorsIncrement(player.playerNumber);
-
-                            //Increment sets played if it's the start of the set
-                            if (startOfSet === true) {
-                              handleSetsPlayed();
-                            }
 
                             //Increment team stats
                             setTeamStats((teamStats) => ({
@@ -3969,11 +4010,6 @@ export default function statGame() {
                                   passType: "Forearm",
                                 },
                               ]);
-                            }
-
-                            //Increment sets played if it's the start of the set
-                            if (startOfSet === true) {
-                              handleSetsPlayed();
                             }
 
                             //Handle side outs
@@ -4839,7 +4875,7 @@ const styles = StyleSheet.create({
   },
   liveStatsPlayerHeader: {
     fontSize: RFValue(9),
-    width: wp(10),
+    width: wp(12),
     marginRight: wp(2),
     marginLeft: wp(2),
     fontWeight: "bold",
