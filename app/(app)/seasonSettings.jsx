@@ -21,6 +21,9 @@ export default function SeasonSettings() {
   const [playerStats, setPlayerStats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [newOwnerEmail, setNewOwnerEmail] = useState("");
+  const [owners, setOwners] = useState([]);
+  const [editors, setEditors] = useState([]);
+  const [viewers, setViewers] = useState([]);
 
   useEffect(() => {
     if (seasonID && user) {
@@ -31,7 +34,36 @@ export default function SeasonSettings() {
             .doc(seasonID)
             .get();
           if (seasonDoc.exists) {
-            setSeasonData(seasonDoc.data());
+            const data = seasonDoc.data();
+            setSeasonData(data);
+
+            const fetchUserData = async (userIds) => {
+              const users = await Promise.all(
+                userIds.map(async (userId) => {
+                  const userDoc = await firestore().collection("users").doc(userId).get();
+                  if (userDoc.exists) {
+                    return { id: userId, ...userDoc.data() };
+                  }
+                  return null;
+                })
+              );
+              return users.filter((user) => user !== null);
+            };
+
+            if (data.access) {
+              if (data.access.owner) {
+                const ownerData = await fetchUserData([data.access.owner]);
+                setOwners(ownerData);
+              }
+              if (data.access.editors && data.access.editors.length > 0) {
+                const editorsData = await fetchUserData(data.access.editors);
+                setEditors(editorsData);
+              }
+              if (data.access.viewers && data.access.viewers.length > 0) {
+                const viewersData = await fetchUserData(data.access.viewers);
+                setViewers(viewersData);
+              }
+            }
           } else {
             console.log("No season data found.");
           }
@@ -99,13 +131,13 @@ export default function SeasonSettings() {
           })
         });
 
-      // Update the season document to include the new owner in the access field
+      // Update the season document to include the new owner in the access.editors field
       const seasonRef = firestore().collection('seasons').doc(seasonID);
       await seasonRef.update({
         [`access.editors`]: firestore.FieldValue.arrayUnion(newOwnerID)
       });
 
-      Alert.alert("Success", "Owner added successfully!");
+      Alert.alert("Success", "Editor added successfully!");
       setModalVisible(false);
       setNewOwnerEmail("");
     } catch (error) {
@@ -124,10 +156,8 @@ export default function SeasonSettings() {
     }
   }
 
-  const owners = seasonData?.access?.owner ? Object.keys(seasonData.access.owner) : [];
-
-  const renderOwner = ({ item }) => (
-    <Text style={styles.sectionText}>- {item}</Text>
+  const renderUser = ({ item }) => (
+    <Text style={styles.sectionText}>- {item.coachName} ({item.email})</Text>
   );
 
   const renderPlayer = ({ item }) => (
@@ -159,7 +189,7 @@ export default function SeasonSettings() {
           <View>
             {/* Current Season Section */}
             <View style={styles.sectionContainer}>
-              <Text style={styles.currentSeasonText}>Current Season: {seasonData.teamName}, {seasonData.year}</Text>
+              <Text style={styles.currentSeasonText}>Current Season: {seasonData.teamName} {seasonData.year}</Text>
               <TouchableOpacity
                 style={styles.changeSeasonButton}
                 onPress={() => {
@@ -174,12 +204,29 @@ export default function SeasonSettings() {
             </View>
             <View style={styles.divider} />
 
-            {/* Owners Section */}
+            {/* Owner Section */}
             <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Owners</Text>
-              {owners.map((owner, index) => renderOwner({ item: owner, key: index }))}
+              <Text style={styles.sectionTitle}>Owner</Text>
+              {owners.map((owner, index) => renderUser({ item: owner, key: index }))}
+            </View>
+            <View style={styles.divider} />
+
+            {/* Editors Section */}
+            <View style={styles.sectionContainer}>
+              <Text style={styles.sectionTitle}>Editors</Text>
+              {editors.map((editor, index) => renderUser({ item: editor, key: index }))}
               <TouchableOpacity style={styles.addOwnerButton} onPress={() => setModalVisible(true)}>
-                <Text style={styles.buttonText}>Add Owner</Text>
+                <Text style={styles.buttonText}>Add Editor</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.divider} />
+
+            {/* Viewers Section */}
+            <View style={styles.sectionContainer}>
+              <Text style={styles.sectionTitle}>Viewers</Text>
+              {viewers.map((viewer, index) => renderUser({ item: viewer, key: index }))}
+              <TouchableOpacity style={styles.addOwnerButton} onPress={() => setModalVisible(true)}>
+                <Text style={styles.buttonText}>Add Viewer</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.divider} />
@@ -219,7 +266,7 @@ export default function SeasonSettings() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>Enter Owner's Email</Text>
+          <Text style={styles.modalText}>Enter Email</Text>
           <TextInput
             style={styles.input}
             placeholder="Email"
@@ -227,7 +274,7 @@ export default function SeasonSettings() {
             onChangeText={setNewOwnerEmail}
           />
           <TouchableOpacity style={styles.addOwnerModalButton} onPress={addOwner}>
-            <Text style={styles.buttonText}>Add Owner</Text>
+            <Text style={styles.buttonText}>Add Editor</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
             <Text style={styles.buttonText}>Cancel</Text>
@@ -416,3 +463,5 @@ const styles = StyleSheet.create({
     marginBottom: hp(2),
   },
 });
+
+
