@@ -56,6 +56,9 @@ export default function statGame() {
   //State Hook for the stat Stack
   const [statStack, setStatStack] = useState([]);
 
+  //State hook to store the current set
+  const [currentSet, setCurrentSet] = useState(1);
+
   // Get the users Lineup -> TODO: replace with respective drilled prop
   const [positionOne, setPositionOne] = useState("5");
   const [positionTwo, setPositionTwo] = useState("8");
@@ -86,6 +89,8 @@ export default function statGame() {
 
   const [onCourtPositionSix, setOnCourtPositionSix] = useState(positionSix);
   const [onCourtPositionSixSub, setOnCourtPositionSixSub] = useState(null);
+
+  const [startOfSet, setStartOfSet] = useState(true);
 
   //Function that rotates the players on the court
   const handleRotation = () => {
@@ -154,6 +159,7 @@ export default function statGame() {
       totalHandPassValue: 0,
       totalPassValue: 0,
       twoPasses: 0,
+      firstTimeOnCourt: true,
     },
     {
       assists: 0,
@@ -189,6 +195,7 @@ export default function statGame() {
       totalHandPassValue: 0,
       totalPassValue: 0,
       twoPasses: 0,
+      firstTimeOnCourt: true,
     },
     {
       assists: 0,
@@ -224,6 +231,7 @@ export default function statGame() {
       totalHandPassValue: 0,
       totalPassValue: 0,
       twoPasses: 0,
+      firstTimeOnCourt: true,
     },
     {
       assists: 0,
@@ -259,6 +267,7 @@ export default function statGame() {
       totalHandPassValue: 0,
       totalPassValue: 0,
       twoPasses: 0,
+      firstTimeOnCourt: true,
     },
     {
       assists: 0,
@@ -294,6 +303,7 @@ export default function statGame() {
       totalHandPassValue: 0,
       totalPassValue: 0,
       twoPasses: 0,
+      firstTimeOnCourt: true,
     },
     {
       assists: 0,
@@ -329,6 +339,7 @@ export default function statGame() {
       totalHandPassValue: 0,
       totalPassValue: 0,
       twoPasses: 0,
+      firstTimeOnCourt: true,
     },
     {
       assists: 0,
@@ -364,6 +375,7 @@ export default function statGame() {
       totalHandPassValue: 0,
       totalPassValue: 0,
       twoPasses: 0,
+      firstTimeOnCourt: true,
     },
     {
       assists: 0,
@@ -399,6 +411,43 @@ export default function statGame() {
       totalHandPassValue: 0,
       totalPassValue: 0,
       twoPasses: 0,
+      firstTimeOnCourt: true,
+    },
+    {
+      assists: 0,
+      assistsPerSet: 0,
+      attackErrors: 0,
+      attempts: 0,
+      blockAssists: 0,
+      blockErrors: 0,
+      blockSolos: 0,
+      digErrors: 0,
+      digs: 0,
+      digsPerSet: 0,
+      forearmPassingAttempts: 0,
+      handPassingAttempts: 0,
+      kills: 0,
+      matchesPlayed: 0,
+      onePasses: 0,
+      passingAttempts: 0,
+      playerName: "Shae",
+      playerNumber: "21",
+      pts: 0,
+      ptsPerSet: 0,
+      receptionErrors: 0,
+      serviceAces: 0,
+      serviceAttempts: 0,
+      serviceErrors: 0,
+      setsLost: 0,
+      setsPlayed: 0,
+      setsWon: 0,
+      threePasses: 0,
+      totalBlocks: 0,
+      totalForearmPassValue: 0,
+      totalHandPassValue: 0,
+      totalPassValue: 0,
+      twoPasses: 0,
+      firstTimeOnCourt: true,
     },
   ];
 
@@ -506,6 +555,26 @@ export default function statGame() {
       setOnCourtPositionSix(benchDropDownValue);
       setOnCourtPositionSixSub(courtDropDownValue);
     }
+
+    //Check if firstTimeOnCourt is true => increment setsPlayed by 1, firstTimeOnCourt = false : continue
+    const updatedRoster = rosterStats.map((player) => {
+      if (player.playerNumber === benchDropDownValue) {
+        if (player.firstTimeOnCourt === true) {
+          return {
+            ...player,
+            setsPlayed: player.setsPlayed + 1,
+            firstTimeOnCourt: false,
+          };
+        } else {
+          return {
+            ...player,
+            firstTimeOnCourt: false,
+          };
+        }
+      }
+      return player;
+    });
+    setRosterStats(updatedRoster);
 
     //Reset drop down values
     setCourtDropDownValue("");
@@ -1405,6 +1474,31 @@ export default function statGame() {
       setUndoAvailable(false);
       return oldStack.slice(0, oldStack.length - 1);
     });
+  };
+
+  const handleSetsPlayed = () => {
+    //Find all of the starting players and then increment their sets played by 1
+    const updatedRoster = rosterStats.map((player) => {
+      if (
+        player.playerNumber === positionOne ||
+        player.playerNumber === positionTwo ||
+        player.playerNumber === positionThree ||
+        player.playerNumber === positionFour ||
+        player.playerNumber === positionFive ||
+        player.playerNumber === positionSix ||
+        player.playerNumber === firstLibero ||
+        player.playerNumber === secondLibero
+      ) {
+        return {
+          ...player,
+          setsPlayed: player.setsPlayed + 1,
+          firstTimeOnCourt: false,
+        };
+      }
+      return player; // Return the player object unchanged
+    });
+    setStartOfSet(false);
+    setRosterStats(updatedRoster); // Update the roster state with the new array
   };
 
   const handleAttemptIncrement = (playerNumber) => {
@@ -2586,16 +2680,28 @@ export default function statGame() {
             <Text style={styles.scoreTeamNameText}>Your Team</Text>
             <TouchableOpacity
               onPress={() => {
+                //Increment Server attempts
                 handleServeAttempts();
+
+                //Increment sets played if it's the start of the set
+                if (startOfSet === true) {
+                  handleSetsPlayed();
+                }
+
+                //Handle sideouts
                 handleSideOuts("Home");
                 handleFBSO("Home");
+
+                //Increment Home Score
                 setHomeScore(homeScore + 1);
+
                 //Keep track of prev serve for undo
                 setPrevServerTracker(serverTracker);
                 if (serverTracker === "Opponent") {
                   setServerTracker("Home");
                   handleRotation();
                 }
+                //Add recent stat to the stat log
                 setStatStack((oldStack) => [
                   ...oldStack,
                   {
@@ -2616,16 +2722,28 @@ export default function statGame() {
             <Text style={styles.scoreTeamNameText}>Opponent</Text>
             <TouchableOpacity
               onPress={() => {
+                //Increment Server attempts
                 handleServeAttempts();
+
+                //Increment sets played if it's the start of the set
+                if (startOfSet === true) {
+                  handleSetsPlayed();
+                }
+
+                //Handle sideouts
                 handleSideOuts("Opponent");
                 handleFBSO("Opponent");
+
+                //Increment Opponent Score
                 setOpponentScore(opponentScore + 1);
+
                 //Keep track of prev serve for undo
                 setPrevServerTracker(serverTracker);
                 if (serverTracker !== "Opponent") {
                   setServerTracker("Opponent");
                   setIsFBSO(true);
                 }
+                //Add recent stat to the stat log
                 setStatStack((oldStack) => [
                   ...oldStack,
                   {
@@ -2983,11 +3101,16 @@ export default function statGame() {
                     <View style={styles.offenseSubContainer}>
                       <TouchableOpacity
                         onPress={() => {
+                          //Increment attempts
                           handleAttemptIncrement(player.playerNumber);
+
+                          //Increment Team attempts
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamAttempts: teamStats.teamAttempts + 1,
                           }));
+
+                          //Add stat to stat log
                           setStatStack((oldStack) => [
                             ...oldStack,
                             {
@@ -3004,23 +3127,40 @@ export default function statGame() {
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() => {
+                          //Increment kills
                           handleKillsIncrement(player.playerNumber);
+
+                          //Increment sets played if it's the start of the set
+                          if (startOfSet === true) {
+                            handleSetsPlayed();
+                          }
+
+                          //Handle Side outs
                           handleSideOuts("Home");
                           handleFBSO("Home");
+
+                          //Increment team stats
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamKills: teamStats.teamKills + 1,
                             teamAttempts: teamStats.teamAttempts + 1,
                             teamPts: teamStats.teamPts + 1,
                           }));
+
+                          //incrment serve attempts if home team is serving
                           handleServeAttempts();
+
+                          //Increment Home score
                           setHomeScore(homeScore + 1);
+
                           //Keep track of prev serve for undo
                           setPrevServerTracker(serverTracker);
                           if (serverTracker === "Opponent") {
                             setServerTracker("Home");
                             handleRotation();
                           }
+
+                          //Add stat to stat log
                           setStatStack((oldStack) => [
                             ...oldStack,
                             {
@@ -3039,22 +3179,39 @@ export default function statGame() {
                     <View style={styles.offenseSubContainer}>
                       <TouchableOpacity
                         onPress={() => {
+                          //Increment attack error
                           handleAttackErrorsIncrement(player.playerNumber);
+
+                          //Increment sets played if it's the start of the set
+                          if (startOfSet === true) {
+                            handleSetsPlayed();
+                          }
+
+                          //Handle Side outs
                           handleSideOuts("Opponent");
                           handleFBSO("Home");
+
+                          //Increment Team Stats
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamAttackErrors: teamStats.teamAttackErrors + 1,
                             teamAttempts: teamStats.teamAttempts + 1,
                           }));
+
+                          //handle serve attempts
                           handleServeAttempts();
+
+                          //Increment Opponent score
                           setOpponentScore(opponentScore + 1);
+
                           //Keep track of prev serve for undo
                           setPrevServerTracker(serverTracker);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
                             setIsFBSO(true);
                           }
+
+                          //Add stat to the statStack
                           setStatStack((oldStack) => [
                             ...oldStack,
                             {
@@ -3072,11 +3229,16 @@ export default function statGame() {
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() => {
+                          //Incrcement assists
                           handleAssistsIncrement(player.playerNumber);
+
+                          //Increment team stats
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamAssists: teamStats.teamAssists + 1,
                           }));
+
+                          //Add stat to the stat log
                           setStatStack((oldStack) => [
                             ...oldStack,
                             {
@@ -3098,23 +3260,40 @@ export default function statGame() {
                     <View style={styles.defenseSubContainer}>
                       <TouchableOpacity
                         onPress={() => {
+                          //Increment player block solos
                           handleBlockSolosIncrement(player.playerNumber);
+
+                          //Increment sets played if it's the start of the set
+                          if (startOfSet === true) {
+                            handleSetsPlayed();
+                          }
+
+                          //Handle sideouts
                           handleSideOuts("Home");
                           handleFBSO("Home");
+
+                          //Increment team stats
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamBlockSolos: teamStats.teamBlockSolos + 1,
                             teamTotalBlocks: teamStats.teamTotalBlocks + 1,
                             teamPts: teamStats.teamPts + 1,
                           }));
+
+                          //Handle serve attempts if needed
                           handleServeAttempts();
+
+                          //Increment home score
                           setHomeScore(homeScore + 1);
+
                           //Keep track of prev serve for undo
                           setPrevServerTracker(serverTracker);
                           if (serverTracker === "Opponent") {
                             setServerTracker("Home");
                             handleRotation();
                           }
+
+                          //Add stat to the stat log
                           setStatStack((oldStack) => [
                             ...oldStack,
                             {
@@ -3131,21 +3310,38 @@ export default function statGame() {
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() => {
+                          //Increment block errors
                           handleBlockErrorsIncrement(player.playerNumber);
+
+                          //Increment sets played if it's the start of the set
+                          if (startOfSet === true) {
+                            handleSetsPlayed();
+                          }
+
+                          //Handle Sideouts
                           handleSideOuts("Opponent");
                           handleFBSO("Opponent");
+
+                          //Increment team stats
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamBlockErrors: teamStats.teamBlockErrors + 1,
                           }));
+
+                          //handle serve attempts if needed
                           handleServeAttempts();
+
+                          //Increment opponent score
                           setOpponentScore(opponentScore + 1);
+
                           //Keep track of prev serve for undo
                           setPrevServerTracker(serverTracker);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
                             setIsFBSO(true);
                           }
+
+                          //add stat to stat log
                           setStatStack((oldStack) => [
                             ...oldStack,
                             {
@@ -3165,7 +3361,7 @@ export default function statGame() {
                     <View style={styles.defenseSubContainer}>
                       <TouchableOpacity
                         onPress={() => {
-                          //Handle All conditions: initial select, deselect, and completion
+                          //Handle All conditions: initial select, deselect, or completion
                           if (
                             selectedBlockAssist === false &&
                             firstBlockAssist === ""
@@ -3193,6 +3389,11 @@ export default function statGame() {
                               teamPts: teamStats.teamPts + 1,
                             }));
 
+                            //Increment sets played if it's the start of the set
+                            if (startOfSet === true) {
+                              handleSetsPlayed();
+                            }
+
                             //Update the statStack
                             setStatStack((oldStack) => [
                               ...oldStack,
@@ -3204,14 +3405,20 @@ export default function statGame() {
                             ]);
                             setUndoAvailable(true);
 
+                            //handle side outs
                             handleSideOuts("Home");
                             handleFBSO("Home");
 
                             //Reset State Hooks
                             setSelectedBlockAssist(false);
                             setFirstBlockAssist("");
+
+                            //handle serve attempts if needed
                             handleServeAttempts();
+
+                            //Increment Home Score
                             setHomeScore(homeScore + 1);
+
                             //Keep track of prev serve for undo
                             setPrevServerTracker(serverTracker);
                             if (serverTracker === "Opponent") {
@@ -3233,21 +3440,38 @@ export default function statGame() {
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() => {
+                          //Increment dig errors
                           handleDigErrorsIncrement(player.playerNumber);
+
+                          //Increment sets played if it's the start of the set
+                          if (startOfSet === true) {
+                            handleSetsPlayed();
+                          }
+
+                          //handle side outs
                           handleSideOuts("Opponent");
                           handleFBSO("Home");
+
+                          //Increment team Stats
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamDigErrors: teamStats.teamDigErrors + 1,
                           }));
+
+                          //handle serve attempts if needed
                           handleServeAttempts();
+
+                          //Increment opponent score
                           setOpponentScore(opponentScore + 1);
+
                           //Keep track of prev serve for undo
                           setPrevServerTracker(serverTracker);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
                             setIsFBSO(true);
                           }
+
+                          //add stat to stat log
                           setStatStack((oldStack) => [
                             ...oldStack,
                             {
@@ -3267,11 +3491,16 @@ export default function statGame() {
                     <View style={styles.defenseSubContainerSolo}>
                       <TouchableOpacity
                         onPress={() => {
+                          //Increment dig
                           handleDigIncrement(player.playerNumber);
+
+                          //Increment player stats
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamDigs: teamStats.teamDigs + 1,
                           }));
+
+                          //add stat to stat log
                           setStatStack((oldStack) => [
                             ...oldStack,
                             {
@@ -3293,20 +3522,35 @@ export default function statGame() {
                     <View style={styles.defenseSubContainer}>
                       <TouchableOpacity
                         onPress={() => {
+                          //Increment player aces
                           handleserviceAcesIncrement(player.playerNumber);
+
+                          //Increment sets played if it's the start of the set
+                          if (startOfSet === true) {
+                            handleSetsPlayed();
+                          }
+
+                          //Increment team stats
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamServiceAces: teamStats.teamServiceAces + 1,
                             teamPts: teamStats.teamPts + 1,
                           }));
+
+                          //handle serve attempts if needed
                           handleServeAttempts();
+
+                          //increment home score
                           setHomeScore(homeScore + 1);
+
                           //Keep track of prev serve for undo
                           setPrevServerTracker(serverTracker);
                           if (serverTracker === "Opponent") {
                             setServerTracker("Home");
                             handleRotation();
                           }
+
+                          //Add stat to stat log
                           setStatStack((oldStack) => [
                             ...oldStack,
                             {
@@ -3323,19 +3567,34 @@ export default function statGame() {
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() => {
+                          //Increment player service errors
                           handleServiceErrorsIncrement(player.playerNumber);
+
+                          //Increment sets played if it's the start of the set
+                          if (startOfSet === true) {
+                            handleSetsPlayed();
+                          }
+
+                          //Increment team stats
                           setTeamStats((teamStats) => ({
                             ...teamStats,
                             teamServiceErrors: teamStats.teamServiceErrors + 1,
                           }));
+
+                          //handle serve attempts
                           handleServeAttempts();
+
+                          //increment opponent score
                           setOpponentScore(opponentScore + 1);
+
                           //Keep track of prev serve for undo
                           setPrevServerTracker(serverTracker);
                           if (serverTracker !== "Opponent") {
                             setServerTracker("Opponent");
                             setIsFBSO(true);
                           }
+
+                          //Add stat to stat log
                           setStatStack((oldStack) => [
                             ...oldStack,
                             {
@@ -3415,6 +3674,7 @@ export default function statGame() {
                     <View style={styles.defenseSubContainer}>
                       <TouchableOpacity
                         onPress={() => {
+                          //Increment player reception errors
                           handleReceptionErrorIncrement(player.playerNumber);
                           if (handPassSelected === true) {
                             setTeamStats((teamStats) => ({
@@ -3454,14 +3714,27 @@ export default function statGame() {
                             ]);
                           }
 
+                          //Increment sets played if it's the start of the set
+                          if (startOfSet === true) {
+                            handleSetsPlayed();
+                          }
+
+                          //Handle side outs
                           handleSideOuts("Opponent");
                           handleFBSO("Opponent");
+
+                          //reset passing trackers
                           setForearmPassSelected(false);
                           setForearmPassPlayer(null);
                           setHandPassSelected(false);
                           setHandPassPlayer(null);
+
+                          //handle serve attempts if needed
                           handleServeAttempts();
+
+                          //Increment opponent score
                           setOpponentScore(opponentScore + 1);
+
                           //Keep track of prev serve for undo
                           setPrevServerTracker(serverTracker);
                           if (serverTracker !== "Opponent") {
@@ -3492,6 +3765,7 @@ export default function statGame() {
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() => {
+                          //Increment player two pass
                           handleTwoPassIncrement(player.playerNumber);
                           if (handPassSelected === true) {
                             setTeamStats((teamStats) => ({
@@ -3537,6 +3811,7 @@ export default function statGame() {
                             ]);
                           }
 
+                          //reset passing trackers
                           setForearmPassSelected(false);
                           setForearmPassPlayer(null);
                           setHandPassSelected(false);
@@ -3567,6 +3842,7 @@ export default function statGame() {
                     <View style={styles.defenseSubContainer}>
                       <TouchableOpacity
                         onPress={() => {
+                          //Increment player one pass
                           handleOnePassIncrement(player.playerNumber);
                           if (handPassSelected === true) {
                             setTeamStats((teamStats) => ({
@@ -3611,6 +3887,7 @@ export default function statGame() {
                               },
                             ]);
                           }
+                          //Reset passing trackers
                           setForearmPassSelected(false);
                           setForearmPassPlayer(null);
                           setHandPassSelected(false);
@@ -3639,6 +3916,7 @@ export default function statGame() {
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() => {
+                          //Increment player three passes
                           handleThreePassIncrement(player.playerNumber);
                           if (handPassSelected === true) {
                             setTeamStats((teamStats) => ({
@@ -3684,6 +3962,7 @@ export default function statGame() {
                             ]);
                           }
 
+                          //Reset passing trackers
                           setForearmPassSelected(false);
                           setForearmPassPlayer(null);
                           setHandPassSelected(false);
