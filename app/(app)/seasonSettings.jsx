@@ -10,12 +10,17 @@ import { COLORS } from "../../constants/Colors";
 import { RFValue } from "react-native-responsive-fontsize";
 import { AntDesign } from "@expo/vector-icons";
 import { useAuth } from "../../context/authContext";
+import { useEffect } from "react";
+import firestore from "@react-native-firebase/firestore";
+import Loading from "../../components/Loading";
 
 export default function SeasonSettings() {
   const router = useRouter();
-  const [selectedSeason, setSelectedSeason] = useState("2024 Season");
-
   const { seasonID, user, setActiveSeason } = useAuth();
+  const [seasonData, setSeasonData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+ 
 
   const [roster, setRoster] = useState([
     { playerNumber: '1', value: 'Player 1' },
@@ -44,6 +49,40 @@ export default function SeasonSettings() {
     { playerNumber: '24', value: 'Player 24' },
   ]);
 
+  useEffect(() => {
+    // Grab season by season ID from firebase, then setSeasonData
+    if (seasonID && user) {
+      const fetchSeasonData = async () => {
+        try {
+          const seasonDoc = await firestore()
+            .collection("seasons")
+            .doc(seasonID)
+            .get();
+          if (seasonDoc.exists) {
+            setSeasonData(seasonDoc.data());
+            
+          } else {
+            console.log("No season data found.");
+          }
+        } catch (error) {
+          console.error("Failed to fetch season data:", error);
+        }
+        setLoading(false);
+      };
+
+      fetchSeasonData();
+    }
+  }, [seasonID, user]);
+
+  if (loading || !seasonData) {
+    if (loading) {
+      return (
+        <View style={styles.loading}>
+          <Loading size={hp(10)} />
+        </View>
+      );
+    }
+  }
   const owners = ["Owner 1", "Owner 2"];
 
   const sections = [
@@ -138,7 +177,7 @@ export default function SeasonSettings() {
         )}
         ListHeaderComponent={
           <View style={styles.sectionContainer}>
-            <Text style={styles.currentSeasonText}>Current Season: {selectedSeason}</Text>
+            <Text style={styles.currentSeasonText}>Current Season: {seasonData.teamName}, {seasonData.year}</Text>
             <TouchableOpacity style={styles.changeSeasonButton}
               onPress={() => {
                 // set active season to null then re route to seasons screen
@@ -166,6 +205,7 @@ container: {
     flex: 1,
     flexDirection: "column",
     },
+    
     backContainer: {
     flexDirection: "row",
     justifyContent: "start",
@@ -188,6 +228,12 @@ container: {
     fontWeight: "bold",
     textAlign: "center",
     color: COLORS.white,
+    },
+
+loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
     },
   titleText: {
     fontSize: RFValue(30),
