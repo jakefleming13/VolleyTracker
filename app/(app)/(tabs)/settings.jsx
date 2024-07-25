@@ -39,16 +39,47 @@ export default function settings() {
           onPress={() =>
             router.push({
               pathname: "gameLog",
-              params: {
-                currentLocalTeamName: seasonData.teamName,
-                currentLocalYear: seasonData.year,
-                currentLocalSeasonID: seasonData.seasonID,
-              },
+             
             })
           }
         >
           <View style={styles.featureListContainer}>
-            <Text style={styles.featureListText}>Game Log</Text>
+            <Text style={styles.featureListText}>Season</Text>
+            <AntDesign
+              style={styles.featureListIcon}
+              name="right"
+              size={hp(3.7)}
+              color={COLORS.black}
+            />
+          </View>
+        </TouchableOpacity>
+
+
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: "gameLog",
+             
+            })
+          }
+        >
+          <View style={styles.featureListContainer}>
+            <Text style={styles.featureListText}>Account</Text>
+            <AntDesign
+              style={styles.featureListIcon}
+              name="right"
+              size={hp(3.7)}
+              color={COLORS.black}
+            />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+       
+  
+        >
+          <View style={styles.featureListContainer}>
+            <Text style={styles.featureListText}>User Guide</Text>
             <AntDesign
               style={styles.featureListIcon}
               name="right"
