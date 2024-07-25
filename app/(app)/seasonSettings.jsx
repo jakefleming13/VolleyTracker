@@ -1,12 +1,12 @@
 import { View, Text } from "react-native";
 import { useRouter } from "expo-router";
-import { SafeView } from "../../../components/SafeView";
+import { SafeView } from "../../components/SafeView";
 import { TouchableOpacity } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { COLORS } from "../../../constants/Colors";
+import { COLORS } from "../../constants/Colors";
 import { StyleSheet } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { AntDesign } from "@expo/vector-icons";
@@ -17,7 +17,7 @@ export default function settings() {
   return (
     <SafeView style={styles.container}>
       <View style={styles.backContainer}>
-        <TouchableOpacity onPress={() => router.push("seasons")}>
+        <TouchableOpacity onPress={() => router.push("settings")}>
           <View style={styles.headerBtn}>
             <AntDesign
               style={styles.seasonListIcon}
@@ -25,69 +25,15 @@ export default function settings() {
               size={hp(3.7)}
               color={COLORS.white}
             />
-            <Text style={styles.headerBtnText}>SEASONS</Text>
+            <Text style={styles.headerBtnText}>SETTINGS</Text>
           </View>
         </TouchableOpacity>
       </View>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>Settings</Text>
+        <Text style={styles.titleText}>Season Settings</Text>
       </View>
       <View style={styles.seperator} />
 
-
-      <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "seasonSettings",
-             
-            })
-          }
-        >
-          <View style={styles.featureListContainer}>
-            <Text style={styles.featureListText}>Season</Text>
-            <AntDesign
-              style={styles.featureListIcon}
-              name="right"
-              size={hp(3.7)}
-              color={COLORS.black}
-            />
-          </View>
-        </TouchableOpacity>
-
-
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "gameLog",
-             
-            })
-          }
-        >
-          <View style={styles.featureListContainer}>
-            <Text style={styles.featureListText}>Account</Text>
-            <AntDesign
-              style={styles.featureListIcon}
-              name="right"
-              size={hp(3.7)}
-              color={COLORS.black}
-            />
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-       
-  
-        >
-          <View style={styles.featureListContainer}>
-            <Text style={styles.featureListText}>User Guide</Text>
-            <AntDesign
-              style={styles.featureListIcon}
-              name="right"
-              size={hp(3.7)}
-              color={COLORS.black}
-            />
-          </View>
-        </TouchableOpacity>
 
     </SafeView>
 
