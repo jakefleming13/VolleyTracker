@@ -672,9 +672,6 @@ export default function statGame() {
     return <View>{display}</View>;
   };
 
-  //Variable to handles the transition to the inbetweenset screen
-  const [endSet, setEndSet] = useState(false);
-
   //teamStats Variable to keep track of all team stats during the current game
   const [teamStats, setTeamStats] = useState({
     teamSetsWon: 0,
@@ -1813,10 +1810,57 @@ export default function statGame() {
     setRosterStats(updatedRoster);
   };
 
+  const RotationCheckModal = () => {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Modal
+          isVisible={isRotationCheckModalVisible}
+          onBackdropPress={toggleRotationCheckModal}
+        >
+          <View style={styles.rotationCheckContainer}>
+            <View style={styles.court}>
+              <View style={styles.netIndicator} />
+              <View style={styles.courtRow}>
+                <View style={styles.courtPosition}>
+                  <Text style={styles.courtPositionText}>{positionFour}</Text>
+                </View>
+                <View style={styles.courtPosition}>
+                  <Text style={styles.courtPositionText}>{positionThree}</Text>
+                </View>
+                <View style={styles.courtPosition}>
+                  <Text style={styles.courtPositionText}>{positionTwo}</Text>
+                </View>
+              </View>
+              <View style={styles.courtRow}>
+                <View style={styles.courtPosition}>
+                  <Text style={styles.courtPositionText}>{positionFive}</Text>
+                </View>
+                <View style={styles.courtPosition}>
+                  <Text style={styles.courtPositionText}>{positionSix}</Text>
+                </View>
+                <View style={styles.courtPosition}>
+                  <Text style={styles.courtPositionText}>{positionOne}</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    );
+  };
+
+  //TODO: Add a state hook that holds the current score cap value
   if (
     (homeScore > 24 && homeScore - opponentScore > 1) ||
     (opponentScore > 24 && opponentScore - homeScore > 1)
   ) {
+    //TODO: setServerTracker() to not first set serve
     return (
       <SafeView style={styles.container}>
         <View style={styles.inBetweenHeaderContainer}>
@@ -1831,9 +1875,20 @@ export default function statGame() {
               <Text style={styles.headerBtnText}>EXIT</Text>
             </View>
           </TouchableOpacity>
+          <TouchableOpacity onPress={toggleLiveStatsModal}>
+            <View style={styles.inBetweenLiveStatsContainer}>
+              <FontAwesome6
+                name="chart-bar"
+                size={RFValue(12)}
+                color={COLORS.white}
+              />
+              <Text style={styles.inBetweenLiveStatsRotationText}>
+                Live Stats
+              </Text>
+            </View>
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              setEndSet(false);
               setStatStack([]);
               setHomeScore(0);
               setOpponentScore(0);
@@ -1844,11 +1899,20 @@ export default function statGame() {
               //Reset onCourtPositionValues and subs to reaspect positions
               //Save set scores -> Increment sets won/sets lost
               //Input validation, ensure rotation is proper -> Alert
-              //set Undo to false
+              setUndoAvailable(false);
             }}
           >
-            <View style={styles.exitBtn}>
-              <Text style={styles.inBetweenContinueBtnText}>CONTINUE</Text>
+            <View style={styles.nextSetBtn}>
+              <View style={styles.NextSetTextContainer}>
+                <Text style={styles.nextSetBtnText}>NEXT</Text>
+                <Text style={styles.nextSetBtnText}>SET</Text>
+              </View>
+              <AntDesign
+                style={styles.rightIcon}
+                name="right"
+                size={hp(3.7)}
+                color={COLORS.white}
+              />
             </View>
           </TouchableOpacity>
         </View>
@@ -1895,9 +1959,9 @@ export default function statGame() {
               <View style={styles.courtPosition}>
                 <Dropdown
                   style={styles.courtdropdown}
-                  placeholderStyle={styles.placeholderDropDown}
-                  selectedTextStyle={styles.selectedDropDownText}
-                  itemTextStyle={styles.dropDownText}
+                  placeholderStyle={styles.placeholderDropDown2}
+                  selectedTextStyle={styles.selectedDropDownText2}
+                  itemTextStyle={styles.dropDownText2}
                   data={inBetweenSetsRosterList()}
                   search={false}
                   maxHeight={300}
@@ -1912,9 +1976,9 @@ export default function statGame() {
               <View style={styles.courtPosition}>
                 <Dropdown
                   style={styles.courtdropdown}
-                  placeholderStyle={styles.placeholderDropDown}
-                  selectedTextStyle={styles.selectedDropDownText}
-                  itemTextStyle={styles.dropDownText}
+                  placeholderStyle={styles.placeholderDropDown2}
+                  selectedTextStyle={styles.selectedDropDownText2}
+                  itemTextStyle={styles.dropDownText2}
                   data={inBetweenSetsRosterList()}
                   search={false}
                   maxHeight={300}
@@ -1929,9 +1993,9 @@ export default function statGame() {
               <View style={styles.courtPosition}>
                 <Dropdown
                   style={styles.courtdropdown}
-                  placeholderStyle={styles.placeholderDropDown}
-                  selectedTextStyle={styles.selectedDropDownText}
-                  itemTextStyle={styles.dropDownText}
+                  placeholderStyle={styles.placeholderDropDown2}
+                  selectedTextStyle={styles.selectedDropDownText2}
+                  itemTextStyle={styles.dropDownText2}
                   data={inBetweenSetsRosterList()}
                   search={false}
                   maxHeight={300}
@@ -1950,9 +2014,9 @@ export default function statGame() {
               <View style={styles.courtPosition}>
                 <Dropdown
                   style={styles.courtdropdown}
-                  placeholderStyle={styles.placeholderDropDown}
-                  selectedTextStyle={styles.selectedDropDownText}
-                  itemTextStyle={styles.dropDownText}
+                  placeholderStyle={styles.placeholderDropDown2}
+                  selectedTextStyle={styles.selectedDropDownText2}
+                  itemTextStyle={styles.dropDownText2}
                   data={inBetweenSetsRosterList()}
                   search={false}
                   maxHeight={300}
@@ -1967,9 +2031,9 @@ export default function statGame() {
               <View style={styles.courtPosition}>
                 <Dropdown
                   style={styles.courtdropdown}
-                  placeholderStyle={styles.placeholderDropDown}
-                  selectedTextStyle={styles.selectedDropDownText}
-                  itemTextStyle={styles.dropDownText}
+                  placeholderStyle={styles.placeholderDropDown2}
+                  selectedTextStyle={styles.selectedDropDownText2}
+                  itemTextStyle={styles.dropDownText2}
                   data={inBetweenSetsRosterList()}
                   search={false}
                   maxHeight={300}
@@ -1984,9 +2048,9 @@ export default function statGame() {
               <View style={styles.courtPosition}>
                 <Dropdown
                   style={styles.courtdropdown}
-                  placeholderStyle={styles.placeholderDropDown}
-                  selectedTextStyle={styles.selectedDropDownText}
-                  itemTextStyle={styles.dropDownText}
+                  placeholderStyle={styles.placeholderDropDown2}
+                  selectedTextStyle={styles.selectedDropDownText2}
+                  itemTextStyle={styles.dropDownText2}
                   data={inBetweenSetsRosterList()}
                   search={false}
                   maxHeight={300}
@@ -2006,8 +2070,8 @@ export default function statGame() {
               <Dropdown
                 style={styles.setterDropDown}
                 placeholderStyle={styles.setterPlaceHolderDropDown}
-                selectedTextStyle={styles.selectedDropDownText}
-                itemTextStyle={styles.dropDownText}
+                selectedTextStyle={styles.selectedDropDownText2}
+                itemTextStyle={styles.dropDownText2}
                 //TODO: Ensure selection is only from on court players
                 data={inBetweenSetsRosterList()}
                 search={false}
@@ -2024,6 +2088,44 @@ export default function statGame() {
           </View>
           <View style={styles.inBetweenSecondaryTitleContainer}>
             <Text style={styles.inBetweenSecondaryTitleText}>Liberos:</Text>
+          </View>
+          <View style={styles.liberoContainer}>
+            <View style={styles.liberoSlot}>
+              <Dropdown
+                style={styles.liberoDropDown}
+                placeholderStyle={styles.placeholderDropDown2}
+                selectedTextStyle={styles.selectedDropDownText2}
+                itemTextStyle={styles.dropDownText2}
+                data={inBetweenSetsRosterList()}
+                search={false}
+                maxHeight={300}
+                labelField="value"
+                valueField="playerNumber"
+                placeholder={"Optional"}
+                activeColor={COLORS.grey}
+                dropdownPosition="top"
+                value={firstLibero}
+                onChange={(val) => setFirstLibero(val.playerNumber)}
+              />
+            </View>
+            <View style={styles.liberoSlot}>
+              <Dropdown
+                style={styles.liberoDropDown}
+                placeholderStyle={styles.placeholderDropDown2}
+                selectedTextStyle={styles.selectedDropDownText2}
+                itemTextStyle={styles.dropDownText2}
+                data={inBetweenSetsRosterList()}
+                search={false}
+                maxHeight={300}
+                labelField="value"
+                valueField="playerNumber"
+                placeholder={"Optional"}
+                activeColor={COLORS.grey}
+                dropdownPosition="top"
+                value={secondLibero}
+                onChange={(val) => setSecondLibero(val.playerNumber)}
+              />
+            </View>
           </View>
           <View style={styles.inBetweenSpacer} />
         </ScrollView>
@@ -2136,58 +2238,7 @@ export default function statGame() {
                 </View>
               </Modal>
             </View>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Modal
-                isVisible={isRotationCheckModalVisible}
-                onBackdropPress={toggleRotationCheckModal}
-              >
-                <View style={styles.rotationCheckContainer}>
-                  <View style={styles.court}>
-                    <View style={styles.netIndicator} />
-                    <View style={styles.courtRow}>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionFour}
-                        </Text>
-                      </View>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionThree}
-                        </Text>
-                      </View>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionTwo}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={styles.courtRow}>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionFive}
-                        </Text>
-                      </View>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionSix}
-                        </Text>
-                      </View>
-                      <View style={styles.courtPosition}>
-                        <Text style={styles.courtPositionText}>
-                          {positionOne}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </Modal>
-            </View>
+            <RotationCheckModal />
             <View style={{ flex: 1 }}>
               <Modal
                 isVisible={isLiveStatsModalVisible}
@@ -4284,7 +4335,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     height: hp(10),
-    backgroundColor: COLORS.secondary,
   },
   inBetweenBodyContainer: {
     flex: 1,
@@ -4329,11 +4379,35 @@ const styles = StyleSheet.create({
     fontSize: RFValue(18),
     color: COLORS.primary,
   },
+  inBetweenLiveStatsContainer: {
+    flexDirection: "row",
+    height: hp(7),
+    width: wp(10),
+    backgroundColor: COLORS.primary,
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    marginTop: 5,
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
+  inBetweenLiveStatsRotationText: {
+    fontSize: RFValue(9),
+    fontWeight: "bold",
+    paddingLeft: 5,
+    color: COLORS.white,
+  },
   radioContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 15,
   },
   radioGroup: {
     flexDirection: "row",
@@ -4353,14 +4427,13 @@ const styles = StyleSheet.create({
   court: {
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
   },
   netIndicator: {
     borderBottomColor: COLORS.black,
     borderBottomWidth: hp(0.8),
     width: wp(45),
     alignSelf: "center",
-    marginTop: 20,
+    marginTop: 10,
   },
   courtRow: {
     flexDirection: "row",
@@ -4388,7 +4461,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 55,
+    marginBottom: 10,
     height: hp(13),
   },
   setterTitleText: {
@@ -4401,7 +4474,6 @@ const styles = StyleSheet.create({
     width: wp(14),
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 5,
     borderRadius: 20,
   },
   setterDropDown: {
@@ -4428,8 +4500,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 40,
-    marginTop: 30,
+    marginBottom: 25,
+    marginTop: 10,
   },
   liberoSlot: {
     backgroundColor: COLORS.secondary,
@@ -4470,15 +4542,15 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
     elevation: 6,
   },
-  placeholderDropDown: {
+  placeholderDropDown2: {
     color: COLORS.white,
     fontSize: RFValue(11),
   },
-  selectedDropDownText: {
+  selectedDropDownText2: {
     fontSize: RFValue(11),
     color: COLORS.black,
   },
-  dropDownText: {
+  dropDownText2: {
     fontSize: RFValue(10),
     color: COLORS.black,
   },
@@ -4507,6 +4579,35 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.27,
     shadowRadius: 4.65,
     elevation: 6,
+  },
+  nextSetBtn: {
+    flexDirection: "row",
+    width: wp(8),
+    height: hp(7),
+    backgroundColor: COLORS.primary,
+    borderRadius: 20,
+    marginHorizontal: 5,
+    marginTop: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
+  nextSetBtnText: {
+    fontSize: RFValue(8.5),
+    marginLeft: 3,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: COLORS.white,
+  },
+  rightIcon: {
+    marginRight: 6,
   },
   undoContainer: {
     flexDirection: "column",
@@ -4576,6 +4677,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     paddingRight: 3,
+  },
+  NextSetTextContainer: {
+    flex: 1,
+    flexDirection: "column",
+    paddingLeft: 3,
   },
   headerBtnText: {
     fontSize: RFValue(9),
