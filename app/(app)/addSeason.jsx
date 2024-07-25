@@ -506,6 +506,8 @@ export default function addSeason() {
       .set({
         access: {
           owner: user.userID,
+          editors: [],
+          viewers: []
         },
         seasonID: newID,
         teamName: teamName,

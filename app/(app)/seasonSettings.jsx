@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, FlatList } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, TextInput, Modal, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeView } from "../../components/SafeView";
 import {
@@ -19,9 +19,10 @@ export default function SeasonSettings() {
   const [seasonData, setSeasonData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [playerStats, setPlayerStats] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newOwnerEmail, setNewOwnerEmail] = useState("");
 
   useEffect(() => {
-    // Grab season by season ID from firebase, then setSeasonData
     if (seasonID && user) {
       const fetchSeasonData = async () => {
         try {
@@ -70,6 +71,49 @@ export default function SeasonSettings() {
     fetchPlayerStats();
   }, [seasonID, user]);
 
+  const addOwner = async () => {
+    try {
+      // Find the user by email in Firestore
+      const userSnapshot = await firestore()
+        .collection('users')
+        .where('email', '==', newOwnerEmail)
+        .get();
+
+      if (userSnapshot.empty) {
+        Alert.alert("User not found", "No user found with this email.");
+        return;
+      }
+
+      const newOwner = userSnapshot.docs[0];
+      const newOwnerID = newOwner.id;
+
+      // Add seasonID, teamName, and year to the user's list of accessible seasons in Firestore
+      await firestore()
+        .collection('users')
+        .doc(newOwnerID)
+        .update({
+          seasons: firestore.FieldValue.arrayUnion({
+            seasonID: seasonID,
+            teamName: seasonData.teamName,
+            year: seasonData.year
+          })
+        });
+
+      // Update the season document to include the new owner in the access field
+      const seasonRef = firestore().collection('seasons').doc(seasonID);
+      await seasonRef.update({
+        [`access.editors`]: firestore.FieldValue.arrayUnion(newOwnerID)
+      });
+
+      Alert.alert("Success", "Owner added successfully!");
+      setModalVisible(false);
+      setNewOwnerEmail("");
+    } catch (error) {
+      console.error("Failed to add owner:", error);
+      Alert.alert("Error", "Failed to add owner. Please try again.");
+    }
+  };
+
   if (loading || !seasonData) {
     if (loading) {
       return (
@@ -80,7 +124,7 @@ export default function SeasonSettings() {
     }
   }
 
-  const owners = ["Owner 1", "Owner 2"];
+  const owners = seasonData?.access?.owner ? Object.keys(seasonData.access.owner) : [];
 
   const renderOwner = ({ item }) => (
     <Text style={styles.sectionText}>- {item}</Text>
@@ -134,7 +178,7 @@ export default function SeasonSettings() {
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>Owners</Text>
               {owners.map((owner, index) => renderOwner({ item: owner, key: index }))}
-              <TouchableOpacity style={styles.addOwnerButton}>
+              <TouchableOpacity style={styles.addOwnerButton} onPress={() => setModalVisible(true)}>
                 <Text style={styles.buttonText}>Add Owner</Text>
               </TouchableOpacity>
             </View>
@@ -166,6 +210,30 @@ export default function SeasonSettings() {
         )}
         keyExtractor={(item) => item.key}
       />
+
+      {/* Modal for Adding Owner */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalView}>
+          <Text style={styles.modalText}>Enter Owner's Email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={newOwnerEmail}
+            onChangeText={setNewOwnerEmail}
+          />
+          <TouchableOpacity style={styles.addOwnerModalButton} onPress={addOwner}>
+            <Text style={styles.buttonText}>Add Owner</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+            <Text style={styles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </SafeView>
   );
 }
@@ -303,5 +371,48 @@ const styles = StyleSheet.create({
   playerText: {
     color: COLORS.black,
     fontSize: RFValue(14),
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  input: {
+    height: hp(5),
+    borderColor: COLORS.grey,
+    borderWidth: 1,
+    marginBottom: hp(2),
+    width: wp(70),
+    padding: 10,
+  },
+  addOwnerModalButton: {
+    backgroundColor: COLORS.primary,
+    padding: hp(1.5),
+    borderRadius: 10,
+    marginBottom: hp(2),
+    alignItems: "center",
+    width: wp(40),
+  },
+  cancelButton: {
+    backgroundColor: COLORS.red,
+    padding: hp(1.5),
+    borderRadius: 10,
+    alignItems: "center",
+    width: wp(40),
+  },
+  modalText: {
+    fontSize: RFValue(18),
+    fontWeight: "bold",
+    marginBottom: hp(2),
   },
 });

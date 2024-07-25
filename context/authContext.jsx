@@ -75,7 +75,10 @@ export const AuthContextProvider = ({ children }) => {
         .set({
           userID: userID,
           coachName: coachName,
-          seasons: []
+          email: email,
+          seasons: [],
+          seasonInvitations: []
+
         });
 
       await updateUserData(userID);
