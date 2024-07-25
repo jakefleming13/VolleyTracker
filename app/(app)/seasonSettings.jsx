@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeView } from "../../components/SafeView";
 import {
@@ -9,19 +9,81 @@ import {
 import { COLORS } from "../../constants/Colors";
 import { RFValue } from "react-native-responsive-fontsize";
 import { AntDesign } from "@expo/vector-icons";
-import { Dropdown } from 'react-native-element-dropdown'; // Replace this with your actual dropdown import
+import { useAuth } from "../../context/authContext";
 
 export default function SeasonSettings() {
   const router = useRouter();
   const [selectedSeason, setSelectedSeason] = useState("2024 Season");
+
+  const { seasonID, user, setActiveSeason } = useAuth();
+
   const [roster, setRoster] = useState([
     { playerNumber: '1', value: 'Player 1' },
     { playerNumber: '2', value: 'Player 2' },
-    // Add more dummy players here
+    { playerNumber: '3', value: 'Player 3' },
+    { playerNumber: '4', value: 'Player 4' },
+    { playerNumber: '5', value: 'Player 5' },
+    { playerNumber: '6', value: 'Player 6' },
+    { playerNumber: '7', value: 'Player 7' },
+    { playerNumber: '8', value: 'Player 8' },
+    { playerNumber: '9', value: 'Player 9' },
+    { playerNumber: '10', value: 'Player 10' },
+    { playerNumber: '11', value: 'Player 11' },
+    { playerNumber: '12', value: 'Player 12' },
+    { playerNumber: '13', value: 'Player 13' },
+    { playerNumber: '14', value: 'Player 14' },
+    { playerNumber: '15', value: 'Player 15' },
+    { playerNumber: '16', value: 'Player 16' },
+    { playerNumber: '17', value: 'Player 17' },
+    { playerNumber: '18', value: 'Player 18' },
+    { playerNumber: '19', value: 'Player 19' },
+    { playerNumber: '20', value: 'Player 20' },
+    { playerNumber: '21', value: 'Player 21' },
+    { playerNumber: '22', value: 'Player 22' },
+    { playerNumber: '23', value: 'Player 23' },
+    { playerNumber: '24', value: 'Player 24' },
   ]);
-  const [selectedPlayer, setSelectedPlayer] = useState(null);
 
   const owners = ["Owner 1", "Owner 2"];
+
+  const sections = [
+    { key: 'season_info', title: 'Season Information', data: owners },
+    { key: 'roster', title: 'Roster', data: roster },
+    { key: 'delete_button', title: 'Delete Season', data: [] },
+  ];
+
+  const renderSectionHeader = ({ title }) => (
+    <View style={styles.sectionContainer}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+    </View>
+  );
+
+  const renderOwner = ({ item }) => (
+    <Text style={styles.sectionText}>- {item}</Text>
+  );
+
+  const renderPlayer = ({ item }) => (
+    <View style={styles.playerItem}>
+      <Text style={styles.playerText}>{item.value}</Text>
+    </View>
+  );
+
+  const renderSectionContent = ({ item, section }) => {
+    switch (section.key) {
+      case 'season_info':
+        return renderOwner({ item });
+      case 'roster':
+        return renderPlayer({ item });
+      case 'delete_button':
+        return (
+          <TouchableOpacity style={styles.deleteSeasonButton}>
+            <Text style={styles.buttonText}>Delete Season</Text>
+          </TouchableOpacity>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <SafeView style={styles.container}>
@@ -42,67 +104,74 @@ export default function SeasonSettings() {
         <Text style={styles.titleText}>Season Settings</Text>
       </View>
       <View style={styles.separator} />
-      
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Season Information Section */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Season Information</Text>
-          <Text style={styles.sectionText}>Current Season: {selectedSeason}</Text>
-          <Text style={styles.sectionText}>Owners with access:</Text>
-          {owners.map((owner, index) => (
-            <Text key={index} style={styles.sectionText}>- {owner}</Text>
-          ))}
-          <TouchableOpacity style={styles.changeSeasonButton}>
-            <Text style={styles.buttonText}>Change Season</Text>
-          </TouchableOpacity>
-        </View>
 
-        {/* Roster Section */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Roster</Text>
-          <View style={styles.rosterSlot}>
-            <Dropdown
-              style={styles.rosterDropDown}
-              placeholderStyle={styles.placeholderDropDown}
-              selectedTextStyle={styles.selectedDropDownText}
-              itemTextStyle={styles.dropDownText}
-              data={roster}
-              search={false}
-              maxHeight={300}
-              labelField="value"
-              valueField="playerNumber"
-              placeholder={"Select a player"}
-              activeColor={COLORS.grey}
-              dropdownPosition="top"
-              value={selectedPlayer}
-              onChange={(val) => setSelectedPlayer(val.playerNumber)}
-            />
+      <FlatList
+        data={sections}
+        keyExtractor={(item) => item.key}
+        renderItem={({ item }) => (
+          <View>
+            {renderSectionHeader({ title: item.title })}
+            {item.key === 'roster' ? (
+              <FlatList
+                data={item.data}
+                renderItem={renderPlayer}
+                keyExtractor={(item) => item.playerNumber}
+                numColumns={3}
+                columnWrapperStyle={styles.columnWrapper}
+              />
+            ) : (
+              <FlatList
+                data={item.data}
+                renderItem={(props) => renderSectionContent({ ...props, section: item })}
+                keyExtractor={(subItem, subIndex) => `${item.key}-${subIndex}`}
+              />
+            )}
+            {item.key === 'season_info' && (
+              <View>
+                <TouchableOpacity style={styles.addOwnerButton}>
+                  <Text style={styles.buttonText}>Add Owner</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            <View style={styles.divider} />
           </View>
-          <TouchableOpacity style={styles.addPlayerButton}>
-            <Text style={styles.buttonText}>Add Player</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Delete Season Button */}
-        <TouchableOpacity style={styles.deleteSeasonButton}>
-          <Text style={styles.buttonText}>Delete Season</Text>
-        </TouchableOpacity>
-      </ScrollView>
+        )}
+        ListHeaderComponent={
+          <View style={styles.sectionContainer}>
+            <Text style={styles.currentSeasonText}>Current Season: {selectedSeason}</Text>
+            <TouchableOpacity style={styles.changeSeasonButton}
+              onPress={() => {
+                // set active season to null then re route to seasons screen
+               setActiveSeason(null)
+               router.push({
+                pathname: "seasons",
+               
+              })
+              }
+            }
+            
+            
+            >
+              <Text style={styles.buttonText}>Change Season</Text>
+            </TouchableOpacity>
+          </View>
+        }
+      />
     </SafeView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+container: {
     flex: 1,
     flexDirection: "column",
-  },
-  backContainer: {
+    },
+    backContainer: {
     flexDirection: "row",
     justifyContent: "start",
     height: hp(11),
-  },
-  headerBtn: {
+    },
+    headerBtn: {
     flexDirection: "row",
     width: "42%",
     height: hp(7),
@@ -112,18 +181,18 @@ const styles = StyleSheet.create({
     marginTop: 18,
     alignItems: "center",
     justifyContent: "center",
-  },
-  headerBtnText: {
+    },
+    headerBtnText: {
     fontSize: RFValue(9),
     paddingRight: 3,
     fontWeight: "bold",
     textAlign: "center",
     color: COLORS.white,
-  },
+    },
   titleText: {
     fontSize: RFValue(30),
     color: COLORS.primary,
-    marginBottom: 35,
+    marginBottom: hp(4),
   },
   titleContainer: {
     alignItems: "center",
@@ -131,71 +200,84 @@ const styles = StyleSheet.create({
   separator: {
     borderBottomColor: COLORS.primary,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    width: "60%",
+    width: wp(60),
     alignSelf: "center",
-    marginBottom: 30,
-  },
-  scrollContainer: {
-    paddingBottom: 20,
+    marginBottom: hp(3),
   },
   sectionContainer: {
-    marginHorizontal: 20,
-    marginBottom: 20,
+    marginHorizontal: wp(5),
+    marginBottom: hp(2),
   },
   sectionTitle: {
     fontSize: RFValue(18),
     fontWeight: "bold",
     color: COLORS.primary,
-    marginBottom: 10,
+    marginBottom: hp(1),
   },
   sectionText: {
     fontSize: RFValue(14),
     color: COLORS.black,
-    marginBottom: 5,
+    marginBottom: hp(0.5),
+  },
+  currentSeasonText: {
+    fontSize: RFValue(16),
+    fontWeight: "bold",
+    color: COLORS.primary,
+    marginBottom: hp(1),
   },
   changeSeasonButton: {
     backgroundColor: COLORS.secondary,
-    padding: 10,
+    padding: hp(1),
     borderRadius: 10,
-    marginTop: 10,
+    marginBottom: hp(2),
+    alignItems: "center",
+  },
+  addOwnerButton: {
+    backgroundColor: COLORS.secondary,
+    padding: hp(1),
+    borderRadius: 10,
+    marginTop: hp(1),
+    marginBottom: hp(2),
     alignItems: "center",
   },
   addPlayerButton: {
     backgroundColor: COLORS.secondary,
-    padding: 10,
+    padding: hp(1),
     borderRadius: 10,
-    marginTop: 10,
+    marginTop: hp(1),
     alignItems: "center",
   },
   deleteSeasonButton: {
     backgroundColor: COLORS.danger,
-    padding: 15,
+    padding: hp(1.5),
     borderRadius: 10,
-    marginTop: 30,
-    marginHorizontal: 20,
+    marginTop: hp(3),
+    marginHorizontal: wp(5),
     alignItems: "center",
   },
   buttonText: {
     fontSize: RFValue(14),
     color: COLORS.white,
   },
-  rosterSlot: {
-    marginTop: 10,
+  divider: {
+    borderBottomColor: COLORS.grey,
+    borderBottomWidth: 1,
+    marginHorizontal: wp(5),
+    marginVertical: hp(1),
   },
-  rosterDropDown: {
-    backgroundColor: COLORS.white,
-    borderColor: COLORS.primary,
-    borderWidth: 1,
+  columnWrapper: {
+    justifyContent: "space-between",
+  },
+  playerItem: {
+    backgroundColor: COLORS.lightGrey,
+    padding: hp(1),
+    marginVertical: hp(0.5),
     borderRadius: 10,
-    padding: 10,
+    alignItems: "center",
+    width: wp(28),
   },
-  placeholderDropDown: {
-    color: COLORS.grey,
-  },
-  selectedDropDownText: {
+  playerText: {
     color: COLORS.black,
-  },
-  dropDownText: {
-    color: COLORS.black,
+    fontSize: RFValue(14),
   },
 });
