@@ -33,7 +33,34 @@ export default function settings() {
         <Text style={styles.titleText}>Settings</Text>
       </View>
       <View style={styles.seperator} />
+
+
+      <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: "gameLog",
+              params: {
+                currentLocalTeamName: seasonData.teamName,
+                currentLocalYear: seasonData.year,
+                currentLocalSeasonID: seasonData.seasonID,
+              },
+            })
+          }
+        >
+          <View style={styles.featureListContainer}>
+            <Text style={styles.featureListText}>Game Log</Text>
+            <AntDesign
+              style={styles.featureListIcon}
+              name="right"
+              size={hp(3.7)}
+              color={COLORS.black}
+            />
+          </View>
+        </TouchableOpacity>
+
     </SafeView>
+
+    
   );
 }
 
@@ -82,5 +109,23 @@ const styles = StyleSheet.create({
   },
   seasonListIcon: {
     paddingRight: 1,
+  },
+
+  featureListContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: COLORS.white,
+    height: hp(9),
+    alignItems: "center",
+    borderWidth: 0.5,
+    borderColor: COLORS.primary,
+  },
+  featureListText: {
+    fontSize: RFValue(18),
+    paddingLeft: 20,
+    color: COLORS.black,
+  },
+  featureListIcon: {
+    paddingRight: 20,
   },
 });
