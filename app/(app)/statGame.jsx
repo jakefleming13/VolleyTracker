@@ -1855,6 +1855,665 @@ export default function statGame() {
     );
   };
 
+  const LiveStatsModel = () => {
+    return (
+      <View style={{ flex: 1 }}>
+        <Modal
+          isVisible={isLiveStatsModalVisible}
+          onBackdropPress={toggleLiveStatsModal}
+          propagateSwipe={true}
+        >
+          <View style={styles.liveStatsModalContainer}>
+            <ScrollView>
+              <View style={styles.liveStatsModalHeader}>
+                <TouchableOpacity onPress={toggleLiveStatsModal}>
+                  <AntDesign
+                    name="closesquareo"
+                    size={RFValue(20)}
+                    color={COLORS.black}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.liveStatsModalHeader2}>
+                <Text style={styles.liveStatsModalHeaderText}>Live Stats</Text>
+              </View>
+              <View style={styles.liveStatsModalBody}>
+                <View style={styles.liveStatsTitleRow}>
+                  <View style={styles.liveStatsStatHeader}>
+                    <Text style={styles.liveStatsPlayerHeader}>
+                      #{"  "}Player
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>SP</Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>K </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>E </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>TA</Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>
+                      {"    "}
+                      K%{"   "}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>A </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>SA</Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>SE</Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>RE</Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>
+                      P AVG.
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>D</Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>BS</Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>BA</Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>BE</Text>
+                    <Text style={styles.liveStatsModalSecondaryTextEnd}>
+                      PTS
+                    </Text>
+                  </View>
+                </View>
+                {rosterStats.map((player) => {
+                  return (
+                    <View
+                      style={styles.liveStatsTitleRow}
+                      key={player.playerNumber}
+                    >
+                      <View style={styles.liveStatsStatHeader}>
+                        <Text style={styles.liveStatsPlayerHeader}>
+                          {/* TODO: validation for length of players name */}
+                          {player.playerNumber}
+                          {"  "}
+                          {player.playerName}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.setsPlayed.toString().length > 1
+                            ? player.setsPlayed
+                            : player.setsPlayed + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.kills.toString().length > 1
+                            ? player.kills
+                            : player.kills + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.attackErrors.toString().length > 1
+                            ? player.attackErrors
+                            : player.attackErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.attempts.toString().length > 1
+                            ? player.attempts
+                            : player.attempts + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {isNaN(
+                            (player.kills - player.attackErrors) /
+                              player.attempts
+                          )
+                            ? "0.000"
+                            : (
+                                (player.kills - player.attackErrors) /
+                                player.attempts
+                              ).toFixed(3)}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.assists.toString().length > 1
+                            ? player.assists
+                            : player.assists + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.serviceAces.toString().length > 1
+                            ? player.serviceAces
+                            : player.serviceAces + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.serviceErrors.toString().length > 1
+                            ? player.serviceErrors
+                            : player.serviceErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.receptionErrors.toString().length > 1
+                            ? player.receptionErrors
+                            : player.receptionErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {isNaN(player.totalPassValue / player.passingAttempts)
+                            ? "0.00"
+                            : (
+                                player.totalPassValue / player.passingAttempts
+                              ).toFixed(2)}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.digs.toString().length > 1
+                            ? player.digs
+                            : player.digs + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.blockSolos.toString().length > 1
+                            ? player.blockSolos
+                            : player.blockSolos + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.blockAssists.toString().length > 1
+                            ? player.blockAssists
+                            : player.blockAssists + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.blockErrors.toString().length > 1
+                            ? player.blockErrors
+                            : player.blockErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryTextEnd2}>
+                          {player.pts.toString().length > 1
+                            ? player.pts.toFixed(1)
+                            : player.pts.toFixed(1)}
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                })}
+                <View style={styles.liveStatsTitleRow}>
+                  <View style={styles.liveStatsStatHeader}>
+                    <Text style={styles.liveStatsPlayerHeader}>
+                      Team
+                      {"  "}
+                      Total
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {teamStats.teamSetsPlayed.toString().length > 1
+                        ? teamStats.teamSetsPlayed
+                        : teamStats.teamSetsPlayed + " "}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {teamStats.teamKills.toString().length > 1
+                        ? teamStats.teamKills
+                        : teamStats.teamKills + " "}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {teamStats.teamAttackErrors.toString().length > 1
+                        ? teamStats.teamAttackErrors
+                        : teamStats.teamAttackErrors + " "}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {teamStats.teamAttempts.toString().length > 1
+                        ? teamStats.teamAttempts
+                        : teamStats.teamAttempts + " "}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {isNaN(
+                        (teamStats.teamKills - teamStats.teamAttackErrors) /
+                          teamStats.teamAttempts
+                      )
+                        ? "0.000"
+                        : (
+                            (teamStats.teamKills - teamStats.teamAttackErrors) /
+                            teamStats.teamAttempts
+                          ).toFixed(3)}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {teamStats.teamAssists.toString().length > 1
+                        ? teamStats.teamAssists
+                        : teamStats.teamAssists + " "}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {teamStats.teamServiceAces.toString().length > 1
+                        ? teamStats.teamServiceAces
+                        : teamStats.teamServiceAces + " "}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {teamStats.teamServiceErrors.toString().length > 1
+                        ? teamStats.teamServiceErrors
+                        : teamStats.teamServiceErrors + " "}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {teamStats.teamReceptionErrors.toString().length > 1
+                        ? teamStats.teamReceptionErrors
+                        : teamStats.teamReceptionErrors + " "}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {isNaN(
+                        teamStats.teamTotalPassValue /
+                          teamStats.teamPassingAttempts
+                      )
+                        ? "0.00"
+                        : (
+                            teamStats.teamTotalPassValue /
+                            teamStats.teamPassingAttempts
+                          ).toFixed(2)}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {teamStats.teamDigs.toString().length > 1
+                        ? teamStats.teamDigs
+                        : teamStats.teamDigs + " "}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {teamStats.teamBlockSolos.toString().length > 1
+                        ? teamStats.teamBlockSolos
+                        : teamStats.teamBlockSolos + " "}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {teamStats.teamBlockAssists.toString().length > 1
+                        ? teamStats.teamBlockAssists
+                        : teamStats.teamBlockAssists + " "}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {teamStats.teamBlockErrors.toString().length > 1
+                        ? teamStats.teamBlockErrors
+                        : teamStats.teamBlockErrors + " "}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryTextEnd2}>
+                      {teamStats.teamPts.toString().length > 1
+                        ? teamStats.teamPts.toFixed(1)
+                        : teamStats.teamPts.toFixed(1)}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.heightSpacer} />
+              <View style={styles.liveStatsModalHeader2}>
+                <Text style={styles.liveStatsModalSecondaryHeaderText}>
+                  Passing
+                </Text>
+              </View>
+              <View style={styles.liveStatsModalBody}>
+                <View style={styles.liveStatsPassingTitleRow}>
+                  <View style={styles.liveStatsStatHeader}>
+                    <Text style={styles.liveStatsPlayerHeader}>
+                      #{"  "}Player
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>ATT</Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>
+                      P. AVG
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>3s</Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>2s</Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>1s</Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>0s</Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>
+                      {"  "}
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>
+                      F. ATT
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>
+                      F. AVG
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>
+                      H. ATT
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryTextEnd}>
+                      H. AVG
+                    </Text>
+                  </View>
+                </View>
+                {rosterStats.map((player) => {
+                  if (player.passingAttempts > 0) {
+                    return (
+                      <View
+                        style={styles.liveStatsPassingTitleRow}
+                        key={player.playerNumber}
+                      >
+                        <View style={styles.liveStatsStatHeader}>
+                          <Text style={styles.liveStatsPlayerHeader}>
+                            {/* TODO: validation for length of players name */}
+                            {player.playerNumber}
+                            {"  "}
+                            {player.playerName}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.passingAttempts.toString().length > 1
+                              ? player.passingAttempts
+                              : player.passingAttempts + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {isNaN(
+                              player.totalPassValue / player.passingAttempts
+                            )
+                              ? "0.00 "
+                              : (
+                                  player.totalPassValue / player.passingAttempts
+                                ).toFixed(2) + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.threePasses.toString().length > 1
+                              ? player.threePasses
+                              : player.threePasses + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.twoPasses.toString().length > 1
+                              ? player.twoPasses
+                              : player.twoPasses + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.onePasses.toString().length > 1
+                              ? player.onePasses
+                              : player.onePasses + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.receptionErrors.toString().length > 1
+                              ? player.receptionErrors
+                              : player.receptionErrors + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText}>
+                            {"   "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.forearmPassingAttempts.toString().length > 1
+                              ? " " + player.forearmPassingAttempts + "    "
+                              : " " + player.forearmPassingAttempts + "     "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {isNaN(
+                              player.totalForearmPassValue /
+                                player.forearmPassingAttempts
+                            )
+                              ? "0.00  "
+                              : (
+                                  player.totalForearmPassValue /
+                                  player.forearmPassingAttempts
+                                ).toFixed(2) + "   "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.handPassingAttempts.toString().length > 1
+                              ? " " + player.handPassingAttempts + "    "
+                              : " " + player.handPassingAttempts + "     "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryTextEnd2}>
+                            {isNaN(
+                              player.totalHandPassValue /
+                                player.handPassingAttempts
+                            )
+                              ? "0.00  "
+                              : (
+                                  player.totalHandPassValue /
+                                  player.handPassingAttempts
+                                ).toFixed(2) + "  "}
+                          </Text>
+                        </View>
+                      </View>
+                    );
+                  }
+                })}
+              </View>
+              {teamStats.teamPassingAttempts === 0 ? (
+                <View style={styles.liveStatsModalHeader2}>
+                  <View style={styles.heightSpacer} />
+                  <Text style={styles.liveStatsModalNoDataText}>
+                    No passing data
+                  </Text>
+                  <View style={styles.heightSpacer} />
+                </View>
+              ) : (
+                <View style={styles.heightSpacer2} />
+              )}
+              <View style={styles.liveStatsModalHeader2}>
+                <Text style={styles.liveStatsModalSecondaryHeaderText}>
+                  Team Side Out Percentages
+                </Text>
+              </View>
+              <View style={styles.liveStatsModalBody}>
+                <View style={styles.liveStatsSideOutTitleRow}>
+                  <View style={styles.liveStatsStatHeader}>
+                    <View style={styles.liveStatsSideOutBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                        Side Out ATT
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsSideOutBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                        Side Out%
+                      </Text>
+                    </View>
+                    <View style={styles.widthSpacer2} />
+                    <View style={styles.liveStatsSideOutBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                        FBSO ATT
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsSideOutBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                        FBSO%
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.liveStatsSideOutTitleRow}>
+                  <View style={styles.liveStatsStatHeader}>
+                    <View style={styles.liveStatsSideOutBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {teamStats.teamTotalSideOutAttempts}
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsSideOutBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {isNaN(
+                          teamStats.teamSuccessfulSideOuts /
+                            teamStats.teamTotalSideOutAttempts
+                        )
+                          ? "-"
+                          : (
+                              (teamStats.teamSuccessfulSideOuts /
+                                teamStats.teamTotalSideOutAttempts) *
+                              100
+                            ).toFixed(1) + "%"}
+                      </Text>
+                    </View>
+                    <View style={styles.widthSpacer2} />
+                    <View style={styles.liveStatsSideOutBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {teamStats.teamFirstBallSideOutAttempts}
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsSideOutBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {isNaN(
+                          teamStats.teamSuccessfulFirstBallSideOuts /
+                            teamStats.teamFirstBallSideOutAttempts
+                        )
+                          ? "-"
+                          : (
+                              (teamStats.teamSuccessfulFirstBallSideOuts /
+                                teamStats.teamFirstBallSideOutAttempts) *
+                              100
+                            ).toFixed(1) + "%"}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.heightSpacer} />
+              <View style={styles.liveStatsModalBody}>
+                <View style={styles.liveStatsRotationsTitleRow}>
+                  <View style={styles.liveStatsStatHeader}>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                        Setter in
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                        ATT
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                        SO%
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.liveStatsRotationsRow}>
+                  <View style={styles.liveStatsStatHeader}>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                        1
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {teamStats.teamTotalSideOutAttemptsPos1}
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {isNaN(
+                          teamStats.teamSuccessfulSideOutsPos1 /
+                            teamStats.teamTotalSideOutAttemptsPos1
+                        )
+                          ? "-"
+                          : (
+                              (teamStats.teamSuccessfulSideOutsPos1 /
+                                teamStats.teamTotalSideOutAttemptsPos1) *
+                              100
+                            ).toFixed(1) + "%"}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.liveStatsRotationsRow}>
+                  <View style={styles.liveStatsStatHeader}>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                        2
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {teamStats.teamTotalSideOutAttemptsPos2}
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {isNaN(
+                          teamStats.teamSuccessfulSideOutsPos2 /
+                            teamStats.teamTotalSideOutAttemptsPos2
+                        )
+                          ? "-"
+                          : (
+                              (teamStats.teamSuccessfulSideOutsPos2 /
+                                teamStats.teamTotalSideOutAttemptsPos2) *
+                              100
+                            ).toFixed(1) + "%"}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.liveStatsRotationsRow}>
+                  <View style={styles.liveStatsStatHeader}>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                        3
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {teamStats.teamTotalSideOutAttemptsPos3}
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {isNaN(
+                          teamStats.teamSuccessfulSideOutsPos3 /
+                            teamStats.teamTotalSideOutAttemptsPos3
+                        )
+                          ? "-"
+                          : (
+                              (teamStats.teamSuccessfulSideOutsPos3 /
+                                teamStats.teamTotalSideOutAttemptsPos3) *
+                              100
+                            ).toFixed(1) + "%"}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.liveStatsRotationsRow}>
+                  <View style={styles.liveStatsStatHeader}>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                        4
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {teamStats.teamTotalSideOutAttemptsPos4}
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {isNaN(
+                          teamStats.teamSuccessfulSideOutsPos4 /
+                            teamStats.teamTotalSideOutAttemptsPos4
+                        )
+                          ? "-"
+                          : (
+                              (teamStats.teamSuccessfulSideOutsPos4 /
+                                teamStats.teamTotalSideOutAttemptsPos4) *
+                              100
+                            ).toFixed(1) + "%"}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.liveStatsRotationsRow}>
+                  <View style={styles.liveStatsStatHeader}>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                        5
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {teamStats.teamTotalSideOutAttemptsPos5}
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {isNaN(
+                          teamStats.teamSuccessfulSideOutsPos5 /
+                            teamStats.teamTotalSideOutAttemptsPos5
+                        )
+                          ? "-"
+                          : (
+                              (teamStats.teamSuccessfulSideOutsPos5 /
+                                teamStats.teamTotalSideOutAttemptsPos5) *
+                              100
+                            ).toFixed(1) + "%"}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.liveStatsRotationsRow}>
+                  <View style={styles.liveStatsStatHeader}>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxHeaderText}>
+                        6
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {teamStats.teamTotalSideOutAttemptsPos6}
+                      </Text>
+                    </View>
+                    <View style={styles.liveStatsRotationsBoxContainer}>
+                      <Text style={styles.liveStatsSideOutBoxText}>
+                        {isNaN(
+                          teamStats.teamSuccessfulSideOutsPos6 /
+                            teamStats.teamTotalSideOutAttemptsPos6
+                        )
+                          ? "-"
+                          : (
+                              (teamStats.teamSuccessfulSideOutsPos6 /
+                                teamStats.teamTotalSideOutAttemptsPos6) *
+                              100
+                            ).toFixed(1) + "%"}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.heightSpacer2} />
+            </ScrollView>
+          </View>
+        </Modal>
+      </View>
+    );
+  };
+
   //TODO: Add a state hook that holds the current score cap value
   if (
     (homeScore > 24 && homeScore - opponentScore > 1) ||
@@ -1916,6 +2575,7 @@ export default function statGame() {
             </View>
           </TouchableOpacity>
         </View>
+        <LiveStatsModel />
         <View style={styles.inBetweenTitleContainer}>
           <Text style={styles.inBetweenTitleText}>Set {currentSet + 1}</Text>
         </View>
@@ -2128,6 +2788,7 @@ export default function statGame() {
             </View>
           </View>
           <View style={styles.inBetweenSpacer} />
+          <View style={styles.inBetweenSpacer} />
         </ScrollView>
       </SafeView>
     );
@@ -2239,735 +2900,7 @@ export default function statGame() {
               </Modal>
             </View>
             <RotationCheckModal />
-            <View style={{ flex: 1 }}>
-              <Modal
-                isVisible={isLiveStatsModalVisible}
-                onBackdropPress={toggleLiveStatsModal}
-                propagateSwipe={true}
-              >
-                <View style={styles.liveStatsModalContainer}>
-                  <ScrollView>
-                    <View style={styles.liveStatsModalHeader}>
-                      <TouchableOpacity onPress={toggleLiveStatsModal}>
-                        <AntDesign
-                          name="closesquareo"
-                          size={RFValue(20)}
-                          color={COLORS.black}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                    <View style={styles.liveStatsModalHeader2}>
-                      <Text style={styles.liveStatsModalHeaderText}>
-                        Live Stats
-                      </Text>
-                    </View>
-                    <View style={styles.liveStatsModalBody}>
-                      <View style={styles.liveStatsTitleRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <Text style={styles.liveStatsPlayerHeader}>
-                            #{"  "}Player
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            SP
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            K{" "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            E{" "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            TA
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            {"    "}
-                            K%{"   "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            A{" "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            SA
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            SE
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            RE
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            P AVG.
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            D
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            BS
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            BA
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            BE
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryTextEnd}>
-                            PTS
-                          </Text>
-                        </View>
-                      </View>
-                      {rosterStats.map((player) => {
-                        return (
-                          <View
-                            style={styles.liveStatsTitleRow}
-                            key={player.playerNumber}
-                          >
-                            <View style={styles.liveStatsStatHeader}>
-                              <Text style={styles.liveStatsPlayerHeader}>
-                                {/* TODO: validation for length of players name */}
-                                {player.playerNumber}
-                                {"  "}
-                                {player.playerName}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.setsPlayed.toString().length > 1
-                                  ? player.setsPlayed
-                                  : player.setsPlayed + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.kills.toString().length > 1
-                                  ? player.kills
-                                  : player.kills + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.attackErrors.toString().length > 1
-                                  ? player.attackErrors
-                                  : player.attackErrors + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.attempts.toString().length > 1
-                                  ? player.attempts
-                                  : player.attempts + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {isNaN(
-                                  (player.kills - player.attackErrors) /
-                                    player.attempts
-                                )
-                                  ? "0.000"
-                                  : (
-                                      (player.kills - player.attackErrors) /
-                                      player.attempts
-                                    ).toFixed(3)}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.assists.toString().length > 1
-                                  ? player.assists
-                                  : player.assists + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.serviceAces.toString().length > 1
-                                  ? player.serviceAces
-                                  : player.serviceAces + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.serviceErrors.toString().length > 1
-                                  ? player.serviceErrors
-                                  : player.serviceErrors + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.receptionErrors.toString().length > 1
-                                  ? player.receptionErrors
-                                  : player.receptionErrors + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {isNaN(
-                                  player.totalPassValue / player.passingAttempts
-                                )
-                                  ? "0.00"
-                                  : (
-                                      player.totalPassValue /
-                                      player.passingAttempts
-                                    ).toFixed(2)}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.digs.toString().length > 1
-                                  ? player.digs
-                                  : player.digs + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.blockSolos.toString().length > 1
-                                  ? player.blockSolos
-                                  : player.blockSolos + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.blockAssists.toString().length > 1
-                                  ? player.blockAssists
-                                  : player.blockAssists + " "}
-                              </Text>
-                              <Text style={styles.liveStatsModalSecondaryText2}>
-                                {player.blockErrors.toString().length > 1
-                                  ? player.blockErrors
-                                  : player.blockErrors + " "}
-                              </Text>
-                              <Text
-                                style={styles.liveStatsModalSecondaryTextEnd2}
-                              >
-                                {player.pts.toString().length > 1
-                                  ? player.pts.toFixed(1)
-                                  : player.pts.toFixed(1)}
-                              </Text>
-                            </View>
-                          </View>
-                        );
-                      })}
-                      <View style={styles.liveStatsTitleRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <Text style={styles.liveStatsPlayerHeader}>
-                            Team
-                            {"  "}
-                            Total
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamSetsPlayed.toString().length > 1
-                              ? teamStats.teamSetsPlayed
-                              : teamStats.teamSetsPlayed + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamKills.toString().length > 1
-                              ? teamStats.teamKills
-                              : teamStats.teamKills + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamAttackErrors.toString().length > 1
-                              ? teamStats.teamAttackErrors
-                              : teamStats.teamAttackErrors + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamAttempts.toString().length > 1
-                              ? teamStats.teamAttempts
-                              : teamStats.teamAttempts + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {isNaN(
-                              (teamStats.teamKills -
-                                teamStats.teamAttackErrors) /
-                                teamStats.teamAttempts
-                            )
-                              ? "0.000"
-                              : (
-                                  (teamStats.teamKills -
-                                    teamStats.teamAttackErrors) /
-                                  teamStats.teamAttempts
-                                ).toFixed(3)}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamAssists.toString().length > 1
-                              ? teamStats.teamAssists
-                              : teamStats.teamAssists + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamServiceAces.toString().length > 1
-                              ? teamStats.teamServiceAces
-                              : teamStats.teamServiceAces + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamServiceErrors.toString().length > 1
-                              ? teamStats.teamServiceErrors
-                              : teamStats.teamServiceErrors + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamReceptionErrors.toString().length > 1
-                              ? teamStats.teamReceptionErrors
-                              : teamStats.teamReceptionErrors + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {isNaN(
-                              teamStats.teamTotalPassValue /
-                                teamStats.teamPassingAttempts
-                            )
-                              ? "0.00"
-                              : (
-                                  teamStats.teamTotalPassValue /
-                                  teamStats.teamPassingAttempts
-                                ).toFixed(2)}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamDigs.toString().length > 1
-                              ? teamStats.teamDigs
-                              : teamStats.teamDigs + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamBlockSolos.toString().length > 1
-                              ? teamStats.teamBlockSolos
-                              : teamStats.teamBlockSolos + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamBlockAssists.toString().length > 1
-                              ? teamStats.teamBlockAssists
-                              : teamStats.teamBlockAssists + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText2}>
-                            {teamStats.teamBlockErrors.toString().length > 1
-                              ? teamStats.teamBlockErrors
-                              : teamStats.teamBlockErrors + " "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryTextEnd2}>
-                            {teamStats.teamPts.toString().length > 1
-                              ? teamStats.teamPts.toFixed(1)
-                              : teamStats.teamPts.toFixed(1)}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={styles.heightSpacer} />
-                    <View style={styles.liveStatsModalHeader2}>
-                      <Text style={styles.liveStatsModalSecondaryHeaderText}>
-                        Passing
-                      </Text>
-                    </View>
-                    <View style={styles.liveStatsModalBody}>
-                      <View style={styles.liveStatsPassingTitleRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <Text style={styles.liveStatsPlayerHeader}>
-                            #{"  "}Player
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            ATT
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            P. AVG
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            3s
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            2s
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            1s
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            0s
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            {"  "}
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            F. ATT
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            F. AVG
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryText}>
-                            H. ATT
-                          </Text>
-                          <Text style={styles.liveStatsModalSecondaryTextEnd}>
-                            H. AVG
-                          </Text>
-                        </View>
-                      </View>
-                      {rosterStats.map((player) => {
-                        if (player.passingAttempts > 0) {
-                          return (
-                            <View
-                              style={styles.liveStatsPassingTitleRow}
-                              key={player.playerNumber}
-                            >
-                              <View style={styles.liveStatsStatHeader}>
-                                <Text style={styles.liveStatsPlayerHeader}>
-                                  {/* TODO: validation for length of players name */}
-                                  {player.playerNumber}
-                                  {"  "}
-                                  {player.playerName}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {player.passingAttempts.toString().length > 1
-                                    ? player.passingAttempts
-                                    : player.passingAttempts + " "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {isNaN(
-                                    player.totalPassValue /
-                                      player.passingAttempts
-                                  )
-                                    ? "0.00 "
-                                    : (
-                                        player.totalPassValue /
-                                        player.passingAttempts
-                                      ).toFixed(2) + " "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {player.threePasses.toString().length > 1
-                                    ? player.threePasses
-                                    : player.threePasses + " "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {player.twoPasses.toString().length > 1
-                                    ? player.twoPasses
-                                    : player.twoPasses + " "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {player.onePasses.toString().length > 1
-                                    ? player.onePasses
-                                    : player.onePasses + " "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {player.receptionErrors.toString().length > 1
-                                    ? player.receptionErrors
-                                    : player.receptionErrors + " "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText}
-                                >
-                                  {"   "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {player.forearmPassingAttempts.toString()
-                                    .length > 1
-                                    ? " " +
-                                      player.forearmPassingAttempts +
-                                      "    "
-                                    : " " +
-                                      player.forearmPassingAttempts +
-                                      "     "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {isNaN(
-                                    player.totalForearmPassValue /
-                                      player.forearmPassingAttempts
-                                  )
-                                    ? "0.00  "
-                                    : (
-                                        player.totalForearmPassValue /
-                                        player.forearmPassingAttempts
-                                      ).toFixed(2) + "   "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryText2}
-                                >
-                                  {player.handPassingAttempts.toString()
-                                    .length > 1
-                                    ? " " + player.handPassingAttempts + "    "
-                                    : " " +
-                                      player.handPassingAttempts +
-                                      "     "}
-                                </Text>
-                                <Text
-                                  style={styles.liveStatsModalSecondaryTextEnd2}
-                                >
-                                  {isNaN(
-                                    player.totalHandPassValue /
-                                      player.handPassingAttempts
-                                  )
-                                    ? "0.00  "
-                                    : (
-                                        player.totalHandPassValue /
-                                        player.handPassingAttempts
-                                      ).toFixed(2) + "  "}
-                                </Text>
-                              </View>
-                            </View>
-                          );
-                        }
-                      })}
-                    </View>
-                    {teamStats.teamPassingAttempts === 0 ? (
-                      <View style={styles.liveStatsModalHeader2}>
-                        <View style={styles.heightSpacer} />
-                        <Text style={styles.liveStatsModalNoDataText}>
-                          No passing data
-                        </Text>
-                        <View style={styles.heightSpacer} />
-                      </View>
-                    ) : (
-                      <View style={styles.heightSpacer2} />
-                    )}
-                    <View style={styles.liveStatsModalHeader2}>
-                      <Text style={styles.liveStatsModalSecondaryHeaderText}>
-                        Team Side Out Percentages
-                      </Text>
-                    </View>
-                    <View style={styles.liveStatsModalBody}>
-                      <View style={styles.liveStatsSideOutTitleRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              Side Out ATT
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              Side Out%
-                            </Text>
-                          </View>
-                          <View style={styles.widthSpacer2} />
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              FBSO ATT
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              FBSO%
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.liveStatsSideOutTitleRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamTotalSideOutAttempts}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulSideOuts /
-                                  teamStats.teamTotalSideOutAttempts
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulSideOuts /
-                                      teamStats.teamTotalSideOutAttempts) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                          <View style={styles.widthSpacer2} />
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamFirstBallSideOutAttempts}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsSideOutBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulFirstBallSideOuts /
-                                  teamStats.teamFirstBallSideOutAttempts
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulFirstBallSideOuts /
-                                      teamStats.teamFirstBallSideOutAttempts) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={styles.heightSpacer} />
-                    <View style={styles.liveStatsModalBody}>
-                      <View style={styles.liveStatsRotationsTitleRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              Setter in
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              ATT
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              SO%
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.liveStatsRotationsRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              1
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamTotalSideOutAttemptsPos1}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulSideOutsPos1 /
-                                  teamStats.teamTotalSideOutAttemptsPos1
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulSideOutsPos1 /
-                                      teamStats.teamTotalSideOutAttemptsPos1) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.liveStatsRotationsRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              2
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamTotalSideOutAttemptsPos2}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulSideOutsPos2 /
-                                  teamStats.teamTotalSideOutAttemptsPos2
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulSideOutsPos2 /
-                                      teamStats.teamTotalSideOutAttemptsPos2) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.liveStatsRotationsRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              3
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamTotalSideOutAttemptsPos3}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulSideOutsPos3 /
-                                  teamStats.teamTotalSideOutAttemptsPos3
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulSideOutsPos3 /
-                                      teamStats.teamTotalSideOutAttemptsPos3) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.liveStatsRotationsRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              4
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamTotalSideOutAttemptsPos4}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulSideOutsPos4 /
-                                  teamStats.teamTotalSideOutAttemptsPos4
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulSideOutsPos4 /
-                                      teamStats.teamTotalSideOutAttemptsPos4) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.liveStatsRotationsRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              5
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamTotalSideOutAttemptsPos5}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulSideOutsPos5 /
-                                  teamStats.teamTotalSideOutAttemptsPos5
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulSideOutsPos5 /
-                                      teamStats.teamTotalSideOutAttemptsPos5) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.liveStatsRotationsRow}>
-                        <View style={styles.liveStatsStatHeader}>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxHeaderText}>
-                              6
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {teamStats.teamTotalSideOutAttemptsPos6}
-                            </Text>
-                          </View>
-                          <View style={styles.liveStatsRotationsBoxContainer}>
-                            <Text style={styles.liveStatsSideOutBoxText}>
-                              {isNaN(
-                                teamStats.teamSuccessfulSideOutsPos6 /
-                                  teamStats.teamTotalSideOutAttemptsPos6
-                              )
-                                ? "-"
-                                : (
-                                    (teamStats.teamSuccessfulSideOutsPos6 /
-                                      teamStats.teamTotalSideOutAttemptsPos6) *
-                                    100
-                                  ).toFixed(1) + "%"}
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                    <View style={styles.heightSpacer2} />
-                  </ScrollView>
-                </View>
-              </Modal>
-            </View>
+            <LiveStatsModel />
             <View style={styles.widthSpacer2} />
             <View style={styles.timeOutContainer}>
               <Text style={styles.timeOutText}>Timeouts:</Text>
