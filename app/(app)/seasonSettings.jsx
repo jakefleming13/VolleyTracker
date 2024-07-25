@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeView } from "../../components/SafeView";
@@ -10,7 +10,6 @@ import { COLORS } from "../../constants/Colors";
 import { RFValue } from "react-native-responsive-fontsize";
 import { AntDesign } from "@expo/vector-icons";
 import { useAuth } from "../../context/authContext";
-import { useEffect } from "react";
 import firestore from "@react-native-firebase/firestore";
 import Loading from "../../components/Loading";
 
@@ -19,9 +18,6 @@ export default function SeasonSettings() {
   const { seasonID, user, setActiveSeason } = useAuth();
   const [seasonData, setSeasonData] = useState(null);
   const [loading, setLoading] = useState(true);
-
- 
-
   const [roster, setRoster] = useState([
     { playerNumber: '1', value: 'Player 1' },
     { playerNumber: '2', value: 'Player 2' },
@@ -60,7 +56,6 @@ export default function SeasonSettings() {
             .get();
           if (seasonDoc.exists) {
             setSeasonData(seasonDoc.data());
-            
           } else {
             console.log("No season data found.");
           }
@@ -83,19 +78,8 @@ export default function SeasonSettings() {
       );
     }
   }
+
   const owners = ["Owner 1", "Owner 2"];
-
-  const sections = [
-    { key: 'season_info', title: 'Season Information', data: owners },
-    { key: 'roster', title: 'Roster', data: roster },
-    { key: 'delete_button', title: 'Delete Season', data: [] },
-  ];
-
-  const renderSectionHeader = ({ title }) => (
-    <View style={styles.sectionContainer}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-    </View>
-  );
 
   const renderOwner = ({ item }) => (
     <Text style={styles.sectionText}>- {item}</Text>
@@ -106,23 +90,6 @@ export default function SeasonSettings() {
       <Text style={styles.playerText}>{item.value}</Text>
     </View>
   );
-
-  const renderSectionContent = ({ item, section }) => {
-    switch (section.key) {
-      case 'season_info':
-        return renderOwner({ item });
-      case 'roster':
-        return renderPlayer({ item });
-      case 'delete_button':
-        return (
-          <TouchableOpacity style={styles.deleteSeasonButton}>
-            <Text style={styles.buttonText}>Delete Season</Text>
-          </TouchableOpacity>
-        );
-      default:
-        return null;
-    }
-  };
 
   return (
     <SafeView style={styles.container}>
@@ -139,79 +106,81 @@ export default function SeasonSettings() {
           </View>
         </TouchableOpacity>
       </View>
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>Season Settings</Text>
-      </View>
-      <View style={styles.separator} />
+      <View style={styles.divider} />
 
       <FlatList
-        data={sections}
-        keyExtractor={(item) => item.key}
-        renderItem={({ item }) => (
+        data={[{ key: 'sections' }]}
+        renderItem={() => (
           <View>
-            {renderSectionHeader({ title: item.title })}
-            {item.key === 'roster' ? (
+            {/* Current Season Section */}
+            <View style={styles.sectionContainer}>
+              <Text style={styles.currentSeasonText}>Current Season: {seasonData.teamName}, {seasonData.year}</Text>
+              <TouchableOpacity
+                style={styles.changeSeasonButton}
+                onPress={() => {
+                  setActiveSeason(null);
+                  router.push({
+                    pathname: "seasons",
+                  });
+                }}
+              >
+                <Text style={styles.buttonText}>Change Season</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.divider} />
+
+            {/* Owners Section */}
+            <View style={styles.sectionContainer}>
+              <Text style={styles.sectionTitle}>Owners</Text>
+              {owners.map((owner, index) => renderOwner({ item: owner, key: index }))}
+              <TouchableOpacity style={styles.addOwnerButton}>
+                <Text style={styles.buttonText}>Add Owner</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.divider} />
+
+            {/* Roster Section */}
+            <View style={styles.sectionContainer}>
+              <Text style={styles.sectionTitle}>Roster</Text>
               <FlatList
-                data={item.data}
+                data={roster}
                 renderItem={renderPlayer}
                 keyExtractor={(item) => item.playerNumber}
                 numColumns={3}
                 columnWrapperStyle={styles.columnWrapper}
+                ListFooterComponent={
+                  <TouchableOpacity style={styles.addPlayerButton}>
+                    <Text style={styles.buttonText}>Add Player</Text>
+                  </TouchableOpacity>
+                }
               />
-            ) : (
-              <FlatList
-                data={item.data}
-                renderItem={(props) => renderSectionContent({ ...props, section: item })}
-                keyExtractor={(subItem, subIndex) => `${item.key}-${subIndex}`}
-              />
-            )}
-            {item.key === 'season_info' && (
-              <View>
-                <TouchableOpacity style={styles.addOwnerButton}>
-                  <Text style={styles.buttonText}>Add Owner</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+            </View>
             <View style={styles.divider} />
-          </View>
-        )}
-        ListHeaderComponent={
-          <View style={styles.sectionContainer}>
-            <Text style={styles.currentSeasonText}>Current Season: {seasonData.teamName}, {seasonData.year}</Text>
-            <TouchableOpacity style={styles.changeSeasonButton}
-              onPress={() => {
-                // set active season to null then re route to seasons screen
-               setActiveSeason(null)
-               router.push({
-                pathname: "seasons",
-               
-              })
-              }
-            }
-            
-            
-            >
-              <Text style={styles.buttonText}>Change Season</Text>
+
+            {/* Delete Season Button */}
+            <TouchableOpacity style={styles.deleteSeasonButton}>
+              <Text style={styles.buttonText}>Delete Season</Text>
             </TouchableOpacity>
           </View>
-        }
+        )}
+        keyExtractor={(item) => item.key}
       />
     </SafeView>
   );
 }
 
 const styles = StyleSheet.create({
-container: {
+  container: {
     flex: 1,
     flexDirection: "column",
-    },
-    
-    backContainer: {
+  },
+  backContainer: {
     flexDirection: "row",
     justifyContent: "start",
     height: hp(11),
-    },
-    headerBtn: {
+    marginBottom: 30
+  },
+  headerBtn: {
     flexDirection: "row",
     width: "42%",
     height: hp(7),
@@ -219,22 +188,22 @@ container: {
     borderRadius: 20,
     marginHorizontal: 20,
     marginTop: 18,
+
     alignItems: "center",
     justifyContent: "center",
-    },
-    headerBtnText: {
+  },
+  headerBtnText: {
     fontSize: RFValue(9),
     paddingRight: 3,
     fontWeight: "bold",
     textAlign: "center",
     color: COLORS.white,
-    },
-
-loading: {
+  },
+  loading: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    },
+  },
   titleText: {
     fontSize: RFValue(30),
     color: COLORS.primary,
@@ -270,36 +239,44 @@ loading: {
     fontWeight: "bold",
     color: COLORS.primary,
     marginBottom: hp(1),
+    marginTop: hp(2)
   },
   changeSeasonButton: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.primary,
     padding: hp(1),
     borderRadius: 10,
     marginBottom: hp(2),
+    marginTop: hp(2),
     alignItems: "center",
+    width: wp(20)
   },
   addOwnerButton: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: COLORS.primary,
     padding: hp(1),
     borderRadius: 10,
-    marginTop: hp(1),
+    marginTop: hp(2),
     marginBottom: hp(2),
     alignItems: "center",
+    width: wp(20)
   },
   addPlayerButton: {
-    backgroundColor: COLORS.secondary,
-    padding: hp(1),
+    backgroundColor: COLORS.primary,
+    padding: hp(1.2),
     borderRadius: 10,
-    marginTop: hp(1),
+    marginTop: hp(2),
     alignItems: "center",
+    width: wp(20)
   },
   deleteSeasonButton: {
-    backgroundColor: COLORS.danger,
+    backgroundColor: COLORS.red,
     padding: hp(1.5),
     borderRadius: 10,
-    marginTop: hp(3),
+    marginTop: hp(5),
     marginHorizontal: wp(5),
     alignItems: "center",
+    alignSelf: 'center',
+    width: wp(20),
+    marginBottom: hp(10),
   },
   buttonText: {
     fontSize: RFValue(14),
