@@ -200,7 +200,7 @@ export default function SeasonSettings() {
       const invitations = userDoc.data().seasonInvitations || [];
 
       if (invitations.some(invite => invite.ownerUserID === userID && invite.seasonID === seasonID)) {
-        
+        setAddViewerModalVisible(false)
         Alert.alert("Request already sent", "Request to join this season already sent to the user, please wait for user to accept or decline before trying again.");
         setLoading(false);
         return;
