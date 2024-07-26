@@ -128,28 +128,137 @@ export default function SeasonSettings() {
       const newOwner = userSnapshot.docs[0];
       const newOwnerID = newOwner.id;
 
+      if (seasonData.access.editors.includes(newOwnerID) || seasonData.access.viewers.includes(newOwnerID)) {
+        Alert.alert("User already an editor/viewer", `User is already a ${seasonData.access.editors.includes(newOwnerID) ? 'editor' : 'viewer'} of your season. If you would like to change their role, simply remove them as a ${seasonData.access.editors.includes(newOwnerID) ? 'editor' : 'viewer'} and send another invitation`);
+        setLoading(false);
+        return;
+      }
+
+      const userDoc = await firestore().collection("users").doc(newOwnerID).get();
+      const invitations = userDoc.data().seasonInvitations || [];
+
+      if (invitations.some(invite => invite.ownerUserID === userID && invite.seasonID === seasonID)) {
+        Alert.alert("Request already sent", "Request to join this season already sent to the user, please wait for user to accept or decline before trying again.");
+        setLoading(false);
+        return;
+      }
+
+      const invitation = {
+        ownerUserID: userID,
+        ownerEmail: user.email,
+        ownerName: user.coachName,
+        teamName: seasonData.teamName,
+        teamYear: seasonData.year,
+        seasonID: seasonID,
+        role: 'editor'
+      };
+
       await firestore()
         .collection('users')
         .doc(newOwnerID)
         .update({
-          seasons: firestore.FieldValue.arrayUnion({
-            seasonID: seasonID,
-            teamName: seasonData.teamName,
-            year: seasonData.year
-          })
+          seasonInvitations: firestore.FieldValue.arrayUnion(invitation)
         });
 
-      const seasonRef = firestore().collection('seasons').doc(seasonID);
-      await seasonRef.update({
-        [`access.editors`]: firestore.FieldValue.arrayUnion(newOwnerID)
-      });
-
-      Alert.alert("Success", "Editor added successfully!");
+      Alert.alert("Success", "Editor invitation sent successfully!");
       setModalVisible(false);
       setNewOwnerEmail("");
     } catch (error) {
-      console.error("Failed to add owner:", error);
-      Alert.alert("Error", "Failed to add owner. Please try again.");
+      console.error("Failed to send editor invitation:", error);
+      Alert.alert("Error", "Failed to send editor invitation. Please try again.");
+    }
+    setLoading(false);
+  };
+
+  const addViewer = async () => {
+    setLoading(true);
+    try {
+      const userSnapshot = await firestore()
+        .collection('users')
+        .where('email', '==', newViewerEmail)
+        .get();
+
+      if (userSnapshot.empty) {
+        Alert.alert("User not found", "No user found with this email.");
+        setLoading(false);
+        return;
+      }
+
+      const newViewer = userSnapshot.docs[0];
+      const newViewerID = newViewer.id;
+
+      if (seasonData.access.editors.includes(newViewerID) || seasonData.access.viewers.includes(newViewerID)) {
+        Alert.alert("User already an editor/viewer", `User is already a ${seasonData.access.editors.includes(newViewerID) ? 'editor' : 'viewer'} of your season. If you would like to change their role, simply remove them as a ${seasonData.access.editors.includes(newViewerID) ? 'editor' : 'viewer'} and send another invitation`);
+        setLoading(false);
+        return;
+      }
+
+      const userDoc = await firestore().collection("users").doc(newViewerID).get();
+      const invitations = userDoc.data().seasonInvitations || [];
+
+      if (invitations.some(invite => invite.ownerUserID === userID && invite.seasonID === seasonID)) {
+        Alert.alert("Request already sent", "Request to join this season already sent to the user, please wait for user to accept or decline before trying again.");
+        setLoading(false);
+        return;
+      }
+
+      const invitation = {
+        ownerUserID: userID,
+        ownerEmail: user.email,
+        ownerName: user.coachName,
+        teamName: seasonData.teamName,
+        teamYear: seasonData.year,
+        seasonID: seasonID,
+        role: 'viewer'
+      };
+
+      await firestore()
+        .collection('users')
+        .doc(newViewerID)
+        .update({
+          seasonInvitations: firestore.FieldValue.arrayUnion(invitation)
+        });
+
+      Alert.alert("Success", "Viewer invitation sent successfully!");
+      setAddViewerModalVisible(false);
+      setNewViewerEmail("");
+    } catch (error) {
+      console.error("Failed to send viewer invitation:", error);
+      Alert.alert("Error", "Failed to send viewer invitation. Please try again.");
+    }
+    setLoading(false);
+  };
+
+  const removeUser = async (userID, role) => {
+    setLoading(true);
+    try {
+      const seasonRef = firestore().collection('seasons').doc(seasonID);
+      const userRef = firestore().collection('users').doc(userID);
+
+      if (role === 'editor') {
+        await seasonRef.update({
+          'access.editors': firestore.FieldValue.arrayRemove(userID)
+        });
+      } else if (role === 'viewer') {
+        await seasonRef.update({
+          'access.viewers': firestore.FieldValue.arrayRemove(userID)
+        });
+      }
+
+      await userRef.update({
+        seasons: firestore.FieldValue.arrayRemove(seasonID)
+      });
+
+      Alert.alert("Success", `${role.charAt(0).toUpperCase() + role.slice(1)} removed successfully!`);
+
+      if (role === 'editor') {
+        setEditors(editors.filter(editor => editor.id !== userID));
+      } else if (role === 'viewer') {
+        setViewers(viewers.filter(viewer => viewer.id !== userID));
+      }
+    } catch (error) {
+      console.error(`Failed to remove ${role}:`, error);
+      Alert.alert("Error", `Failed to remove ${role}. Please try again.`);
     }
     setLoading(false);
   };
@@ -158,19 +267,19 @@ export default function SeasonSettings() {
     setLoading(true);
     try {
       const playerStatsCollectionRef = firestore().collection('seasons').doc(seasonID).collection('playerStats');
-
+  
       const snapshot = await playerStatsCollectionRef.get();
       if (snapshot.empty) {
         console.log("No player stats found.");
         setLoading(false);
         return;
       }
-
+  
       const playerStatsDoc = snapshot.docs[0];
       const playerStatsRef = playerStatsCollectionRef.doc(playerStatsDoc.id);
-
+  
       const teamSize = (playerStatsDoc.data().roster || []).length;
-
+  
       const newPlayer = {
         playerName: newPlayerName,
         playerNumber: newPlayerNumber,
@@ -206,16 +315,16 @@ export default function SeasonSettings() {
         pts: 0,
         ptsPerSet: 0.0
       };
-
+  
       await playerStatsRef.update({
         roster: firestore.FieldValue.arrayUnion(newPlayer)
       });
-
+  
       Alert.alert("Success", "Player added successfully!");
       setAddPlayerModalVisible(false);
       setNewPlayerName("");
       setNewPlayerNumber("");
-
+  
       const updatedDoc = await playerStatsRef.get();
       if (updatedDoc.exists) {
         const stats = updatedDoc.data();
@@ -227,49 +336,7 @@ export default function SeasonSettings() {
     }
     setLoading(false);
   };
-
-  const addViewer = async () => {
-    setLoading(true);
-    try {
-      const userSnapshot = await firestore()
-        .collection('users')
-        .where('email', '==', newViewerEmail)
-        .get();
-
-      if (userSnapshot.empty) {
-        Alert.alert("User not found", "No user found with this email.");
-        setLoading(false);
-        return;
-      }
-
-      const newViewer = userSnapshot.docs[0];
-      const newViewerID = newViewer.id;
-
-      await firestore()
-        .collection('users')
-        .doc(newViewerID)
-        .update({
-          seasons: firestore.FieldValue.arrayUnion({
-            seasonID: seasonID,
-            teamName: seasonData.teamName,
-            year: seasonData.year
-          })
-        });
-
-      const seasonRef = firestore().collection('seasons').doc(seasonID);
-      await seasonRef.update({
-        [`access.viewers`]: firestore.FieldValue.arrayUnion(newViewerID)
-      });
-
-      Alert.alert("Success", "Viewer added successfully!");
-      setAddViewerModalVisible(false);
-      setNewViewerEmail("");
-    } catch (error) {
-      console.error("Failed to add viewer:", error);
-      Alert.alert("Error", "Failed to add viewer. Please try again.");
-    }
-    setLoading(false);
-  };
+  
 
   if (loading) {
     return (
@@ -279,8 +346,13 @@ export default function SeasonSettings() {
     );
   }
 
-  const renderUser = ({ item }) => (
-    <Text style={styles.sectionText}>- {item.coachName} ({item.email})</Text>
+  const renderUser = ({ item, role }) => (
+    <View style={styles.userItem}>
+      <Text style={styles.sectionText}>- {item.coachName} ({item.email})</Text>
+      <TouchableOpacity onPress={() => removeUser(item.id, role)}>
+        <AntDesign name="closecircleo" size={hp(3)} color={COLORS.red} />
+      </TouchableOpacity>
+    </View>
   );
 
   const renderPlayer = ({ item }) => (
@@ -294,7 +366,6 @@ export default function SeasonSettings() {
   const isOwner = userID === seasonData?.access?.owner;
   const isEditor = seasonData?.access?.editors?.includes(userID);
   const isViewer = seasonData?.access?.viewers?.includes(userID);
-
 
   return (
     <SafeView style={styles.container}>
@@ -352,7 +423,7 @@ export default function SeasonSettings() {
                   </MenuOptions>
                 </Menu>
               </View>
-              {owners.map((owner, index) => renderUser({ item: owner, key: index }))}
+              {owners.map((owner, index) => renderUser({ item: owner, role: 'owner', key: index }))}
             </View>
             <View style={styles.divider} />
 
@@ -374,7 +445,7 @@ export default function SeasonSettings() {
                   </MenuOptions>
                 </Menu>
               </View>
-              {editors.map((editor, index) => renderUser({ item: editor, key: index }))}
+              {editors.map((editor, index) => renderUser({ item: editor, role: 'editor', key: index }))}
               {isOwner && (
                 <TouchableOpacity style={styles.addOwnerButton} onPress={() => setModalVisible(true)}>
                   <Text style={styles.buttonText}>Add Editor</Text>
@@ -401,7 +472,7 @@ export default function SeasonSettings() {
                   </MenuOptions>
                 </Menu>
               </View>
-              {viewers.map((viewer, index) => renderUser({ item: viewer, key: index }))}
+              {viewers.map((viewer, index) => renderUser({ item: viewer, role: 'viewer', key: index }))}
               {isOwner && (
                 <TouchableOpacity style={styles.addOwnerButton} onPress={() => setAddViewerModalVisible(true)}>
                   <Text style={styles.buttonText}>Add Viewer</Text>
@@ -704,5 +775,10 @@ const styles = StyleSheet.create({
   },
   questionIcon: {
     marginLeft: wp(1),
-  }
+  },
+  userItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
 });
