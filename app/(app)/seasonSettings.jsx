@@ -12,6 +12,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { useAuth } from "../../context/authContext";
 import firestore from "@react-native-firebase/firestore";
 import Loading from "../../components/Loading";
+import { Menu, MenuProvider, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 export default function SeasonSettings() {
   const router = useRouter();
@@ -24,13 +25,12 @@ export default function SeasonSettings() {
   const [addPlayerModalVisible, setAddPlayerModalVisible] = useState(false);
   const [newPlayerName, setNewPlayerName] = useState("");
   const [newPlayerNumber, setNewPlayerNumber] = useState("");
-  const [addViewerModalVisible, setAddViewerModalVisible] = useState(false);
-  const [newViewerEmail, setNewViewerEmail] = useState("");
   const [owners, setOwners] = useState([]);
   const [editors, setEditors] = useState([]);
   const [viewers, setViewers] = useState([]);
+  const [addViewerModalVisible, setAddViewerModalVisible] = useState(false);
+  const [newViewerEmail, setNewViewerEmail] = useState("");
 
-  // Grab all season data
   useEffect(() => {
     const fetchSeasonData = async () => {
       setLoading(true);
@@ -43,7 +43,6 @@ export default function SeasonSettings() {
           const data = seasonDoc.data();
           setSeasonData(data);
 
-          // get user data
           const fetchUserData = async (userIds) => {
             const users = await Promise.all(
               userIds.map(async (userId) => {
@@ -115,7 +114,6 @@ export default function SeasonSettings() {
   const addOwner = async () => {
     setLoading(true);
     try {
-      // Find the user by email in Firestore
       const userSnapshot = await firestore()
         .collection('users')
         .where('email', '==', newOwnerEmail)
@@ -130,7 +128,6 @@ export default function SeasonSettings() {
       const newOwner = userSnapshot.docs[0];
       const newOwnerID = newOwner.id;
 
-      // Add seasonID, teamName, and year to the user's list of accessible seasons in Firestore
       await firestore()
         .collection('users')
         .doc(newOwnerID)
@@ -142,7 +139,6 @@ export default function SeasonSettings() {
           })
         });
 
-      // Update the season document to include the new owner in the access.editors field
       const seasonRef = firestore().collection('seasons').doc(seasonID);
       await seasonRef.update({
         [`access.editors`]: firestore.FieldValue.arrayUnion(newOwnerID)
@@ -161,10 +157,8 @@ export default function SeasonSettings() {
   const addPlayer = async () => {
     setLoading(true);
     try {
-      // Reference to the playerStats collection for the season
       const playerStatsCollectionRef = firestore().collection('seasons').doc(seasonID).collection('playerStats');
 
-      // Retrieve the document from the playerStats collection
       const snapshot = await playerStatsCollectionRef.get();
       if (snapshot.empty) {
         console.log("No player stats found.");
@@ -172,14 +166,11 @@ export default function SeasonSettings() {
         return;
       }
 
-      // Assume there's only one document in the collection, grab the first one
       const playerStatsDoc = snapshot.docs[0];
       const playerStatsRef = playerStatsCollectionRef.doc(playerStatsDoc.id);
 
-      // Get the current roster size to determine the new player ID
       const teamSize = (playerStatsDoc.data().roster || []).length;
 
-      // New player object with all the required stats
       const newPlayer = {
         playerName: newPlayerName,
         playerNumber: newPlayerNumber,
@@ -216,7 +207,6 @@ export default function SeasonSettings() {
         ptsPerSet: 0.0
       };
 
-      // Update the roster field by adding a new player
       await playerStatsRef.update({
         roster: firestore.FieldValue.arrayUnion(newPlayer)
       });
@@ -226,7 +216,6 @@ export default function SeasonSettings() {
       setNewPlayerName("");
       setNewPlayerNumber("");
 
-      // Refresh the player stats
       const updatedDoc = await playerStatsRef.get();
       if (updatedDoc.exists) {
         const stats = updatedDoc.data();
@@ -242,7 +231,6 @@ export default function SeasonSettings() {
   const addViewer = async () => {
     setLoading(true);
     try {
-      // Find the user by email in Firestore
       const userSnapshot = await firestore()
         .collection('users')
         .where('email', '==', newViewerEmail)
@@ -257,7 +245,6 @@ export default function SeasonSettings() {
       const newViewer = userSnapshot.docs[0];
       const newViewerID = newViewer.id;
 
-      // Add seasonID, teamName, and year to the user's list of accessible seasons in Firestore
       await firestore()
         .collection('users')
         .doc(newViewerID)
@@ -269,7 +256,6 @@ export default function SeasonSettings() {
           })
         });
 
-      // Update the season document to include the new viewer in the access.viewers field
       const seasonRef = firestore().collection('seasons').doc(seasonID);
       await seasonRef.update({
         [`access.viewers`]: firestore.FieldValue.arrayUnion(newViewerID)
@@ -343,14 +329,44 @@ export default function SeasonSettings() {
 
             {/* Owner Section */}
             <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Owner</Text>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Owner</Text>
+                <Menu>
+                  <MenuTrigger>
+                    <AntDesign
+                      style={styles.questionIcon}
+                      name="questioncircleo"
+                      size={hp(4)}
+                      color={COLORS.black}
+                    />
+                  </MenuTrigger>
+                  <MenuOptions>
+                    <MenuOption onSelect={() => {}} text="Owner tooltip text" />
+                  </MenuOptions>
+                </Menu>
+              </View>
               {owners.map((owner, index) => renderUser({ item: owner, key: index }))}
             </View>
             <View style={styles.divider} />
 
             {/* Editors Section */}
             <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Editors</Text>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Editors</Text>
+                <Menu>
+                  <MenuTrigger>
+                    <AntDesign
+                      style={styles.questionIcon}
+                      name="questioncircleo"
+                      size={hp(4)}
+                      color={COLORS.black}
+                    />
+                  </MenuTrigger>
+                  <MenuOptions>
+                    <MenuOption onSelect={() => {}} text="Editors tooltip text" />
+                  </MenuOptions>
+                </Menu>
+              </View>
               {editors.map((editor, index) => renderUser({ item: editor, key: index }))}
               <TouchableOpacity style={styles.addOwnerButton} onPress={() => setModalVisible(true)}>
                 <Text style={styles.buttonText}>Add Editor</Text>
@@ -360,7 +376,22 @@ export default function SeasonSettings() {
 
             {/* Viewers Section */}
             <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Viewers</Text>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Viewers</Text>
+                <Menu>
+                  <MenuTrigger>
+                    <AntDesign
+                      style={styles.questionIcon}
+                      name="questioncircleo"
+                      size={hp(4)}
+                      color={COLORS.black}
+                    />
+                  </MenuTrigger>
+                  <MenuOptions>
+                    <MenuOption onSelect={() => {}} text="Viewers tooltip text" />
+                  </MenuOptions>
+                </Menu>
+              </View>
               {viewers.map((viewer, index) => renderUser({ item: viewer, key: index }))}
               <TouchableOpacity style={styles.addOwnerButton} onPress={() => setAddViewerModalVisible(true)}>
                 <Text style={styles.buttonText}>Add Viewer</Text>
@@ -419,6 +450,30 @@ export default function SeasonSettings() {
         </View>
       </Modal>
 
+      {/* Modal for Adding Viewer */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={addViewerModalVisible}
+        onRequestClose={() => setAddViewerModalVisible(false)}
+      >
+        <View style={styles.modalView}>
+          <Text style={styles.modalText}>Enter Viewer's Email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={newViewerEmail}
+            onChangeText={setNewViewerEmail}
+          />
+          <TouchableOpacity style={styles.addOwnerModalButton} onPress={addViewer}>
+            <Text style={styles.buttonText}>Add Viewer</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.cancelButton} onPress={() => setAddViewerModalVisible(false)}>
+            <Text style={styles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
       {/* Modal for Adding Player */}
       <Modal
         animationType="slide"
@@ -448,30 +503,6 @@ export default function SeasonSettings() {
           </TouchableOpacity>
         </View>
       </Modal>
-
-      {/* Modal for Adding Viewer */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={addViewerModalVisible}
-        onRequestClose={() => setAddViewerModalVisible(false)}
-      >
-        <View style={styles.modalView}>
-          <Text style={styles.modalText}>Enter Viewer's Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={newViewerEmail}
-            onChangeText={setNewViewerEmail}
-          />
-          <TouchableOpacity style={styles.addOwnerModalButton} onPress={addViewer}>
-            <Text style={styles.buttonText}>Add Viewer</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.cancelButton} onPress={() => setAddViewerModalVisible(false)}>
-            <Text style={styles.buttonText}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
     </SafeView>
   );
 }
@@ -495,7 +526,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginHorizontal: 20,
     marginTop: 18,
-
     alignItems: "center",
     justifyContent: "center",
   },
@@ -653,5 +683,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: hp(2),
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    
+  },
+  questionIcon: {
+    marginLeft: wp(1),
+  }
 });
-
