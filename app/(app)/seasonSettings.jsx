@@ -17,6 +17,7 @@ import { Menu, MenuProvider, MenuOptions, MenuOption, MenuTrigger } from 'react-
 export default function SeasonSettings() {
   const router = useRouter();
   const { seasonID, user, setActiveSeason } = useAuth();
+  const userID = user?.userID; // Ensure the correct property is accessed
   const [seasonData, setSeasonData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [playerStats, setPlayerStats] = useState([]);
@@ -79,10 +80,10 @@ export default function SeasonSettings() {
       setLoading(false);
     };
 
-    if (seasonID && user) {
+    if (seasonID && userID) {
       fetchSeasonData();
     }
-  }, [seasonID, user]);
+  }, [seasonID, userID]);
 
   useEffect(() => {
     const fetchPlayerStats = async () => {
@@ -106,17 +107,17 @@ export default function SeasonSettings() {
       setLoading(false);
     };
 
-    if (seasonID && user) {
+    if (seasonID && userID) {
       fetchPlayerStats();
     }
-  }, [seasonID, user]);
+  }, [seasonID, userID]);
 
-  const sendInvitation = async (email, role) => {
+  const addOwner = async () => {
     setLoading(true);
     try {
       const userSnapshot = await firestore()
         .collection('users')
-        .where('email', '==', email)
+        .where('email', '==', newOwnerEmail)
         .get();
 
       if (userSnapshot.empty) {
@@ -125,45 +126,31 @@ export default function SeasonSettings() {
         return;
       }
 
-      const newUser = userSnapshot.docs[0];
-      const newUserID = newUser.id;
-
-      const invitation = {
-        ownerUserID: user.userID,
-        ownerEmail: user.email,
-        ownerName: user.coachName,
-        teamName: seasonData.teamName,
-        teamYear: seasonData.year,
-        seasonID: seasonID
-      };
+      const newOwner = userSnapshot.docs[0];
+      const newOwnerID = newOwner.id;
 
       await firestore()
         .collection('users')
-        .doc(newUserID)
+        .doc(newOwnerID)
         .update({
-          seasonInvitations: firestore.FieldValue.arrayUnion(invitation)
+          seasons: firestore.FieldValue.arrayUnion({
+            seasonID: seasonID,
+            teamName: seasonData.teamName,
+            year: seasonData.year
+          })
         });
 
-      if (role === 'editor') {
-        const seasonRef = firestore().collection('seasons').doc(seasonID);
-        await seasonRef.update({
-          [`access.editors`]: firestore.FieldValue.arrayUnion(newUserID)
-        });
-      } else if (role === 'viewer') {
-        const seasonRef = firestore().collection('seasons').doc(seasonID);
-        await seasonRef.update({
-          [`access.viewers`]: firestore.FieldValue.arrayUnion(newUserID)
-        });
-      }
+      const seasonRef = firestore().collection('seasons').doc(seasonID);
+      await seasonRef.update({
+        [`access.editors`]: firestore.FieldValue.arrayUnion(newOwnerID)
+      });
 
-      Alert.alert("Success", `${role.charAt(0).toUpperCase() + role.slice(1)} added successfully!`);
+      Alert.alert("Success", "Editor added successfully!");
       setModalVisible(false);
-      setAddViewerModalVisible(false);
       setNewOwnerEmail("");
-      setNewViewerEmail("");
     } catch (error) {
-      console.error(`Failed to add ${role}:`, error);
-      Alert.alert("Error", `Failed to add ${role}. Please try again.`);
+      console.error("Failed to add owner:", error);
+      Alert.alert("Error", "Failed to add owner. Please try again.");
     }
     setLoading(false);
   };
@@ -242,6 +229,49 @@ export default function SeasonSettings() {
     setLoading(false);
   };
 
+  const addViewer = async () => {
+    setLoading(true);
+    try {
+      const userSnapshot = await firestore()
+        .collection('users')
+        .where('email', '==', newViewerEmail)
+        .get();
+
+      if (userSnapshot.empty) {
+        Alert.alert("User not found", "No user found with this email.");
+        setLoading(false);
+        return;
+      }
+
+      const newViewer = userSnapshot.docs[0];
+      const newViewerID = newViewer.id;
+
+      await firestore()
+        .collection('users')
+        .doc(newViewerID)
+        .update({
+          seasons: firestore.FieldValue.arrayUnion({
+            seasonID: seasonID,
+            teamName: seasonData.teamName,
+            year: seasonData.year
+          })
+        });
+
+      const seasonRef = firestore().collection('seasons').doc(seasonID);
+      await seasonRef.update({
+        [`access.viewers`]: firestore.FieldValue.arrayUnion(newViewerID)
+      });
+
+      Alert.alert("Success", "Viewer added successfully!");
+      setAddViewerModalVisible(false);
+      setNewViewerEmail("");
+    } catch (error) {
+      console.error("Failed to add viewer:", error);
+      Alert.alert("Error", "Failed to add viewer. Please try again.");
+    }
+    setLoading(false);
+  };
+
   if (loading) {
     return (
       <View style={styles.loading}>
@@ -259,6 +289,15 @@ export default function SeasonSettings() {
       <Text style={styles.playerText}>{item.playerName} - #{item.playerNumber}</Text>
     </View>
   );
+
+  const isOwner = userID === seasonData?.access?.owner;
+  const isEditor = seasonData?.access?.editors?.includes(userID);
+  const isViewer = seasonData?.access?.viewers?.includes(userID);
+
+  console.log("User ID:", userID);
+  console.log("Owner:", seasonData?.access?.owner);
+  console.log("Editors:", seasonData?.access?.editors);
+  console.log("Viewers:", seasonData?.access?.viewers);
 
   return (
     <SafeView style={styles.container}>
@@ -339,9 +378,11 @@ export default function SeasonSettings() {
                 </Menu>
               </View>
               {editors.map((editor, index) => renderUser({ item: editor, key: index }))}
-              <TouchableOpacity style={styles.addOwnerButton} onPress={() => setModalVisible(true)}>
-                <Text style={styles.buttonText}>Add Editor</Text>
-              </TouchableOpacity>
+              {isOwner && (
+                <TouchableOpacity style={styles.addOwnerButton} onPress={() => setModalVisible(true)}>
+                  <Text style={styles.buttonText}>Add Editor</Text>
+                </TouchableOpacity>
+              )}
             </View>
             <View style={styles.divider} />
 
@@ -364,9 +405,11 @@ export default function SeasonSettings() {
                 </Menu>
               </View>
               {viewers.map((viewer, index) => renderUser({ item: viewer, key: index }))}
-              <TouchableOpacity style={styles.addOwnerButton} onPress={() => setAddViewerModalVisible(true)}>
-                <Text style={styles.buttonText}>Add Viewer</Text>
-              </TouchableOpacity>
+              {isOwner && (
+                <TouchableOpacity style={styles.addOwnerButton} onPress={() => setAddViewerModalVisible(true)}>
+                  <Text style={styles.buttonText}>Add Viewer</Text>
+                </TouchableOpacity>
+              )}
             </View>
             <View style={styles.divider} />
 
@@ -380,24 +423,28 @@ export default function SeasonSettings() {
                 numColumns={3}
                 columnWrapperStyle={styles.columnWrapper}
                 ListFooterComponent={
-                  <TouchableOpacity style={styles.addPlayerButton} onPress={() => setAddPlayerModalVisible(true)}>
-                    <Text style={styles.buttonText}>Add Player</Text>
-                  </TouchableOpacity>
+                  (isOwner || isEditor) && (
+                    <TouchableOpacity style={styles.addPlayerButton} onPress={() => setAddPlayerModalVisible(true)}>
+                      <Text style={styles.buttonText}>Add Player</Text>
+                    </TouchableOpacity>
+                  )
                 }
               />
             </View>
             <View style={styles.divider} />
 
             {/* Delete Season Button */}
-            <TouchableOpacity style={styles.deleteSeasonButton}>
-              <Text style={styles.buttonText}>Delete Season</Text>
-            </TouchableOpacity>
+            {isOwner && (
+              <TouchableOpacity style={styles.deleteSeasonButton}>
+                <Text style={styles.buttonText}>Delete Season</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
         keyExtractor={(item) => item.key}
       />
 
-      {/* Modal for Adding Editor */}
+      {/* Modal for Adding Owner */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -405,14 +452,14 @@ export default function SeasonSettings() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>Enter Editor's Email</Text>
+          <Text style={styles.modalText}>Enter Owner's Email</Text>
           <TextInput
             style={styles.input}
             placeholder="Email"
             value={newOwnerEmail}
             onChangeText={setNewOwnerEmail}
           />
-          <TouchableOpacity style={styles.addOwnerModalButton} onPress={() => sendInvitation(newOwnerEmail, 'editor')}>
+          <TouchableOpacity style={styles.addOwnerModalButton} onPress={addOwner}>
             <Text style={styles.buttonText}>Add Editor</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
@@ -436,7 +483,7 @@ export default function SeasonSettings() {
             value={newViewerEmail}
             onChangeText={setNewViewerEmail}
           />
-          <TouchableOpacity style={styles.addOwnerModalButton} onPress={() => sendInvitation(newViewerEmail, 'viewer')}>
+          <TouchableOpacity style={styles.addOwnerModalButton} onPress={addViewer}>
             <Text style={styles.buttonText}>Add Viewer</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.cancelButton} onPress={() => setAddViewerModalVisible(false)}>
