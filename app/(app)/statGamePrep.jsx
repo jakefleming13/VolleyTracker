@@ -14,7 +14,6 @@ import { useState } from "react";
 import { RadioButton } from "react-native-paper";
 import { Dropdown } from "react-native-element-dropdown";
 import {
-  MenuProvider,
   Menu,
   MenuOptions,
   MenuOption,
@@ -123,6 +122,30 @@ export default function statGamePrep() {
         onPress: () => router.push("seasonHome"),
       },
     ]);
+  };
+
+  const handleIncrementSetsPlayed = () => {
+    //Find all of the starting players and then increment their sets played by 1
+    const updatedRoster = localRoster.map((player) => {
+      if (
+        player.playerNumber === positionOne ||
+        player.playerNumber === positionTwo ||
+        player.playerNumber === positionThree ||
+        player.playerNumber === positionFour ||
+        player.playerNumber === positionFive ||
+        player.playerNumber === positionSix ||
+        player.playerNumber === firstLibero ||
+        player.playerNumber === secondLibero
+      ) {
+        return {
+          ...player,
+          setsPlayed: player.setsPlayed + 1,
+          firstTimeOnCourt: false,
+        };
+      }
+      return player; // Return the player object unchanged
+    });
+    setRosterStats(updatedRoster); // Update the roster state with the new array
   };
 
   return (
@@ -657,6 +680,11 @@ export default function statGamePrep() {
         <View style={styles.confirmContainer}>
           <TouchableOpacity
             onPress={() => {
+              //TODO: Input validation
+
+              //Increment sets played for all players on court + libs
+              handleIncrementSetsPlayed();
+
               router.push({
                 pathname: "statGame",
                 params: {
