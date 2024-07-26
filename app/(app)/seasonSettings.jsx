@@ -17,7 +17,6 @@ import { Menu, MenuProvider, MenuOptions, MenuOption, MenuTrigger } from 'react-
 export default function SeasonSettings() {
   const router = useRouter();
   const { seasonID, user, setActiveSeason } = useAuth();
-  const userID = user?.userID; // Ensure the correct property is accessed
   const [seasonData, setSeasonData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [playerStats, setPlayerStats] = useState([]);
@@ -80,10 +79,10 @@ export default function SeasonSettings() {
       setLoading(false);
     };
 
-    if (seasonID && userID) {
+    if (seasonID && user) {
       fetchSeasonData();
     }
-  }, [seasonID, userID]);
+  }, [seasonID, user]);
 
   useEffect(() => {
     const fetchPlayerStats = async () => {
@@ -107,10 +106,10 @@ export default function SeasonSettings() {
       setLoading(false);
     };
 
-    if (seasonID && userID) {
+    if (seasonID && user) {
       fetchPlayerStats();
     }
-  }, [seasonID, userID]);
+  }, [seasonID, user]);
 
   const addOwner = async () => {
     setLoading(true);
@@ -290,6 +289,8 @@ export default function SeasonSettings() {
     </View>
   );
 
+  const userID = user?.userID;
+
   const isOwner = userID === seasonData?.access?.owner;
   const isEditor = seasonData?.access?.editors?.includes(userID);
   const isViewer = seasonData?.access?.viewers?.includes(userID);
@@ -423,7 +424,7 @@ export default function SeasonSettings() {
                 numColumns={3}
                 columnWrapperStyle={styles.columnWrapper}
                 ListFooterComponent={
-                  (isOwner || isEditor) && (
+                  (isOwner) && (
                     <TouchableOpacity style={styles.addPlayerButton} onPress={() => setAddPlayerModalVisible(true)}>
                       <Text style={styles.buttonText}>Add Player</Text>
                     </TouchableOpacity>
