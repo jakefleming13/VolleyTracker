@@ -341,7 +341,7 @@ export default function SeasonSettings() {
                     />
                   </MenuTrigger>
                   <MenuOptions>
-                    <MenuOption onSelect={() => {}} text="Owner tooltip text" />
+                    <MenuOption onSelect={() => {}} text="The owner has full permissions for a season, such as statting, viewing stats, and deleting the season." />
                   </MenuOptions>
                 </Menu>
               </View>
@@ -363,7 +363,7 @@ export default function SeasonSettings() {
                     />
                   </MenuTrigger>
                   <MenuOptions>
-                    <MenuOption onSelect={() => {}} text="Editors tooltip text" />
+                    <MenuOption onSelect={() => {}} text="Editors have full permissions for a season, with the exception that they cannot delete a season. They can stat games, view stats, and perform any other actions that an owner can take." />
                   </MenuOptions>
                 </Menu>
               </View>
@@ -388,7 +388,7 @@ export default function SeasonSettings() {
                     />
                   </MenuTrigger>
                   <MenuOptions>
-                    <MenuOption onSelect={() => {}} text="Viewers tooltip text" />
+                    <MenuOption onSelect={() => {}} text="Viewers can only view various player and season stats. Viewers cannot add any stats or delete a season." />
                   </MenuOptions>
                 </Menu>
               </View>
