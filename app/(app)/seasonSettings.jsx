@@ -249,7 +249,7 @@ export default function SeasonSettings() {
             try {
               const seasonRef = firestore().collection('seasons').doc(seasonID);
               const userRef = firestore().collection('users').doc(userID);
-
+  
               if (role === 'editor') {
                 await seasonRef.update({
                   'access.editors': firestore.FieldValue.arrayRemove(userID)
@@ -259,13 +259,20 @@ export default function SeasonSettings() {
                   'access.viewers': firestore.FieldValue.arrayRemove(userID)
                 });
               }
-
-              await userRef.update({
-                seasons: firestore.FieldValue.arrayRemove(seasonID)
-              });
-
+  
+              // Remove the season from the user's seasons array
+              const userDoc = await userRef.get();
+              if (userDoc.exists) {
+                const userSeasons = userDoc.data().seasons || [];
+                const updatedSeasons = userSeasons.filter(season => season.seasonID !== seasonID);
+  
+                await userRef.update({
+                  seasons: updatedSeasons
+                });
+              }
+  
               Alert.alert("Success", `${role.charAt(0).toUpperCase() + role.slice(1)} removed successfully!`);
-
+  
               if (role === 'editor') {
                 setEditors(editors.filter(editor => editor.id !== userID));
               } else if (role === 'viewer') {
@@ -281,6 +288,7 @@ export default function SeasonSettings() {
       ]
     );
   };
+  
 
   const removeSeasonFromAccount = async () => {
     Alert.alert(
