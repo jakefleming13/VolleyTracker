@@ -295,10 +295,6 @@ export default function SeasonSettings() {
   const isEditor = seasonData?.access?.editors?.includes(userID);
   const isViewer = seasonData?.access?.viewers?.includes(userID);
 
-  console.log("User ID:", userID);
-  console.log("Owner:", seasonData?.access?.owner);
-  console.log("Editors:", seasonData?.access?.editors);
-  console.log("Viewers:", seasonData?.access?.viewers);
 
   return (
     <SafeView style={styles.container}>
@@ -352,7 +348,7 @@ export default function SeasonSettings() {
                     />
                   </MenuTrigger>
                   <MenuOptions>
-                    <MenuOption onSelect={() => {}} text="The owner has full permissions for a season, such as statting, viewing stats, and deleting the season." />
+                    <MenuOption onSelect={() => {}} text="The owner has full permissions for a season, such as statting, viewing stats, adding new editors/viewers, and deleting the season." />
                   </MenuOptions>
                 </Menu>
               </View>
@@ -374,7 +370,7 @@ export default function SeasonSettings() {
                     />
                   </MenuTrigger>
                   <MenuOptions>
-                    <MenuOption onSelect={() => {}} text="Editors have full permissions for a season, with the exception that they cannot delete a season. They can stat games, view stats, and perform any other actions that an owner can take." />
+                    <MenuOption onSelect={() => {}} text="Editors have full permissions for a season, with the exception that they cannot delete a season or add new editors or viewers. They can stat games, view stats, and perform any other actions that an owner can take." />
                   </MenuOptions>
                 </Menu>
               </View>
@@ -401,7 +397,7 @@ export default function SeasonSettings() {
                     />
                   </MenuTrigger>
                   <MenuOptions>
-                    <MenuOption onSelect={() => {}} text="Viewers can only view various player and season stats. Viewers cannot add any stats or delete a season." />
+                    <MenuOption onSelect={() => {}} text="Viewers can only view various player and season stats. Viewers cannot add any stats, delete a season, or add new editors or viewers" />
                   </MenuOptions>
                 </Menu>
               </View>
