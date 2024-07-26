@@ -21,10 +21,13 @@ export default function SeasonSettings() {
   const [playerStats, setPlayerStats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [newOwnerEmail, setNewOwnerEmail] = useState("");
+  const [addPlayerModalVisible, setAddPlayerModalVisible] = useState(false);
+  const [newPlayerName, setNewPlayerName] = useState("");
+  const [newPlayerNumber, setNewPlayerNumber] = useState("");
   const [owners, setOwners] = useState([]);
   const [editors, setEditors] = useState([]);
-  const [viewers, setViewers] = useState([]);
 
+  // Grab all season data
   useEffect(() => {
     if (seasonID && user) {
       const fetchSeasonData = async () => {
@@ -36,7 +39,8 @@ export default function SeasonSettings() {
           if (seasonDoc.exists) {
             const data = seasonDoc.data();
             setSeasonData(data);
-
+            
+            // get user data
             const fetchUserData = async (userIds) => {
               const users = await Promise.all(
                 userIds.map(async (userId) => {
@@ -58,10 +62,6 @@ export default function SeasonSettings() {
               if (data.access.editors && data.access.editors.length > 0) {
                 const editorsData = await fetchUserData(data.access.editors);
                 setEditors(editorsData);
-              }
-              if (data.access.viewers && data.access.viewers.length > 0) {
-                const viewersData = await fetchUserData(data.access.viewers);
-                setViewers(viewersData);
               }
             }
           } else {
@@ -146,6 +146,86 @@ export default function SeasonSettings() {
     }
   };
 
+  const addPlayer = async () => {
+    try {
+      // Reference to the playerStats collection for the season
+      const playerStatsCollectionRef = firestore().collection('seasons').doc(seasonID).collection('playerStats');
+  
+      // Retrieve the document from the playerStats collection
+      const snapshot = await playerStatsCollectionRef.get();
+      if (snapshot.empty) {
+        console.log("No player stats found.");
+        return;
+      }
+  
+      // Assume there's only one document in the collection, grab the first one
+      const playerStatsDoc = snapshot.docs[0];
+      const playerStatsRef = playerStatsCollectionRef.doc(playerStatsDoc.id);
+  
+      // Get the current roster size to determine the new player ID
+      const teamSize = (playerStatsDoc.data().roster || []).length;
+  
+      // New player object with all the required stats
+      const newPlayer = {
+        playerName: newPlayerName,
+        playerNumber: newPlayerNumber,
+        playerID: teamSize + 1,
+        setsWon: 0,
+        setsLost: 0,
+        matchesPlayed: 0,
+        setsPlayed: 0,
+        attempts: 0,
+        kills: 0,
+        attackErrors: 0,
+        assists: 0,
+        assistsPerSet: 0.0,
+        digs: 0,
+        digErrors: 0,
+        digsPerSet: 0,
+        totalBlocks: 0,
+        blockSolos: 0,
+        blockAssists: 0,
+        serviceAces: 0,
+        serviceAttempts: 0,
+        serviceErrors: 0,
+        passingAttempts: 0,
+        handPassingAttempts: 0,
+        forearmPassingAttempts: 0,
+        totalPassValue: 0,
+        totalHandPassValue: 0,
+        totalForearmPassValue: 0,
+        receptionErrors: 0,
+        onePasses: 0,
+        twoPasses: 0,
+        threePasses: 0,
+        pts: 0,
+        ptsPerSet: 0.0
+      };
+  
+      // Update the roster field by adding a new player
+      await playerStatsRef.update({
+        roster: firestore.FieldValue.arrayUnion(newPlayer)
+      });
+  
+      Alert.alert("Success", "Player added successfully!");
+      setAddPlayerModalVisible(false);
+      setNewPlayerName("");
+      setNewPlayerNumber("");
+  
+      // Refresh the player stats
+      const updatedDoc = await playerStatsRef.get();
+      if (updatedDoc.exists) {
+        const stats = updatedDoc.data();
+        setPlayerStats(stats.roster || []);
+      }
+    } catch (error) {
+      console.error("Failed to add player:", error);
+      Alert.alert("Error", "Failed to add player. Please try again.");
+    }
+  };
+  
+  
+
   if (loading || !seasonData) {
     if (loading) {
       return (
@@ -221,16 +301,6 @@ export default function SeasonSettings() {
             </View>
             <View style={styles.divider} />
 
-            {/* Viewers Section */}
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Viewers</Text>
-              {viewers.map((viewer, index) => renderUser({ item: viewer, key: index }))}
-              <TouchableOpacity style={styles.addOwnerButton} onPress={() => setModalVisible(true)}>
-                <Text style={styles.buttonText}>Add Viewer</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.divider} />
-
             {/* Roster Section */}
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>Roster</Text>
@@ -241,7 +311,7 @@ export default function SeasonSettings() {
                 numColumns={3}
                 columnWrapperStyle={styles.columnWrapper}
                 ListFooterComponent={
-                  <TouchableOpacity style={styles.addPlayerButton}>
+                  <TouchableOpacity style={styles.addPlayerButton} onPress={() => setAddPlayerModalVisible(true)}>
                     <Text style={styles.buttonText}>Add Player</Text>
                   </TouchableOpacity>
                 }
@@ -266,7 +336,7 @@ export default function SeasonSettings() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>Enter Email</Text>
+          <Text style={styles.modalText}>Enter Owner's Email</Text>
           <TextInput
             style={styles.input}
             placeholder="Email"
@@ -277,6 +347,36 @@ export default function SeasonSettings() {
             <Text style={styles.buttonText}>Add Editor</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+            <Text style={styles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
+      {/* Modal for Adding Player */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={addPlayerModalVisible}
+        onRequestClose={() => setAddPlayerModalVisible(false)}
+      >
+        <View style={styles.modalView}>
+          <Text style={styles.modalText}>Enter Player Details</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Player Name"
+            value={newPlayerName}
+            onChangeText={setNewPlayerName}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Player Number"
+            value={newPlayerNumber}
+            onChangeText={setNewPlayerNumber}
+          />
+          <TouchableOpacity style={styles.addOwnerModalButton} onPress={addPlayer}>
+            <Text style={styles.buttonText}>Add Player</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.cancelButton} onPress={() => setAddPlayerModalVisible(false)}>
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
         </View>
