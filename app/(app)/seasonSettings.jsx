@@ -24,8 +24,11 @@ export default function SeasonSettings() {
   const [addPlayerModalVisible, setAddPlayerModalVisible] = useState(false);
   const [newPlayerName, setNewPlayerName] = useState("");
   const [newPlayerNumber, setNewPlayerNumber] = useState("");
+  const [addViewerModalVisible, setAddViewerModalVisible] = useState(false);
+  const [newViewerEmail, setNewViewerEmail] = useState("");
   const [owners, setOwners] = useState([]);
   const [editors, setEditors] = useState([]);
+  const [viewers, setViewers] = useState([]);
 
   // Grab all season data
   useEffect(() => {
@@ -39,7 +42,7 @@ export default function SeasonSettings() {
         if (seasonDoc.exists) {
           const data = seasonDoc.data();
           setSeasonData(data);
-          
+
           // get user data
           const fetchUserData = async (userIds) => {
             const users = await Promise.all(
@@ -62,6 +65,10 @@ export default function SeasonSettings() {
             if (data.access.editors && data.access.editors.length > 0) {
               const editorsData = await fetchUserData(data.access.editors);
               setEditors(editorsData);
+            }
+            if (data.access.viewers && data.access.viewers.length > 0) {
+              const viewersData = await fetchUserData(data.access.viewers);
+              setViewers(viewersData);
             }
           }
         } else {
@@ -232,6 +239,52 @@ export default function SeasonSettings() {
     setLoading(false);
   };
 
+  const addViewer = async () => {
+    setLoading(true);
+    try {
+      // Find the user by email in Firestore
+      const userSnapshot = await firestore()
+        .collection('users')
+        .where('email', '==', newViewerEmail)
+        .get();
+
+      if (userSnapshot.empty) {
+        Alert.alert("User not found", "No user found with this email.");
+        setLoading(false);
+        return;
+      }
+
+      const newViewer = userSnapshot.docs[0];
+      const newViewerID = newViewer.id;
+
+      // Add seasonID, teamName, and year to the user's list of accessible seasons in Firestore
+      await firestore()
+        .collection('users')
+        .doc(newViewerID)
+        .update({
+          seasons: firestore.FieldValue.arrayUnion({
+            seasonID: seasonID,
+            teamName: seasonData.teamName,
+            year: seasonData.year
+          })
+        });
+
+      // Update the season document to include the new viewer in the access.viewers field
+      const seasonRef = firestore().collection('seasons').doc(seasonID);
+      await seasonRef.update({
+        [`access.viewers`]: firestore.FieldValue.arrayUnion(newViewerID)
+      });
+
+      Alert.alert("Success", "Viewer added successfully!");
+      setAddViewerModalVisible(false);
+      setNewViewerEmail("");
+    } catch (error) {
+      console.error("Failed to add viewer:", error);
+      Alert.alert("Error", "Failed to add viewer. Please try again.");
+    }
+    setLoading(false);
+  };
+
   if (loading) {
     return (
       <View style={styles.loading}>
@@ -301,6 +354,16 @@ export default function SeasonSettings() {
               {editors.map((editor, index) => renderUser({ item: editor, key: index }))}
               <TouchableOpacity style={styles.addOwnerButton} onPress={() => setModalVisible(true)}>
                 <Text style={styles.buttonText}>Add Editor</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.divider} />
+
+            {/* Viewers Section */}
+            <View style={styles.sectionContainer}>
+              <Text style={styles.sectionTitle}>Viewers</Text>
+              {viewers.map((viewer, index) => renderUser({ item: viewer, key: index }))}
+              <TouchableOpacity style={styles.addOwnerButton} onPress={() => setAddViewerModalVisible(true)}>
+                <Text style={styles.buttonText}>Add Viewer</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.divider} />
@@ -381,6 +444,30 @@ export default function SeasonSettings() {
             <Text style={styles.buttonText}>Add Player</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.cancelButton} onPress={() => setAddPlayerModalVisible(false)}>
+            <Text style={styles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
+      {/* Modal for Adding Viewer */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={addViewerModalVisible}
+        onRequestClose={() => setAddViewerModalVisible(false)}
+      >
+        <View style={styles.modalView}>
+          <Text style={styles.modalText}>Enter Viewer's Email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={newViewerEmail}
+            onChangeText={setNewViewerEmail}
+          />
+          <TouchableOpacity style={styles.addOwnerModalButton} onPress={addViewer}>
+            <Text style={styles.buttonText}>Add Viewer</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.cancelButton} onPress={() => setAddViewerModalVisible(false)}>
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
         </View>
@@ -567,3 +654,4 @@ const styles = StyleSheet.create({
     marginBottom: hp(2),
   },
 });
+
