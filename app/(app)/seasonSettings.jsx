@@ -29,81 +29,84 @@ export default function SeasonSettings() {
 
   // Grab all season data
   useEffect(() => {
-    if (seasonID && user) {
-      const fetchSeasonData = async () => {
-        try {
-          const seasonDoc = await firestore()
-            .collection("seasons")
-            .doc(seasonID)
-            .get();
-          if (seasonDoc.exists) {
-            const data = seasonDoc.data();
-            setSeasonData(data);
-            
-            // get user data
-            const fetchUserData = async (userIds) => {
-              const users = await Promise.all(
-                userIds.map(async (userId) => {
-                  const userDoc = await firestore().collection("users").doc(userId).get();
-                  if (userDoc.exists) {
-                    return { id: userId, ...userDoc.data() };
-                  }
-                  return null;
-                })
-              );
-              return users.filter((user) => user !== null);
-            };
+    const fetchSeasonData = async () => {
+      setLoading(true);
+      try {
+        const seasonDoc = await firestore()
+          .collection("seasons")
+          .doc(seasonID)
+          .get();
+        if (seasonDoc.exists) {
+          const data = seasonDoc.data();
+          setSeasonData(data);
+          
+          // get user data
+          const fetchUserData = async (userIds) => {
+            const users = await Promise.all(
+              userIds.map(async (userId) => {
+                const userDoc = await firestore().collection("users").doc(userId).get();
+                if (userDoc.exists) {
+                  return { id: userId, ...userDoc.data() };
+                }
+                return null;
+              })
+            );
+            return users.filter((user) => user !== null);
+          };
 
-            if (data.access) {
-              if (data.access.owner) {
-                const ownerData = await fetchUserData([data.access.owner]);
-                setOwners(ownerData);
-              }
-              if (data.access.editors && data.access.editors.length > 0) {
-                const editorsData = await fetchUserData(data.access.editors);
-                setEditors(editorsData);
-              }
+          if (data.access) {
+            if (data.access.owner) {
+              const ownerData = await fetchUserData([data.access.owner]);
+              setOwners(ownerData);
             }
-          } else {
-            console.log("No season data found.");
+            if (data.access.editors && data.access.editors.length > 0) {
+              const editorsData = await fetchUserData(data.access.editors);
+              setEditors(editorsData);
+            }
           }
-        } catch (error) {
-          console.error("Failed to fetch season data:", error);
+        } else {
+          console.log("No season data found.");
         }
-        setLoading(false);
-      };
+      } catch (error) {
+        console.error("Failed to fetch season data:", error);
+      }
+      setLoading(false);
+    };
 
+    if (seasonID && user) {
       fetchSeasonData();
     }
   }, [seasonID, user]);
 
   useEffect(() => {
     const fetchPlayerStats = async () => {
-      if (seasonID && user) {
-        try {
-          const playerStatsCollection = firestore()
-            .collection('seasons')
-            .doc(seasonID)
-            .collection('playerStats');
+      setLoading(true);
+      try {
+        const playerStatsCollection = firestore()
+          .collection('seasons')
+          .doc(seasonID)
+          .collection('playerStats');
 
-          const snapshot = await playerStatsCollection.get();
-          const stats = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
+        const snapshot = await playerStatsCollection.get();
+        const stats = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-          setPlayerStats(stats[0]?.roster || []);
-        } catch (error) {
-          console.error('Failed to fetch player stats:', error);
-        }
-        setLoading(false);
+        setPlayerStats(stats[0]?.roster || []);
+      } catch (error) {
+        console.error('Failed to fetch player stats:', error);
       }
+      setLoading(false);
     };
 
-    fetchPlayerStats();
+    if (seasonID && user) {
+      fetchPlayerStats();
+    }
   }, [seasonID, user]);
 
   const addOwner = async () => {
+    setLoading(true);
     try {
       // Find the user by email in Firestore
       const userSnapshot = await firestore()
@@ -113,6 +116,7 @@ export default function SeasonSettings() {
 
       if (userSnapshot.empty) {
         Alert.alert("User not found", "No user found with this email.");
+        setLoading(false);
         return;
       }
 
@@ -144,27 +148,30 @@ export default function SeasonSettings() {
       console.error("Failed to add owner:", error);
       Alert.alert("Error", "Failed to add owner. Please try again.");
     }
+    setLoading(false);
   };
 
   const addPlayer = async () => {
+    setLoading(true);
     try {
       // Reference to the playerStats collection for the season
       const playerStatsCollectionRef = firestore().collection('seasons').doc(seasonID).collection('playerStats');
-  
+
       // Retrieve the document from the playerStats collection
       const snapshot = await playerStatsCollectionRef.get();
       if (snapshot.empty) {
         console.log("No player stats found.");
+        setLoading(false);
         return;
       }
-  
+
       // Assume there's only one document in the collection, grab the first one
       const playerStatsDoc = snapshot.docs[0];
       const playerStatsRef = playerStatsCollectionRef.doc(playerStatsDoc.id);
-  
+
       // Get the current roster size to determine the new player ID
       const teamSize = (playerStatsDoc.data().roster || []).length;
-  
+
       // New player object with all the required stats
       const newPlayer = {
         playerName: newPlayerName,
@@ -201,17 +208,17 @@ export default function SeasonSettings() {
         pts: 0,
         ptsPerSet: 0.0
       };
-  
+
       // Update the roster field by adding a new player
       await playerStatsRef.update({
         roster: firestore.FieldValue.arrayUnion(newPlayer)
       });
-  
+
       Alert.alert("Success", "Player added successfully!");
       setAddPlayerModalVisible(false);
       setNewPlayerName("");
       setNewPlayerNumber("");
-  
+
       // Refresh the player stats
       const updatedDoc = await playerStatsRef.get();
       if (updatedDoc.exists) {
@@ -222,18 +229,15 @@ export default function SeasonSettings() {
       console.error("Failed to add player:", error);
       Alert.alert("Error", "Failed to add player. Please try again.");
     }
+    setLoading(false);
   };
-  
-  
 
-  if (loading || !seasonData) {
-    if (loading) {
-      return (
-        <View style={styles.loading}>
-          <Loading size={hp(10)} />
-        </View>
-      );
-    }
+  if (loading) {
+    return (
+      <View style={styles.loading}>
+        <Loading size={hp(10)} />
+      </View>
+    );
   }
 
   const renderUser = ({ item }) => (
@@ -563,5 +567,3 @@ const styles = StyleSheet.create({
     marginBottom: hp(2),
   },
 });
-
-
