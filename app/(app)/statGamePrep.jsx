@@ -126,26 +126,21 @@ export default function statGamePrep() {
 
   const handleIncrementSetsPlayed = () => {
     //Find all of the starting players and then increment their sets played by 1
-    const updatedRoster = localRoster.map((player) => {
+    for (let index = 0; index < localRoster.length; index++) {
       if (
-        player.playerNumber === positionOne ||
-        player.playerNumber === positionTwo ||
-        player.playerNumber === positionThree ||
-        player.playerNumber === positionFour ||
-        player.playerNumber === positionFive ||
-        player.playerNumber === positionSix ||
-        player.playerNumber === firstLibero ||
-        player.playerNumber === secondLibero
+        localRoster[index].playerNumber === positionOne ||
+        localRoster[index].playerNumber === positionTwo ||
+        localRoster[index].playerNumber === positionThree ||
+        localRoster[index].playerNumber === positionFour ||
+        localRoster[index].playerNumber === positionFive ||
+        localRoster[index].playerNumber === positionSix ||
+        localRoster[index].playerNumber === firstLibero ||
+        localRoster[index].playerNumber === secondLibero
       ) {
-        return {
-          ...player,
-          setsPlayed: player.setsPlayed + 1,
-          firstTimeOnCourt: false,
-        };
+        localRoster[index].setsPlayed += 1;
+        localRoster[index].firstTimeOnCourt = false;
       }
-      return player; // Return the player object unchanged
-    });
-    setRosterStats(updatedRoster); // Update the roster state with the new array
+    }
   };
 
   return (
