@@ -13,7 +13,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome6 } from "@expo/vector-icons";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "react-native-modal";
 import { Dropdown } from "react-native-element-dropdown";
 import {
@@ -52,7 +52,7 @@ export default function statGame() {
   const [serverTracker, setServerTracker] = useState("Opponent");
 
   //Keeps the state of the previous serve for undo functionality
-  const [prevServerTracker, setPrevServerTracker] = useState(null);
+  const [prevServerTracker, setPrevServerTracker] = useState(serverTracker);
 
   //State Hook for the stat Stack
   const [statStack, setStatStack] = useState([]);
@@ -90,8 +90,6 @@ export default function statGame() {
 
   const [onCourtPositionSix, setOnCourtPositionSix] = useState(positionSix);
   const [onCourtPositionSixSub, setOnCourtPositionSixSub] = useState(null);
-
-  const [startOfSet, setStartOfSet] = useState(true);
 
   //Function that rotates the players on the court
   const handleRotation = () => {
@@ -456,8 +454,8 @@ export default function statGame() {
   //rosterStats variable contains all of the player stats for the current game
   const [rosterStats, setRosterStats] = useState(testingRoster);
 
-  const [homeScore, setHomeScore] = useState(20);
-  const [opponentScore, setOpponentScore] = useState(20);
+  const [homeScore, setHomeScore] = useState(0);
+  const [opponentScore, setOpponentScore] = useState(0);
 
   const [setScores, setSetScores] = useState([]);
 
@@ -1592,7 +1590,7 @@ export default function statGame() {
     });
   };
 
-  const handleSetsPlayed = () => {
+  const handleStartersSetsPlayed = () => {
     //Find all of the starting players and then increment their sets played by 1
     const updatedRoster = rosterStats.map((player) => {
       if (
@@ -1613,7 +1611,17 @@ export default function statGame() {
       }
       return player; // Return the player object unchanged
     });
-    setStartOfSet(false);
+    setRosterStats(updatedRoster); // Update the roster state with the new array
+  };
+
+  //Function that resets all of the players currently on court to ensure sets played works properly
+  const resetFirstTimeOnCourt = () => {
+    const updatedRoster = rosterStats.map((player) => {
+      return {
+        ...player,
+        firstTimeOnCourt: true,
+      };
+    });
     setRosterStats(updatedRoster); // Update the roster state with the new array
   };
 
@@ -1978,6 +1986,17 @@ export default function statGame() {
               <View style={styles.liveStatsModalHeader2}>
                 <Text style={styles.liveStatsModalHeaderText}>Live Stats</Text>
               </View>
+              {setScores.length > 0 ? (
+                <View style={styles.liveStatsModalHeader2}>
+                  <Text style={styles.liveStatsModalScoreText}>
+                    {setScores.map((score) => {
+                      return <Text> {score} </Text>;
+                    })}
+                  </Text>
+                </View>
+              ) : (
+                <View />
+              )}
               <View style={styles.liveStatsModalBody}>
                 <View style={styles.liveStatsTitleRow}>
                   <View style={styles.liveStatsStatHeader}>
@@ -2604,12 +2623,74 @@ export default function statGame() {
     );
   };
 
-  //TODO: Add a state hook that holds the current score cap value
-  if (
-    (homeScore > 24 && homeScore - opponentScore > 1) ||
-    (opponentScore > 24 && opponentScore - homeScore > 1)
-  ) {
-    //TODO: setServerTracker() to not first set serve
+  //Function that handles the end of a set
+  const endSet = () => {
+    if (
+      (homeScore > 24 && homeScore - opponentScore > 1) ||
+      (opponentScore > 24 && opponentScore - homeScore > 1)
+    ) {
+      // Update server trackers if the set ends
+      if (prevServerTracker === "Opponent") {
+        setServerTracker("Home");
+        setPrevServerTracker("Home");
+      } else {
+        setServerTracker("Opponent");
+        setPrevServerTracker("Opponent");
+      }
+
+      //Determine if the set was won
+      if (homeScore > opponentScore) {
+        setTeamStats((prev) => {
+          return {
+            ...prev,
+            teamSetsWon: prev.teamSetsWon + 1,
+            teamSetsPlayed: prev.teamSetsPlayed + 1,
+          };
+        });
+      } else {
+        setTeamStats((prev) => {
+          return {
+            ...prev,
+            teamSetsWon: prev.teamSetsLost + 1,
+            teamSetsPlayed: prev.teamSetsPlayed + 1,
+          };
+        });
+      }
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const [endSetState, setEndSetState] = useState(false);
+
+  // Effect to check and end the set
+  useEffect(() => {
+    if (endSet()) {
+      //set End Set to true -> allowing the inBetweenSet screen to be displayed
+      setEndSetState(true);
+
+      // Format scores as a string "homeScore-opponentScore"
+      const scoreString = `${homeScore}-${opponentScore}`;
+      // Record the completed set's scores as a string
+      setSetScores((prevSetScores) => [...prevSetScores, scoreString]);
+
+      //Reset Home and Opponent Scores
+      setHomeScore(0);
+      setOpponentScore(0);
+
+      //Increment current set
+      setCurrentSet(currentSet + 1);
+
+      //Reset stat Stack
+      setStatStack([]);
+
+      //Reset firstTimeOnCourt field for all players
+      resetFirstTimeOnCourt();
+    }
+  }, [homeScore, opponentScore, prevServerTracker]); // Dependencies to track changes in scores
+
+  if (endSetState === true) {
     return (
       <SafeView style={styles.container}>
         <View style={styles.inBetweenHeaderContainer}>
@@ -2638,17 +2719,13 @@ export default function statGame() {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              setStatStack([]);
-              setHomeScore(0);
-              setOpponentScore(0);
-              setCurrentSet(currentSet + 1);
+              setEndSetState(false);
 
               //TODOs:
-              //reset firstTimeOnCourts for players
               //Reset onCourtPositionValues and subs to reaspect positions
-              //Save set scores -> Increment sets won/sets lost
               //Input validation, ensure rotation is proper ->
-              //Increment sets played for starters and libs
+
+              handleStartersSetsPlayed();
               setUndoAvailable(false);
             }}
           >
@@ -2668,13 +2745,13 @@ export default function statGame() {
         </View>
         <LiveStatsModel />
         <View style={styles.inBetweenTitleContainer}>
-          <Text style={styles.inBetweenTitleText}>Set {currentSet + 1}</Text>
+          <Text style={styles.inBetweenTitleText}>Set {currentSet}</Text>
         </View>
         <View style={styles.inBetweenSeperator} />
         <ScrollView>
           <View style={styles.inBetweenSecondaryTitleContainer}>
             <Text style={styles.inBetweenSecondaryTitleText}>
-              Set {currentSet + 1} First Serve:{" "}
+              Set {currentSet} First Serve:{" "}
             </Text>
           </View>
           <View style={styles.radioContainer}>
@@ -3428,6 +3505,7 @@ export default function statGame() {
                       {/* TODO: Input validation to keep player name less that 15 chars */}
                       <Text style={styles.playerNameText}>
                         {player.playerName}
+                        {player.setsPlayed}
                       </Text>
                     </View>
                     <View style={styles.widthSpacer1} />
@@ -4850,6 +4928,9 @@ const styles = StyleSheet.create({
   liveStatsModalHeaderText: {
     fontSize: RFValue(14),
     fontWeight: "bold",
+  },
+  liveStatsModalScoreText: {
+    fontSize: RFValue(10),
   },
 
   liveStatsModalSecondaryText: {
