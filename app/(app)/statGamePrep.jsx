@@ -14,7 +14,6 @@ import { useState } from "react";
 import { RadioButton } from "react-native-paper";
 import { Dropdown } from "react-native-element-dropdown";
 import {
-  MenuProvider,
   Menu,
   MenuOptions,
   MenuOption,
@@ -108,6 +107,7 @@ export default function statGamePrep() {
       threePasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
+      firstTimeOnCourt: true,
     });
   }
 
@@ -124,572 +124,592 @@ export default function statGamePrep() {
     ]);
   };
 
+  const handleIncrementSetsPlayed = () => {
+    //Find all of the starting players and then increment their sets played by 1
+    for (let index = 0; index < localRoster.length; index++) {
+      if (
+        localRoster[index].playerNumber === positionOne ||
+        localRoster[index].playerNumber === positionTwo ||
+        localRoster[index].playerNumber === positionThree ||
+        localRoster[index].playerNumber === positionFour ||
+        localRoster[index].playerNumber === positionFive ||
+        localRoster[index].playerNumber === positionSix ||
+        localRoster[index].playerNumber === firstLibero ||
+        localRoster[index].playerNumber === secondLibero
+      ) {
+        localRoster[index].setsPlayed += 1;
+        localRoster[index].firstTimeOnCourt = false;
+      }
+    }
+  };
+
   return (
-      <SafeView style={styles.container}>
-        <View style={styles.backContainer}>
-          <TouchableOpacity onPress={cancelAlert}>
-            <View style={styles.headerBtn}>
-              <AntDesign
-                style={styles.backIcon}
-                name="left"
-                size={hp(3.7)}
-                color={COLORS.white}
+    <SafeView style={styles.container}>
+      <View style={styles.backContainer}>
+        <TouchableOpacity onPress={cancelAlert}>
+          <View style={styles.headerBtn}>
+            <AntDesign
+              style={styles.backIcon}
+              name="left"
+              size={hp(3.7)}
+              color={COLORS.white}
+            />
+            <Text style={styles.headerBtnText}>CANCEL</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>New Game</Text>
+      </View>
+      <View style={styles.seperator} />
+      <ScrollView>
+        <View style={styles.spacer} />
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>View: </Text>
+          <View style={styles.popUpContainer}>
+            <Menu>
+              <MenuTrigger>
+                <AntDesign
+                  style={styles.questionIcon}
+                  name="questioncircleo"
+                  size={hp(4)}
+                  color={COLORS.black}
+                />
+              </MenuTrigger>
+              <MenuOptions>
+                <MenuOption>
+                  <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+                    List View
+                  </Text>
+                  <Text style={{ color: COLORS.primary }}>
+                    Players will be orientated in a vertical list.{" "}
+                  </Text>
+                </MenuOption>
+                <MenuOption>
+                  <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+                    Rotation View
+                  </Text>
+                  <Text style={{ color: COLORS.primary }}>
+                    Players will be directly shown where they are on the court.{" "}
+                  </Text>
+                </MenuOption>
+              </MenuOptions>
+            </Menu>
+          </View>
+        </View>
+        <View style={styles.radioContainer}>
+          <View style={styles.radioGroup}>
+            <View style={styles.radioButton}>
+              <RadioButton
+                value="List View"
+                status={selectedView === "List View" ? "checked" : "unchecked"}
+                onPress={() => setSelectedView("List View")}
+                color={COLORS.primary}
               />
-              <Text style={styles.headerBtnText}>CANCEL</Text>
+              <Text style={styles.radioLabel}>List View </Text>
+            </View>
+            <View style={styles.radioButton}>
+              <RadioButton
+                // Disabled until feature can be developed
+                disabled={true}
+                value="Rotation View"
+                status={
+                  selectedView === "Rotation View" ? "checked" : "unchecked"
+                }
+                onPress={() => setSelectedView("Rotation View")}
+                color={COLORS.primary}
+              />
+              <Text style={styles.radioLabel}>Rotation View </Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>Game Type: </Text>
+          <View style={styles.popUpContainer}>
+            <Menu>
+              <MenuTrigger>
+                <AntDesign
+                  style={styles.questionIcon}
+                  name="questioncircleo"
+                  size={hp(4)}
+                  color={COLORS.black}
+                />
+              </MenuTrigger>
+              <MenuOptions>
+                <MenuOption>
+                  <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+                    Game
+                  </Text>
+                  <Text style={{ color: COLORS.primary }}>
+                    Recorded stats will count towards season stats.{" "}
+                  </Text>
+                </MenuOption>
+                <MenuOption>
+                  <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+                    Scrimmage
+                  </Text>
+                  <Text style={{ color: COLORS.primary }}>
+                    Recorded stats will not count towards season stats but will
+                    be saved as a game.{" "}
+                  </Text>
+                </MenuOption>
+                <MenuOption>
+                  <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+                    Practice
+                  </Text>
+                  <Text style={{ color: COLORS.primary }}>
+                    Recorded stats will not count towards season stats and will
+                    be saved as a practice.{" "}
+                  </Text>
+                </MenuOption>
+              </MenuOptions>
+            </Menu>
+          </View>
+        </View>
+        <View style={styles.radioContainer}>
+          <View style={styles.radioGroup}>
+            <View style={styles.radioButton}>
+              <RadioButton
+                value="Game"
+                status={selectedGameType === "Game" ? "checked" : "unchecked"}
+                onPress={() => setSelectedGameType("Game")}
+                color={COLORS.primary}
+              />
+              <Text style={styles.radioLabel}>Game</Text>
+            </View>
+            <View style={styles.radioButton}>
+              <RadioButton
+                value="Scrimmage"
+                status={
+                  selectedGameType === "Scrimmage" ? "checked" : "unchecked"
+                }
+                onPress={() => setSelectedGameType("Scrimmage")}
+                color={COLORS.primary}
+              />
+              <Text style={styles.radioLabel}>Scrimmage</Text>
+            </View>
+            <View style={styles.radioButton}>
+              <RadioButton
+                value="Practice"
+                status={
+                  selectedGameType === "Practice" ? "checked" : "unchecked"
+                }
+                onPress={() => setSelectedGameType("Practice")}
+                color={COLORS.primary}
+              />
+              <Text style={styles.radioLabel}>Practice </Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>Sets: </Text>
+          <View style={styles.popUpContainer}>
+            <Menu>
+              <MenuTrigger>
+                <AntDesign
+                  style={styles.questionIcon}
+                  name="questioncircleo"
+                  size={hp(4)}
+                  color={COLORS.black}
+                />
+              </MenuTrigger>
+              <MenuOptions>
+                <MenuOption>
+                  <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+                    Sets Being Played
+                  </Text>
+                  <Text style={{ color: COLORS.primary }}>
+                    Best of 3 sets (3rd to 15).{" "}
+                  </Text>
+                  <Text style={{ color: COLORS.primary }}>
+                    Best of 5 sets (5th to 15).{" "}
+                  </Text>
+                  <Text style={{ color: COLORS.primary }}>
+                    Select 1 to 5 sets, all to 25 points.{" "}
+                  </Text>
+                </MenuOption>
+              </MenuOptions>
+            </Menu>
+          </View>
+        </View>
+        <View style={styles.radioContainer}>
+          <View style={styles.setSelectionSlot}>
+            <Dropdown
+              style={styles.setSelectionDropDown}
+              placeholderStyle={styles.setSelectionPlaceHolderDropDown}
+              selectedTextStyle={styles.selectedDropDownText}
+              itemTextStyle={styles.dropDownText}
+              data={setSelectionList}
+              search={false}
+              maxHeight={300}
+              labelField="value"
+              valueField="key"
+              placeholder={"Select Sets Being Played"}
+              activeColor={COLORS.grey}
+              dropdownPosition="auto"
+              value={selectedSets}
+              onChange={(val) => setSelectedSets(val.key)}
+            />
+          </View>
+        </View>
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>Opponent:</Text>
+        </View>
+        <View style={styles.inputContainer}>
+          <View style={styles.input}>
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="default"
+              maxLength={18}
+              onChangeText={(value) => setSelectedOpponent(value)}
+              placeholder="Opponent... "
+              style={styles.inputText}
+              onFocus={this.onFocus}
+            />
+          </View>
+        </View>
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>Location:</Text>
+        </View>
+        <View style={styles.inputContainer}>
+          <View style={styles.input}>
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="default"
+              maxLength={18}
+              onChangeText={(value) => setSelectedLocation(value)}
+              placeholder="Location... "
+              style={styles.inputText}
+              onFocus={this.onFocus}
+            />
+          </View>
+        </View>
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>First Serve: </Text>
+          <View style={styles.popUpContainer}>
+            <Menu>
+              <MenuTrigger>
+                <AntDesign
+                  style={styles.questionIcon}
+                  name="questioncircleo"
+                  size={hp(4)}
+                  color={COLORS.black}
+                />
+              </MenuTrigger>
+              <MenuOptions>
+                <MenuOption>
+                  <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+                    First Serve
+                  </Text>
+                  <Text style={{ color: COLORS.primary }}>
+                    Select which team will serve first.
+                  </Text>
+                </MenuOption>
+              </MenuOptions>
+            </Menu>
+          </View>
+        </View>
+        <View style={styles.radioContainer}>
+          <View style={styles.radioGroup}>
+            <View style={styles.radioButton}>
+              <RadioButton
+                value={currentLocalTeamName}
+                status={
+                  selectedFirstServe === currentLocalTeamName
+                    ? "checked"
+                    : "unchecked"
+                }
+                onPress={() => setSelectedFirstServe(currentLocalTeamName)}
+                color={COLORS.primary}
+              />
+              <Text style={styles.radioLabel}>{currentLocalTeamName}</Text>
+            </View>
+            <View style={styles.radioButton}>
+              <RadioButton
+                value="Opponent"
+                status={
+                  selectedFirstServe === "Opponent" ? "checked" : "unchecked"
+                }
+                onPress={() => setSelectedFirstServe("Opponent")}
+                color={COLORS.primary}
+              />
+              <Text style={styles.radioLabel}>Opponent</Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>Rotation: </Text>
+          <View style={styles.popUpContainer}>
+            <Menu>
+              <MenuTrigger>
+                <AntDesign
+                  style={styles.questionIcon}
+                  name="questioncircleo"
+                  size={hp(4)}
+                  color={COLORS.black}
+                />
+              </MenuTrigger>
+              <MenuOptions>
+                <MenuOption>
+                  <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+                    First Set Line-Up
+                  </Text>
+                  <Text style={{ color: COLORS.primary }}>
+                    Place each player into their corresponding spot on the
+                    court.{" "}
+                  </Text>
+                  <Text style={{ color: COLORS.primary }}>
+                    Service from Position 1.{" "}
+                  </Text>
+                  <Text style={{ color: COLORS.primary }}>
+                    Select an on court setter. Team specific stats will be
+                    dictated by the rotaion that this player is in.{" "}
+                  </Text>
+                </MenuOption>
+              </MenuOptions>
+            </Menu>
+          </View>
+        </View>
+        <View style={styles.court}>
+          <View style={styles.netIndicator} />
+          <View style={styles.courtRow}>
+            <View style={styles.courtPosition}>
+              <Dropdown
+                style={styles.courtdropdown}
+                placeholderStyle={styles.placeholderDropDown}
+                selectedTextStyle={styles.selectedDropDownText}
+                itemTextStyle={styles.dropDownText}
+                data={dropDownRosterList}
+                search={false}
+                maxHeight={300}
+                labelField="value"
+                activeColor={COLORS.grey}
+                valueField="playerNumber"
+                placeholder={"Position 4"}
+                value={positionFour}
+                onChange={(val) => setPositionFour(val.playerNumber)}
+              />
+            </View>
+            <View style={styles.courtPosition}>
+              <Dropdown
+                style={styles.courtdropdown}
+                placeholderStyle={styles.placeholderDropDown}
+                selectedTextStyle={styles.selectedDropDownText}
+                itemTextStyle={styles.dropDownText}
+                data={dropDownRosterList}
+                search={false}
+                maxHeight={300}
+                activeColor={COLORS.grey}
+                labelField="value"
+                valueField="playerNumber"
+                placeholder={"Position 3"}
+                value={positionThree}
+                onChange={(val) => setPositionThree(val.playerNumber)}
+              />
+            </View>
+            <View style={styles.courtPosition}>
+              <Dropdown
+                style={styles.courtdropdown}
+                placeholderStyle={styles.placeholderDropDown}
+                selectedTextStyle={styles.selectedDropDownText}
+                itemTextStyle={styles.dropDownText}
+                data={dropDownRosterList}
+                search={false}
+                maxHeight={300}
+                labelField="value"
+                activeColor={COLORS.grey}
+                valueField="playerNumber"
+                placeholder={"Position 2"}
+                value={positionTwo}
+                onChange={(val) => {
+                  setPositionTwo(val.playerNumber);
+                }}
+              />
+            </View>
+          </View>
+          <View style={styles.courtRow}>
+            <View style={styles.courtPosition}>
+              <Dropdown
+                style={styles.courtdropdown}
+                placeholderStyle={styles.placeholderDropDown}
+                selectedTextStyle={styles.selectedDropDownText}
+                itemTextStyle={styles.dropDownText}
+                data={dropDownRosterList}
+                search={false}
+                maxHeight={300}
+                labelField="value"
+                activeColor={COLORS.grey}
+                valueField="playerNumber"
+                placeholder={"Position 5"}
+                value={positionFive}
+                onChange={(val) => setPositionFive(val.playerNumber)}
+              />
+            </View>
+            <View style={styles.courtPosition}>
+              <Dropdown
+                style={styles.courtdropdown}
+                placeholderStyle={styles.placeholderDropDown}
+                selectedTextStyle={styles.selectedDropDownText}
+                itemTextStyle={styles.dropDownText}
+                data={dropDownRosterList}
+                search={false}
+                maxHeight={300}
+                labelField="value"
+                valueField="playerNumber"
+                activeColor={COLORS.grey}
+                placeholder={"Position 6"}
+                value={positionSix}
+                onChange={(val) => setPositionSix(val.playerNumber)}
+              />
+            </View>
+            <View style={styles.courtPosition}>
+              <Dropdown
+                style={styles.courtdropdown}
+                placeholderStyle={styles.placeholderDropDown}
+                selectedTextStyle={styles.selectedDropDownText}
+                itemTextStyle={styles.dropDownText}
+                data={dropDownRosterList}
+                search={false}
+                maxHeight={300}
+                labelField="value"
+                activeColor={COLORS.grey}
+                valueField="playerNumber"
+                placeholder={"Position 1"}
+                value={positionOne}
+                onChange={(val) => setPositionOne(val.playerNumber)}
+              />
+            </View>
+          </View>
+        </View>
+        <View style={styles.setterContainer}>
+          <Text style={styles.setterTitleText}>On Court Setter: </Text>
+          <View style={styles.setterSlot}>
+            <Dropdown
+              style={styles.setterDropDown}
+              placeholderStyle={styles.setterPlaceHolderDropDown}
+              selectedTextStyle={styles.selectedDropDownText}
+              itemTextStyle={styles.dropDownText}
+              //TODO: Ensure selection is only from on court players
+              data={dropDownRosterList}
+              search={false}
+              maxHeight={300}
+              labelField="value"
+              valueField="playerNumber"
+              placeholder={"Select Setter"}
+              activeColor={COLORS.grey}
+              dropdownPosition="auto"
+              value={setter}
+              onChange={(val) => setSetter(val.playerNumber)}
+            />
+          </View>
+        </View>
+        <View style={styles.secondaryTitleContainer}>
+          <Text style={styles.secondaryTitleText}>Libero(s): </Text>
+          <View style={styles.popUpContainer}>
+            <Menu>
+              <MenuTrigger>
+                <AntDesign
+                  style={styles.questionIcon}
+                  name="questioncircleo"
+                  size={hp(4)}
+                  color={COLORS.black}
+                />
+              </MenuTrigger>
+              <MenuOptions>
+                <MenuOption>
+                  <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+                    Liberos
+                  </Text>
+                  <Text style={{ color: COLORS.primary }}>
+                    Select 1, 2, or no Liberos for the first set.{" "}
+                  </Text>
+                  <Text style={{ color: COLORS.primary }}>
+                    Liberos cannot be changed during the set.{" "}
+                  </Text>
+                </MenuOption>
+              </MenuOptions>
+            </Menu>
+          </View>
+        </View>
+        <View style={styles.liberoContainer}>
+          <View style={styles.liberoSlot}>
+            <Dropdown
+              style={styles.liberoDropDown}
+              placeholderStyle={styles.placeholderDropDown}
+              selectedTextStyle={styles.selectedDropDownText}
+              itemTextStyle={styles.dropDownText}
+              data={dropDownRosterList}
+              search={false}
+              maxHeight={300}
+              labelField="value"
+              valueField="playerNumber"
+              placeholder={"Optional"}
+              activeColor={COLORS.grey}
+              dropdownPosition="top"
+              value={firstLibero}
+              onChange={(val) => setFirstLibero(val.playerNumber)}
+            />
+          </View>
+          <View style={styles.liberoSlot}>
+            <Dropdown
+              style={styles.liberoDropDown}
+              placeholderStyle={styles.placeholderDropDown}
+              selectedTextStyle={styles.selectedDropDownText}
+              itemTextStyle={styles.dropDownText}
+              data={dropDownRosterList}
+              search={false}
+              maxHeight={300}
+              labelField="value"
+              valueField="playerNumber"
+              placeholder={"Optional"}
+              activeColor={COLORS.grey}
+              dropdownPosition="top"
+              value={secondLibero}
+              onChange={(val) => setSecondLibero(val.playerNumber)}
+            />
+          </View>
+        </View>
+        <View style={styles.confirmContainer}>
+          <TouchableOpacity
+            onPress={() => {
+              //TODO: Input validation
+
+              //Increment sets played for all players on court + libs
+              handleIncrementSetsPlayed();
+
+              router.push({
+                pathname: "statGame",
+                params: {
+                  currentLocalRoster: JSON.stringify(localRoster),
+                  view: selectedView,
+                  gameType: selectedGameType,
+                  firstServe: selectedFirstServe,
+                  location: selectedLocation,
+                  opponent: selectedOpponent,
+                  setsBeingPlayed: selectedSets,
+                  pOne: positionOne,
+                  pTwo: positionTwo,
+                  pThree: positionThree,
+                  pFour: positionFour,
+                  pFive: positionFive,
+                  pSix: positionSix,
+                  firstL: firstLibero,
+                  secondL: secondLibero,
+                  onCourtSetter: setter,
+                },
+              });
+            }}
+          >
+            <View style={styles.confirmBtn}>
+              <Text style={styles.confirmBtnText}> START </Text>
             </View>
           </TouchableOpacity>
         </View>
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>New Game</Text>
-        </View>
-        <View style={styles.seperator} />
-        <ScrollView>
-          <View style={styles.spacer} />
-          <View style={styles.secondaryTitleContainer}>
-            <Text style={styles.secondaryTitleText}>View: </Text>
-            <View style={styles.popUpContainer}>
-              <Menu>
-                <MenuTrigger>
-                  <AntDesign
-                    style={styles.questionIcon}
-                    name="questioncircleo"
-                    size={hp(4)}
-                    color={COLORS.black}
-                  />
-                </MenuTrigger>
-                <MenuOptions>
-                  <MenuOption>
-                    <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
-                      List View
-                    </Text>
-                    <Text style={{ color: COLORS.primary }}>
-                      Players will be orientated in a vertical list.{" "}
-                    </Text>
-                  </MenuOption>
-                  <MenuOption>
-                    <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
-                      Rotation View
-                    </Text>
-                    <Text style={{ color: COLORS.primary }}>
-                      Players will be directly shown where they are on the
-                      court.{" "}
-                    </Text>
-                  </MenuOption>
-                </MenuOptions>
-              </Menu>
-            </View>
-          </View>
-          <View style={styles.radioContainer}>
-            <View style={styles.radioGroup}>
-              <View style={styles.radioButton}>
-                <RadioButton
-                  value="List View"
-                  status={
-                    selectedView === "List View" ? "checked" : "unchecked"
-                  }
-                  onPress={() => setSelectedView("List View")}
-                  color={COLORS.primary}
-                />
-                <Text style={styles.radioLabel}>List View </Text>
-              </View>
-              <View style={styles.radioButton}>
-                <RadioButton
-                  // Disabled until feature can be developed
-                  disabled={true}
-                  value="Rotation View"
-                  status={
-                    selectedView === "Rotation View" ? "checked" : "unchecked"
-                  }
-                  onPress={() => setSelectedView("Rotation View")}
-                  color={COLORS.primary}
-                />
-                <Text style={styles.radioLabel}>Rotation View </Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.secondaryTitleContainer}>
-            <Text style={styles.secondaryTitleText}>Game Type: </Text>
-            <View style={styles.popUpContainer}>
-              <Menu>
-                <MenuTrigger>
-                  <AntDesign
-                    style={styles.questionIcon}
-                    name="questioncircleo"
-                    size={hp(4)}
-                    color={COLORS.black}
-                  />
-                </MenuTrigger>
-                <MenuOptions>
-                  <MenuOption>
-                    <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
-                      Game
-                    </Text>
-                    <Text style={{ color: COLORS.primary }}>
-                      Recorded stats will count towards season stats.{" "}
-                    </Text>
-                  </MenuOption>
-                  <MenuOption>
-                    <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
-                      Scrimmage
-                    </Text>
-                    <Text style={{ color: COLORS.primary }}>
-                      Recorded stats will not count towards season stats but
-                      will be saved as a game.{" "}
-                    </Text>
-                  </MenuOption>
-                  <MenuOption>
-                    <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
-                      Practice
-                    </Text>
-                    <Text style={{ color: COLORS.primary }}>
-                      Recorded stats will not count towards season stats and
-                      will be saved as a practice.{" "}
-                    </Text>
-                  </MenuOption>
-                </MenuOptions>
-              </Menu>
-            </View>
-          </View>
-          <View style={styles.radioContainer}>
-            <View style={styles.radioGroup}>
-              <View style={styles.radioButton}>
-                <RadioButton
-                  value="Game"
-                  status={selectedGameType === "Game" ? "checked" : "unchecked"}
-                  onPress={() => setSelectedGameType("Game")}
-                  color={COLORS.primary}
-                />
-                <Text style={styles.radioLabel}>Game</Text>
-              </View>
-              <View style={styles.radioButton}>
-                <RadioButton
-                  value="Scrimmage"
-                  status={
-                    selectedGameType === "Scrimmage" ? "checked" : "unchecked"
-                  }
-                  onPress={() => setSelectedGameType("Scrimmage")}
-                  color={COLORS.primary}
-                />
-                <Text style={styles.radioLabel}>Scrimmage</Text>
-              </View>
-              <View style={styles.radioButton}>
-                <RadioButton
-                  value="Practice"
-                  status={
-                    selectedGameType === "Practice" ? "checked" : "unchecked"
-                  }
-                  onPress={() => setSelectedGameType("Practice")}
-                  color={COLORS.primary}
-                />
-                <Text style={styles.radioLabel}>Practice </Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.secondaryTitleContainer}>
-            <Text style={styles.secondaryTitleText}>Sets: </Text>
-            <View style={styles.popUpContainer}>
-              <Menu>
-                <MenuTrigger>
-                  <AntDesign
-                    style={styles.questionIcon}
-                    name="questioncircleo"
-                    size={hp(4)}
-                    color={COLORS.black}
-                  />
-                </MenuTrigger>
-                <MenuOptions>
-                  <MenuOption>
-                    <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
-                      Sets Being Played
-                    </Text>
-                    <Text style={{ color: COLORS.primary }}>
-                      Best of 3 sets (3rd to 15).{" "}
-                    </Text>
-                    <Text style={{ color: COLORS.primary }}>
-                      Best of 5 sets (5th to 15).{" "}
-                    </Text>
-                    <Text style={{ color: COLORS.primary }}>
-                      Select 1 to 5 sets, all to 25 points.{" "}
-                    </Text>
-                  </MenuOption>
-                </MenuOptions>
-              </Menu>
-            </View>
-          </View>
-          <View style={styles.radioContainer}>
-            <View style={styles.setSelectionSlot}>
-              <Dropdown
-                style={styles.setSelectionDropDown}
-                placeholderStyle={styles.setSelectionPlaceHolderDropDown}
-                selectedTextStyle={styles.selectedDropDownText}
-                itemTextStyle={styles.dropDownText}
-                data={setSelectionList}
-                search={false}
-                maxHeight={300}
-                labelField="value"
-                valueField="key"
-                placeholder={"Select Sets Being Played"}
-                activeColor={COLORS.grey}
-                dropdownPosition="auto"
-                value={selectedSets}
-                onChange={(val) => setSelectedSets(val.key)}
-              />
-            </View>
-          </View>
-          <View style={styles.secondaryTitleContainer}>
-            <Text style={styles.secondaryTitleText}>Opponent:</Text>
-          </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.input}>
-              <TextInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="default"
-                maxLength={18}
-                onChangeText={(value) => setSelectedOpponent(value)}
-                placeholder="Opponent... "
-                style={styles.inputText}
-                onFocus={this.onFocus}
-              />
-            </View>
-          </View>
-          <View style={styles.secondaryTitleContainer}>
-            <Text style={styles.secondaryTitleText}>Location:</Text>
-          </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.input}>
-              <TextInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="default"
-                maxLength={18}
-                onChangeText={(value) => setSelectedLocation(value)}
-                placeholder="Location... "
-                style={styles.inputText}
-                onFocus={this.onFocus}
-              />
-            </View>
-          </View>
-          <View style={styles.secondaryTitleContainer}>
-            <Text style={styles.secondaryTitleText}>First Serve: </Text>
-            <View style={styles.popUpContainer}>
-              <Menu>
-                <MenuTrigger>
-                  <AntDesign
-                    style={styles.questionIcon}
-                    name="questioncircleo"
-                    size={hp(4)}
-                    color={COLORS.black}
-                  />
-                </MenuTrigger>
-                <MenuOptions>
-                  <MenuOption>
-                    <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
-                      First Serve
-                    </Text>
-                    <Text style={{ color: COLORS.primary }}>
-                      Select which team will serve first.
-                    </Text>
-                  </MenuOption>
-                </MenuOptions>
-              </Menu>
-            </View>
-          </View>
-          <View style={styles.radioContainer}>
-            <View style={styles.radioGroup}>
-              <View style={styles.radioButton}>
-                <RadioButton
-                  value={currentLocalTeamName}
-                  status={
-                    selectedFirstServe === currentLocalTeamName
-                      ? "checked"
-                      : "unchecked"
-                  }
-                  onPress={() => setSelectedFirstServe(currentLocalTeamName)}
-                  color={COLORS.primary}
-                />
-                <Text style={styles.radioLabel}>{currentLocalTeamName}</Text>
-              </View>
-              <View style={styles.radioButton}>
-                <RadioButton
-                  value="Opponent"
-                  status={
-                    selectedFirstServe === "Opponent" ? "checked" : "unchecked"
-                  }
-                  onPress={() => setSelectedFirstServe("Opponent")}
-                  color={COLORS.primary}
-                />
-                <Text style={styles.radioLabel}>Opponent</Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.secondaryTitleContainer}>
-            <Text style={styles.secondaryTitleText}>Rotation: </Text>
-            <View style={styles.popUpContainer}>
-              <Menu>
-                <MenuTrigger>
-                  <AntDesign
-                    style={styles.questionIcon}
-                    name="questioncircleo"
-                    size={hp(4)}
-                    color={COLORS.black}
-                  />
-                </MenuTrigger>
-                <MenuOptions>
-                  <MenuOption>
-                    <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
-                      First Set Line-Up
-                    </Text>
-                    <Text style={{ color: COLORS.primary }}>
-                      Place each player into their corresponding spot on the
-                      court.{" "}
-                    </Text>
-                    <Text style={{ color: COLORS.primary }}>
-                      Service from Position 1.{" "}
-                    </Text>
-                    <Text style={{ color: COLORS.primary }}>
-                      Select an on court setter. Team specific stats will be
-                      dictated by the rotaion that this player is in.{" "}
-                    </Text>
-                  </MenuOption>
-                </MenuOptions>
-              </Menu>
-            </View>
-          </View>
-          <View style={styles.court}>
-            <View style={styles.netIndicator} />
-            <View style={styles.courtRow}>
-              <View style={styles.courtPosition}>
-                <Dropdown
-                  style={styles.courtdropdown}
-                  placeholderStyle={styles.placeholderDropDown}
-                  selectedTextStyle={styles.selectedDropDownText}
-                  itemTextStyle={styles.dropDownText}
-                  data={dropDownRosterList}
-                  search={false}
-                  maxHeight={300}
-                  labelField="value"
-                  activeColor={COLORS.grey}
-                  valueField="playerNumber"
-                  placeholder={"Position 4"}
-                  value={positionFour}
-                  onChange={(val) => setPositionFour(val.playerNumber)}
-                />
-              </View>
-              <View style={styles.courtPosition}>
-                <Dropdown
-                  style={styles.courtdropdown}
-                  placeholderStyle={styles.placeholderDropDown}
-                  selectedTextStyle={styles.selectedDropDownText}
-                  itemTextStyle={styles.dropDownText}
-                  data={dropDownRosterList}
-                  search={false}
-                  maxHeight={300}
-                  activeColor={COLORS.grey}
-                  labelField="value"
-                  valueField="playerNumber"
-                  placeholder={"Position 3"}
-                  value={positionThree}
-                  onChange={(val) => setPositionThree(val.playerNumber)}
-                />
-              </View>
-              <View style={styles.courtPosition}>
-                <Dropdown
-                  style={styles.courtdropdown}
-                  placeholderStyle={styles.placeholderDropDown}
-                  selectedTextStyle={styles.selectedDropDownText}
-                  itemTextStyle={styles.dropDownText}
-                  data={dropDownRosterList}
-                  search={false}
-                  maxHeight={300}
-                  labelField="value"
-                  activeColor={COLORS.grey}
-                  valueField="playerNumber"
-                  placeholder={"Position 2"}
-                  value={positionTwo}
-                  onChange={(val) => {
-                    setPositionTwo(val.playerNumber);
-                  }}
-                />
-              </View>
-            </View>
-            <View style={styles.courtRow}>
-              <View style={styles.courtPosition}>
-                <Dropdown
-                  style={styles.courtdropdown}
-                  placeholderStyle={styles.placeholderDropDown}
-                  selectedTextStyle={styles.selectedDropDownText}
-                  itemTextStyle={styles.dropDownText}
-                  data={dropDownRosterList}
-                  search={false}
-                  maxHeight={300}
-                  labelField="value"
-                  activeColor={COLORS.grey}
-                  valueField="playerNumber"
-                  placeholder={"Position 5"}
-                  value={positionFive}
-                  onChange={(val) => setPositionFive(val.playerNumber)}
-                />
-              </View>
-              <View style={styles.courtPosition}>
-                <Dropdown
-                  style={styles.courtdropdown}
-                  placeholderStyle={styles.placeholderDropDown}
-                  selectedTextStyle={styles.selectedDropDownText}
-                  itemTextStyle={styles.dropDownText}
-                  data={dropDownRosterList}
-                  search={false}
-                  maxHeight={300}
-                  labelField="value"
-                  valueField="playerNumber"
-                  activeColor={COLORS.grey}
-                  placeholder={"Position 6"}
-                  value={positionSix}
-                  onChange={(val) => setPositionSix(val.playerNumber)}
-                />
-              </View>
-              <View style={styles.courtPosition}>
-                <Dropdown
-                  style={styles.courtdropdown}
-                  placeholderStyle={styles.placeholderDropDown}
-                  selectedTextStyle={styles.selectedDropDownText}
-                  itemTextStyle={styles.dropDownText}
-                  data={dropDownRosterList}
-                  search={false}
-                  maxHeight={300}
-                  labelField="value"
-                  activeColor={COLORS.grey}
-                  valueField="playerNumber"
-                  placeholder={"Position 1"}
-                  value={positionOne}
-                  onChange={(val) => setPositionOne(val.playerNumber)}
-                />
-              </View>
-            </View>
-          </View>
-          <View style={styles.setterContainer}>
-            <Text style={styles.setterTitleText}>On Court Setter: </Text>
-            <View style={styles.setterSlot}>
-              <Dropdown
-                style={styles.setterDropDown}
-                placeholderStyle={styles.setterPlaceHolderDropDown}
-                selectedTextStyle={styles.selectedDropDownText}
-                itemTextStyle={styles.dropDownText}
-                //TODO: Ensure selection is only from on court players
-                data={dropDownRosterList}
-                search={false}
-                maxHeight={300}
-                labelField="value"
-                valueField="playerNumber"
-                placeholder={"Select Setter"}
-                activeColor={COLORS.grey}
-                dropdownPosition="auto"
-                value={setter}
-                onChange={(val) => setSetter(val.playerNumber)}
-              />
-            </View>
-          </View>
-          <View style={styles.secondaryTitleContainer}>
-            <Text style={styles.secondaryTitleText}>Libero(s): </Text>
-            <View style={styles.popUpContainer}>
-              <Menu>
-                <MenuTrigger>
-                  <AntDesign
-                    style={styles.questionIcon}
-                    name="questioncircleo"
-                    size={hp(4)}
-                    color={COLORS.black}
-                  />
-                </MenuTrigger>
-                <MenuOptions>
-                  <MenuOption>
-                    <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
-                      Liberos
-                    </Text>
-                    <Text style={{ color: COLORS.primary }}>
-                      Select 1, 2, or no Liberos for the first set.{" "}
-                    </Text>
-                    <Text style={{ color: COLORS.primary }}>
-                      Liberos cannot be changed during the set.{" "}
-                    </Text>
-                  </MenuOption>
-                </MenuOptions>
-              </Menu>
-            </View>
-          </View>
-          <View style={styles.liberoContainer}>
-            <View style={styles.liberoSlot}>
-              <Dropdown
-                style={styles.liberoDropDown}
-                placeholderStyle={styles.placeholderDropDown}
-                selectedTextStyle={styles.selectedDropDownText}
-                itemTextStyle={styles.dropDownText}
-                data={dropDownRosterList}
-                search={false}
-                maxHeight={300}
-                labelField="value"
-                valueField="playerNumber"
-                placeholder={"Optional"}
-                activeColor={COLORS.grey}
-                dropdownPosition="top"
-                value={firstLibero}
-                onChange={(val) => setFirstLibero(val.playerNumber)}
-              />
-            </View>
-            <View style={styles.liberoSlot}>
-              <Dropdown
-                style={styles.liberoDropDown}
-                placeholderStyle={styles.placeholderDropDown}
-                selectedTextStyle={styles.selectedDropDownText}
-                itemTextStyle={styles.dropDownText}
-                data={dropDownRosterList}
-                search={false}
-                maxHeight={300}
-                labelField="value"
-                valueField="playerNumber"
-                placeholder={"Optional"}
-                activeColor={COLORS.grey}
-                dropdownPosition="top"
-                value={secondLibero}
-                onChange={(val) => setSecondLibero(val.playerNumber)}
-              />
-            </View>
-          </View>
-          <View style={styles.confirmContainer}>
-            <TouchableOpacity
-              onPress={() => {
-                router.push({
-                  pathname: "statGame",
-                  params: {
-                    currentLocalRoster: JSON.stringify(localRoster),
-                    view: selectedView,
-                    gameType: selectedGameType,
-                    firstServe: selectedFirstServe,
-                    location: selectedLocation,
-                    opponent: selectedOpponent,
-                    setsBeingPlayed: selectedSets,
-                    pOne: positionOne,
-                    pTwo: positionTwo,
-                    pThree: positionThree,
-                    pFour: positionFour,
-                    pFive: positionFive,
-                    pSix: positionSix,
-                    firstL: firstLibero,
-                    secondL: secondLibero,
-                    onCourtSetter: setter,
-                  },
-                });
-              }}
-            >
-              <View style={styles.confirmBtn}>
-                <Text style={styles.confirmBtnText}> START </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </SafeView>
-  
+      </ScrollView>
+    </SafeView>
   );
 }
 
