@@ -57,6 +57,18 @@ export default function statGame() {
   //State Hook for the stat Stack
   const [statStack, setStatStack] = useState([]);
 
+  //State hooks to keep track of sets won/lost and sets completed
+  const [homeSetsWon, setHomeSetsWon] = useState(0);
+  const [opponentSetsWon, setOpponentSetsWon] = useState(0);
+  const [setsFinished, setSetsFinished] = useState(0);
+
+  //Sets being played, which is passed from statGamePrep
+
+  //Structure of what the  `setsBeingPlayed` param looks like:
+  //   key: "BO3", key: "BO5", key: "1", key: "2", key: "3", key: "4", key: "5",
+  //TODO: replace with `setsBeingPlayed` param
+  const [gameConditions, setGameConditions] = useState("1");
+
   //State hook to store the current set
   const [currentSet, setCurrentSet] = useState(1);
 
@@ -454,8 +466,8 @@ export default function statGame() {
   //rosterStats variable contains all of the player stats for the current game
   const [rosterStats, setRosterStats] = useState(testingRoster);
 
-  const [homeScore, setHomeScore] = useState(0);
-  const [opponentScore, setOpponentScore] = useState(0);
+  const [homeScore, setHomeScore] = useState(22);
+  const [opponentScore, setOpponentScore] = useState(22);
 
   const [setScores, setSetScores] = useState([]);
 
@@ -2640,6 +2652,7 @@ export default function statGame() {
 
       //Determine if the set was won
       if (homeScore > opponentScore) {
+        setHomeSetsWon(homeSetsWon + 1);
         setTeamStats((prev) => {
           return {
             ...prev,
@@ -2648,6 +2661,7 @@ export default function statGame() {
           };
         });
       } else {
+        setOpponentSetsWon(opponentSetsWon + 1);
         setTeamStats((prev) => {
           return {
             ...prev,
@@ -2656,6 +2670,7 @@ export default function statGame() {
           };
         });
       }
+
       return true;
     } else {
       return false;
@@ -2663,21 +2678,25 @@ export default function statGame() {
   };
 
   const [endSetState, setEndSetState] = useState(false);
+  const [endGameState, setEndGameState] = useState(false);
 
   // Effect to check and end the set
   useEffect(() => {
     if (endSet()) {
+      setSetsFinished(setsFinished + 1);
+
       //set End Set to true -> allowing the inBetweenSet screen to be displayed
       setEndSetState(true);
 
       // Format scores as a string "homeScore-opponentScore"
       const scoreString = `${homeScore}-${opponentScore}`;
+
       // Record the completed set's scores as a string
       setSetScores((prevSetScores) => [...prevSetScores, scoreString]);
 
       //Reset Home and Opponent Scores
-      setHomeScore(0);
-      setOpponentScore(0);
+      setHomeScore(22);
+      setOpponentScore(22);
 
       //Increment current set
       setCurrentSet(currentSet + 1);
@@ -2690,7 +2709,315 @@ export default function statGame() {
     }
   }, [homeScore, opponentScore, prevServerTracker]); // Dependencies to track changes in scores
 
-  if (endSetState === true) {
+  useEffect(() => {
+    // Check if the game is over
+    switch (gameConditions) {
+      case "BO3":
+        if (homeSetsWon === 2 || opponentSetsWon === 2) {
+          setEndGameState(true);
+        }
+      case "BO5":
+        if (homeSetsWon === 3 || opponentSetsWon === 3) {
+          setEndGameState(true);
+        }
+      case "1":
+        if (setsFinished === 1) {
+          setEndGameState(true);
+        }
+      case "2":
+        if (setsFinished === 2) {
+          setEndGameState(true);
+        }
+      case "3":
+        if (setsFinished === 3) {
+          setEndGameState(true);
+        }
+      case "4":
+        if (setsFinished === 4) {
+          setEndGameState(true);
+        }
+      case "5":
+        if (setsFinished === 5) {
+          setEndGameState(true);
+        }
+    }
+  }, [setsFinished, homeSetsWon, opponentSetsWon]);
+
+  if (endGameState === true) {
+    return (
+      <SafeView style={styles.container}>
+        <View style={styles.endGameHeaderContainer}>
+          <TouchableOpacity>
+            <View style={styles.endGameBtn}>
+              {/* TODO: Write to firestore, navigate to box score */}
+              <Text style={styles.endGameBtnText}>Save Game</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.inBetweenTitleContainer}>
+          <Text style={styles.inBetweenTitleText}>Game Complete</Text>
+        </View>
+        <View style={styles.inBetweenSeperator} />
+        <ScrollView>
+          <View style={styles.endGameBodyContainer}>
+            <View style={styles.endGameScoresContainer}>
+              <View style={styles.scoreContainer}>
+                {/* TODO: Inputvalidation to ensure team name is not too long */}
+                <Text style={styles.scoreTeamNameText}>Your Team</Text>
+                <View style={styles.scoreAmountContainer}>
+                  <Text style={styles.scoreText}>{homeSetsWon}</Text>
+                </View>
+              </View>
+              <View style={styles.scoreSpacer2} />
+              <View style={styles.scoreContainer}>
+                <Text style={styles.scoreTeamNameText}>Opponent</Text>
+                <View style={styles.scoreAmountContainer}>
+                  <Text style={styles.scoreText}>{opponentSetsWon}</Text>
+                </View>
+              </View>
+            </View>
+            {setScores.length > 0 ? (
+              <View style={styles.liveStatsModalHeader2}>
+                <Text style={styles.liveStatsModalScoreText}>
+                  {setScores.map((score) => {
+                    return <Text> {score} </Text>;
+                  })}
+                </Text>
+              </View>
+            ) : (
+              <View />
+            )}
+            <View style={styles.liveStatsModalBody}>
+              <View style={styles.liveStatsTitleRow}>
+                <View style={styles.liveStatsStatHeader}>
+                  <Text style={styles.liveStatsPlayerHeader}>
+                    #{"  "}Player
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>K </Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>E</Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>TA</Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>
+                    {"    "}
+                    K%{"   "}
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>A </Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>SA</Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>SE</Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>RE</Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>P AVG.</Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>D</Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>BS</Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>BA</Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>BE</Text>
+                  <Text style={styles.liveStatsModalSecondaryTextEnd}>PTS</Text>
+                </View>
+              </View>
+              {rosterStats.map((player) => {
+                return (
+                  <View
+                    style={styles.liveStatsTitleRow}
+                    key={player.playerNumber}
+                  >
+                    <View style={styles.liveStatsStatHeader}>
+                      <Text style={styles.liveStatsPlayerHeader}>
+                        {/* TODO: validation for length of players name */}
+                        {player.playerNumber}
+                        {"  "}
+                        {player.playerName}
+                      </Text>
+                      <Text style={styles.liveStatsModalSecondaryText2}>
+                        {player.kills.toString().length > 1
+                          ? player.kills
+                          : player.kills + " "}
+                      </Text>
+                      <Text style={styles.liveStatsModalSecondaryText2}>
+                        {player.attackErrors.toString().length > 1
+                          ? player.attackErrors
+                          : player.attackErrors + " "}
+                      </Text>
+                      <Text style={styles.liveStatsModalSecondaryText2}>
+                        {player.attempts.toString().length > 1
+                          ? player.attempts
+                          : player.attempts + " "}
+                      </Text>
+                      <Text style={styles.liveStatsModalSecondaryText2}>
+                        {isNaN(
+                          (player.kills - player.attackErrors) / player.attempts
+                        )
+                          ? "0.000"
+                          : (
+                              (player.kills - player.attackErrors) /
+                              player.attempts
+                            ).toFixed(3)}
+                      </Text>
+                      <Text style={styles.liveStatsModalSecondaryText2}>
+                        {player.assists.toString().length > 1
+                          ? player.assists
+                          : player.assists + " "}
+                      </Text>
+                      <Text style={styles.liveStatsModalSecondaryText2}>
+                        {player.serviceAces.toString().length > 1
+                          ? player.serviceAces
+                          : player.serviceAces + " "}
+                      </Text>
+                      <Text style={styles.liveStatsModalSecondaryText2}>
+                        {player.serviceErrors.toString().length > 1
+                          ? player.serviceErrors
+                          : player.serviceErrors + " "}
+                      </Text>
+                      <Text style={styles.liveStatsModalSecondaryText2}>
+                        {player.receptionErrors.toString().length > 1
+                          ? player.receptionErrors
+                          : player.receptionErrors + " "}
+                      </Text>
+                      <Text style={styles.liveStatsModalSecondaryText2}>
+                        {isNaN(player.totalPassValue / player.passingAttempts)
+                          ? "0.00"
+                          : (
+                              player.totalPassValue / player.passingAttempts
+                            ).toFixed(2)}
+                      </Text>
+                      <Text style={styles.liveStatsModalSecondaryText2}>
+                        {player.digs.toString().length > 1
+                          ? player.digs
+                          : player.digs + " "}
+                      </Text>
+                      <Text style={styles.liveStatsModalSecondaryText2}>
+                        {player.blockSolos.toString().length > 1
+                          ? player.blockSolos
+                          : player.blockSolos + " "}
+                      </Text>
+                      <Text style={styles.liveStatsModalSecondaryText2}>
+                        {player.blockAssists.toString().length > 1
+                          ? player.blockAssists
+                          : player.blockAssists + " "}
+                      </Text>
+                      <Text style={styles.liveStatsModalSecondaryText2}>
+                        {player.blockErrors.toString().length > 1
+                          ? player.blockErrors
+                          : player.blockErrors + " "}
+                      </Text>
+                      <Text style={styles.liveStatsModalSecondaryTextEnd2}>
+                        {player.pts.toString().length > 1
+                          ? player.pts.toFixed(1)
+                          : player.pts.toFixed(1)}
+                      </Text>
+                    </View>
+                  </View>
+                );
+              })}
+              <View style={styles.liveStatsTitleRow}>
+                <View style={styles.liveStatsStatHeader}>
+                  <Text style={styles.liveStatsPlayerHeader}>
+                    Team
+                    {"  "}
+                    Total
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {teamStats.teamKills.toString().length > 1
+                      ? teamStats.teamKills
+                      : teamStats.teamKills + " "}
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {teamStats.teamAttackErrors.toString().length > 1
+                      ? teamStats.teamAttackErrors
+                      : teamStats.teamAttackErrors + " "}
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {teamStats.teamAttempts.toString().length > 1
+                      ? teamStats.teamAttempts
+                      : teamStats.teamAttempts + " "}
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {isNaN(
+                      (teamStats.teamKills - teamStats.teamAttackErrors) /
+                        teamStats.teamAttempts
+                    )
+                      ? "0.000"
+                      : (
+                          (teamStats.teamKills - teamStats.teamAttackErrors) /
+                          teamStats.teamAttempts
+                        ).toFixed(3)}
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {teamStats.teamAssists.toString().length > 1
+                      ? teamStats.teamAssists
+                      : teamStats.teamAssists + " "}
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {teamStats.teamServiceAces.toString().length > 1
+                      ? teamStats.teamServiceAces
+                      : teamStats.teamServiceAces + " "}
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {teamStats.teamServiceErrors.toString().length > 1
+                      ? teamStats.teamServiceErrors
+                      : teamStats.teamServiceErrors + " "}
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {teamStats.teamReceptionErrors.toString().length > 1
+                      ? teamStats.teamReceptionErrors
+                      : teamStats.teamReceptionErrors + " "}
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {isNaN(
+                      teamStats.teamTotalPassValue /
+                        teamStats.teamPassingAttempts
+                    )
+                      ? "0.00"
+                      : (
+                          teamStats.teamTotalPassValue /
+                          teamStats.teamPassingAttempts
+                        ).toFixed(2)}
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {teamStats.teamDigs.toString().length > 1
+                      ? teamStats.teamDigs
+                      : teamStats.teamDigs + " "}
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {teamStats.teamBlockSolos.toString().length > 1
+                      ? teamStats.teamBlockSolos
+                      : teamStats.teamBlockSolos + " "}
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {teamStats.teamBlockAssists.toString().length > 1
+                      ? teamStats.teamBlockAssists
+                      : teamStats.teamBlockAssists + " "}
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {teamStats.teamBlockErrors.toString().length > 1
+                      ? teamStats.teamBlockErrors
+                      : teamStats.teamBlockErrors + " "}
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryTextEnd2}>
+                    {teamStats.teamPts.toString().length > 1
+                      ? teamStats.teamPts.toFixed(1)
+                      : teamStats.teamPts.toFixed(1)}
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View style={styles.endGameButtonsContainer}>
+              <TouchableOpacity onPress={cancelAlert}>
+                <View style={styles.endGameDeleteBtn}>
+                  <Text style={styles.endGameBtnText}>Delete Game</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <View style={styles.endGameBtn}>
+                  {/* TODO: Write to firestore, navigate to box score */}
+                  <Text style={styles.endGameBtnText}>Save Game</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.heightSpacer} />
+          </View>
+        </ScrollView>
+        <LiveStatsModel />
+      </SafeView>
+    );
+  } else if (endSetState === true) {
     return (
       <SafeView style={styles.container}>
         <View style={styles.inBetweenHeaderContainer}>
@@ -3505,7 +3832,6 @@ export default function statGame() {
                       {/* TODO: Input validation to keep player name less that 15 chars */}
                       <Text style={styles.playerNameText}>
                         {player.playerName}
-                        {player.setsPlayed}
                       </Text>
                     </View>
                     <View style={styles.widthSpacer1} />
@@ -4378,16 +4704,87 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
   },
+  endGameHeaderContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    height: hp(13),
+    marginRight: wp(2),
+  },
   inBetweenHeaderContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     height: hp(10),
   },
+  endGameBodyContainer: {
+    flex: 1,
+    flexDirection: "column",
+    alignItems: "center",
+    marginTop: hp(3.5),
+  },
+  endGameButtonsContainer: {
+    flexDirection: "row",
+    marginHorizontal: wp(5),
+    width: wp(25),
+    marginTop: hp(7.5),
+    justifyContent: "space-between",
+  },
+  endGameScoresContainer: {
+    flexDirection: "row",
+    marginBottom: hp(0.5),
+  },
+  scoreSpacer2: {
+    width: wp(1),
+  },
+  endGameBtn: {
+    flexDirection: "row",
+    width: wp(9),
+    height: hp(7.5),
+    backgroundColor: COLORS.primary,
+    borderRadius: 20,
+    marginHorizontal: 5,
+    marginTop: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
+  endGameDeleteBtn: {
+    flexDirection: "row",
+    width: wp(9),
+    height: hp(7.5),
+    backgroundColor: COLORS.red,
+    borderRadius: 20,
+    marginHorizontal: 5,
+    marginTop: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
+  endGameBtnText: {
+    fontSize: RFValue(9),
+    paddingRight: 3,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: COLORS.white,
+  },
   inBetweenBodyContainer: {
     flex: 1,
     flexDirection: "column",
     alignItems: "center",
-    backgroundColor: COLORS.grey,
+    backgroundColor: COLORS.darkGrey,
   },
   inBetweenHeaderText: {
     fontSize: RFValue(18),
@@ -4399,6 +4796,7 @@ const styles = StyleSheet.create({
   },
   inBetweenTitleContainer: {
     alignItems: "center",
+    justifyContent: "center",
   },
   inBetweenSeperator: {
     borderBottomColor: COLORS.primary,
