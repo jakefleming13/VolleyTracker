@@ -111,9 +111,20 @@ const SeasonHome = () => {
             />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: "statServePass",
+              params: {
+                currentLocalTeamName: seasonData.teamName,
+                currentLocalYear: seasonData.year,
+                currentLocalRoster: JSON.stringify(seasonData.roster),
+              },
+            })
+          }
+        >
           <View style={styles.featureListContainer}>
-            <Text style={styles.featureListText}>Stat Passing</Text>
+            <Text style={styles.featureListText}>Stat Serving and Passing</Text>
             <AntDesign
               style={styles.featureListIcon}
               name="right"
