@@ -57,6 +57,7 @@ export default function AddSeason() {
   const [invitationModalVisible, setInvitationModalVisible] = useState(false);
   const [seasonInvitations, setSeasonInvitations] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   //Keeps track of current team size(updates when the user hits add or remove buttons)
   var [teamSize, setTeamSize] = useState(8);
@@ -348,6 +349,7 @@ export default function AddSeason() {
   useEffect(() => {
     const fetchInvitations = async () => {
       try {
+        setIsLoading(true); // Show loading when opening modal
         const userDoc = await firestore().collection("users").doc(user.userID).get();
         if (userDoc.exists) {
           const data = userDoc.data();
@@ -355,13 +357,15 @@ export default function AddSeason() {
         }
       } catch (error) {
         console.error("Failed to fetch season invitations:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    if (user) {
+    if (user && invitationModalVisible) {
       fetchInvitations();
     }
-  }, [user]);
+  }, [user, invitationModalVisible]);
 
   //handles when a user updates a specific player name
   function handlePlayerNameUpdate(ID, value) {
@@ -667,7 +671,7 @@ export default function AddSeason() {
     } catch (error) {
       console.error("Failed to fetch latest invitations:", error);
     } finally {
-      setTimeout(() => setIsRefreshing(false), 10000); // Disable refresh for 10 seconds
+      setIsRefreshing(false);
     }
   };
 
@@ -822,6 +826,7 @@ export default function AddSeason() {
             <TouchableOpacity
               onPress={fetchLatestInvitations}
               disabled={isRefreshing}
+              style={styles.refreshButton}
             >
               <AntDesign
                 name="reload1"
@@ -830,33 +835,42 @@ export default function AddSeason() {
               />
             </TouchableOpacity>
           </View>
-          {isRefreshing ? (
-            <Loading />
+          {isLoading ? (
+            <View style={styles.loading}>
+               <Loading  size={hp(10)} />
+            </View>
+           
           ) : (
             <ScrollView style={styles.modalContent}>
-              {seasonInvitations.map((invitation, index) => (
-                <View key={index} style={styles.invitationItem}>
-                  <Text style={styles.invitationText}>
-                    {invitation.ownerName} ({invitation.ownerEmail}) has invited
-                    you to be an {invitation.role} for {invitation.teamName}{" "}
-                    {invitation.teamYear}.
-                  </Text>
-                  <View style={styles.invitationButtons}>
-                    <TouchableOpacity
-                      style={styles.acceptButton}
-                      onPress={() => handleAcceptInvitation(invitation)}
-                    >
-                      <Text style={styles.buttonText}>Accept</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.declineButton}
-                      onPress={() => handleDeclineInvitation(invitation)}
-                    >
-                      <Text style={styles.buttonText}>Decline</Text>
-                    </TouchableOpacity>
+              {seasonInvitations.length > 0 ? (
+                seasonInvitations.map((invitation, index) => (
+                  <View key={index} style={styles.invitationItem}>
+                    <Text style={styles.invitationText}>
+                      {invitation.ownerName} ({invitation.ownerEmail}) has invited
+                      you to be an {invitation.role} for {invitation.teamName}{" "}
+                      {invitation.teamYear}.
+                    </Text>
+                    <View style={styles.invitationButtons}>
+                      <TouchableOpacity
+                        style={styles.acceptButton}
+                        onPress={() => handleAcceptInvitation(invitation)}
+                      >
+                        <Text style={styles.buttonText}>Accept</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.declineButton}
+                        onPress={() => handleDeclineInvitation(invitation)}
+                      >
+                        <Text style={styles.buttonText}>Decline</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
-              ))}
+                ))
+              ) : (
+                <Text style={styles.noInvitationsText}>
+                  There are no new invitations to display.
+                </Text>
+              )}
             </ScrollView>
           )}
           <TouchableOpacity
@@ -1069,14 +1083,24 @@ const styles = StyleSheet.create({
   },
   modalHeader: {
     flexDirection: "row",
-    justifyContent: "center",
     alignItems: "center",
     width: "100%",
+    justifyContent: "center",
     marginBottom: 10,
   },
   modalTitle: {
+    flex: 1,
     fontSize: RFValue(18),
     fontWeight: "bold",
+    textAlign: "center",
+  },
+  refreshButton: {
+    position: "absolute",
+    right: 0,
+  },
+  loading: {
+    alignSelf: "center",
+    height: hp(1),
   },
   modalContent: {
     width: "100%",
@@ -1091,6 +1115,12 @@ const styles = StyleSheet.create({
     fontSize: RFValue(14),
     marginBottom: 10,
     textAlign: "center",
+  },
+  noInvitationsText: {
+
+    textAlign: "center",
+    color: COLORS.grey,
+    marginTop: 20,
   },
   invitationButtons: {
     flexDirection: "row",
