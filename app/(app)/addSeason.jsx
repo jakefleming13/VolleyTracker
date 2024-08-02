@@ -671,7 +671,8 @@ export default function AddSeason() {
     } catch (error) {
       console.error("Failed to fetch latest invitations:", error);
     } finally {
-      setIsRefreshing(false);
+      setTimeout(() => setIsRefreshing(false), 5000); // Disable the button for 5 seconds
+     
     }
   };
 
