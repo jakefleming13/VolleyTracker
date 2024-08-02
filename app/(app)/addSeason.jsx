@@ -14,6 +14,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import firestore from "@react-native-firebase/firestore";
 import { automatedID } from "../../services/automatedID";
+import Loading from "../../components/Loading";
 
 export default function AddSeason() {
   //get router
@@ -55,6 +56,7 @@ export default function AddSeason() {
   const [year, setYear] = useState("");
   const [invitationModalVisible, setInvitationModalVisible] = useState(false);
   const [seasonInvitations, setSeasonInvitations] = useState([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   //Keeps track of current team size(updates when the user hits add or remove buttons)
   var [teamSize, setTeamSize] = useState(8);
@@ -346,7 +348,7 @@ export default function AddSeason() {
   useEffect(() => {
     const fetchInvitations = async () => {
       try {
-        const userDoc = await firestore().collection('users').doc(user.userID).get();
+        const userDoc = await firestore().collection("users").doc(user.userID).get();
         if (userDoc.exists) {
           const data = userDoc.data();
           setSeasonInvitations(data.seasonInvitations || []);
@@ -528,7 +530,7 @@ export default function AddSeason() {
         access: {
           owner: user.userID,
           editors: [],
-          viewers: []
+          viewers: [],
         },
         seasonID: newID,
         teamName: teamName,
@@ -605,16 +607,16 @@ export default function AddSeason() {
 
   const handleAcceptInvitation = async (invitation) => {
     try {
-      const seasonRef = firestore().collection('seasons').doc(invitation.seasonID);
-      const userRef = firestore().collection('users').doc(user.userID);
+      const seasonRef = firestore().collection("seasons").doc(invitation.seasonID);
+      const userRef = firestore().collection("users").doc(user.userID);
 
-      if (invitation.role === 'editor') {
+      if (invitation.role === "editor") {
         await seasonRef.update({
-          'access.editors': firestore.FieldValue.arrayUnion(user.userID)
+          "access.editors": firestore.FieldValue.arrayUnion(user.userID),
         });
-      } else if (invitation.role === 'viewer') {
+      } else if (invitation.role === "viewer") {
         await seasonRef.update({
-          'access.viewers': firestore.FieldValue.arrayUnion(user.userID)
+          "access.viewers": firestore.FieldValue.arrayUnion(user.userID),
         });
       }
 
@@ -622,13 +624,16 @@ export default function AddSeason() {
         seasons: firestore.FieldValue.arrayUnion({
           seasonID: invitation.seasonID,
           teamName: invitation.teamName,
-          year: invitation.teamYear
+          year: invitation.teamYear,
         }),
-        seasonInvitations: firestore.FieldValue.arrayRemove(invitation)
+        seasonInvitations: firestore.FieldValue.arrayRemove(invitation),
       });
 
-      setSeasonInvitations(seasonInvitations.filter(i => i !== invitation));
-      Alert.alert("Success", `You are now a ${invitation.role} for ${invitation.teamName} ${invitation.teamYear}!`);
+      setSeasonInvitations(seasonInvitations.filter((i) => i !== invitation));
+      Alert.alert(
+        "Success",
+        `You are now a ${invitation.role} for ${invitation.teamName} ${invitation.teamYear}!`
+      );
     } catch (error) {
       console.error(`Failed to accept ${invitation.role} invitation:`, error);
       Alert.alert("Error", `Failed to accept ${invitation.role} invitation. Please try again.`);
@@ -637,17 +642,32 @@ export default function AddSeason() {
 
   const handleDeclineInvitation = async (invitation) => {
     try {
-      const userRef = firestore().collection('users').doc(user.userID);
+      const userRef = firestore().collection("users").doc(user.userID);
 
       await userRef.update({
-        seasonInvitations: firestore.FieldValue.arrayRemove(invitation)
+        seasonInvitations: firestore.FieldValue.arrayRemove(invitation),
       });
 
-      setSeasonInvitations(seasonInvitations.filter(i => i !== invitation));
+      setSeasonInvitations(seasonInvitations.filter((i) => i !== invitation));
       Alert.alert("Success", "Invitation declined.");
     } catch (error) {
       console.error("Failed to decline invitation:", error);
       Alert.alert("Error", "Failed to decline invitation. Please try again.");
+    }
+  };
+
+  const fetchLatestInvitations = async () => {
+    setIsRefreshing(true);
+    try {
+      const userDoc = await firestore().collection("users").doc(user.userID).get();
+      if (userDoc.exists) {
+        const data = userDoc.data();
+        setSeasonInvitations(data.seasonInvitations || []);
+      }
+    } catch (error) {
+      console.error("Failed to fetch latest invitations:", error);
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 10000); // Disable refresh for 10 seconds
     }
   };
 
@@ -797,31 +817,52 @@ export default function AddSeason() {
         onRequestClose={() => setInvitationModalVisible(false)}
       >
         <View style={styles.modalView}>
-          <Text style={styles.modalTitle}>Season Invitations</Text>
-          <ScrollView style={styles.modalContent}>
-            {seasonInvitations.map((invitation, index) => (
-              <View key={index} style={styles.invitationItem}>
-                <Text style={styles.invitationText}>
-                  {invitation.ownerName} ({invitation.ownerEmail}) has invited you to be an {invitation.role} for {invitation.teamName} {invitation.teamYear}.
-                </Text>
-                <View style={styles.invitationButtons}>
-                  <TouchableOpacity
-                    style={styles.acceptButton}
-                    onPress={() => handleAcceptInvitation(invitation)}
-                  >
-                    <Text style={styles.buttonText}>Accept</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.declineButton}
-                    onPress={() => handleDeclineInvitation(invitation)}
-                  >
-                    <Text style={styles.buttonText}>Decline</Text>
-                  </TouchableOpacity>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Season Invitations</Text>
+            <TouchableOpacity
+              onPress={fetchLatestInvitations}
+              disabled={isRefreshing}
+            >
+              <AntDesign
+                name="reload1"
+                size={24}
+                color={isRefreshing ? COLORS.grey : COLORS.primary}
+              />
+            </TouchableOpacity>
+          </View>
+          {isRefreshing ? (
+            <Loading />
+          ) : (
+            <ScrollView style={styles.modalContent}>
+              {seasonInvitations.map((invitation, index) => (
+                <View key={index} style={styles.invitationItem}>
+                  <Text style={styles.invitationText}>
+                    {invitation.ownerName} ({invitation.ownerEmail}) has invited
+                    you to be an {invitation.role} for {invitation.teamName}{" "}
+                    {invitation.teamYear}.
+                  </Text>
+                  <View style={styles.invitationButtons}>
+                    <TouchableOpacity
+                      style={styles.acceptButton}
+                      onPress={() => handleAcceptInvitation(invitation)}
+                    >
+                      <Text style={styles.buttonText}>Accept</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.declineButton}
+                      onPress={() => handleDeclineInvitation(invitation)}
+                    >
+                      <Text style={styles.buttonText}>Decline</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            ))}
-          </ScrollView>
-          <TouchableOpacity style={styles.closeButton} onPress={() => setInvitationModalVisible(false)}>
+              ))}
+            </ScrollView>
+          )}
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setInvitationModalVisible(false)}
+          >
             <Text style={styles.buttonText}>Close</Text>
           </TouchableOpacity>
         </View>
@@ -1026,10 +1067,16 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 10,
+  },
   modalTitle: {
     fontSize: RFValue(18),
     fontWeight: "bold",
-    marginBottom: hp(2),
   },
   modalContent: {
     width: "100%",
@@ -1043,7 +1090,7 @@ const styles = StyleSheet.create({
   invitationText: {
     fontSize: RFValue(14),
     marginBottom: 10,
-    textAlign: 'center'
+    textAlign: "center",
   },
   invitationButtons: {
     flexDirection: "row",
@@ -1076,4 +1123,3 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
-
