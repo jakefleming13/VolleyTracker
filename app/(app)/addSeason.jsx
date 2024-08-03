@@ -62,7 +62,7 @@ export default function AddSeason() {
   //Keeps track of current team size(updates when the user hits add or remove buttons)
   var [teamSize, setTeamSize] = useState(8);
 
-  //players var, uploads to the db once the user hits confrim
+  //players var, uploads to the db once the user hits confirm
   var [players, setPlayers] = useState([
     {
       playerName: "",
@@ -349,7 +349,7 @@ export default function AddSeason() {
   useEffect(() => {
     const fetchInvitations = async () => {
       try {
-        setIsLoading(true); // Show loading when opening modal
+        setIsLoading(true); // Show loading when fetching invitations
         const userDoc = await firestore().collection("users").doc(user.userID).get();
         if (userDoc.exists) {
           const data = userDoc.data();
@@ -362,10 +362,10 @@ export default function AddSeason() {
       }
     };
 
-    if (user && invitationModalVisible) {
-      fetchInvitations();
+    if (user) {
+      fetchInvitations(); // Fetch invitations immediately on load
     }
-  }, [user, invitationModalVisible]);
+  }, [user]);
 
   //handles when a user updates a specific player name
   function handlePlayerNameUpdate(ID, value) {
@@ -526,7 +526,7 @@ export default function AddSeason() {
         }),
       });
 
-    //Create new season in "seasons" collcetion
+    //Create new season in "seasons" collection
     firestore()
       .collection("seasons")
       .doc(newID)
@@ -636,7 +636,8 @@ export default function AddSeason() {
       setSeasonInvitations(seasonInvitations.filter((i) => i !== invitation));
       Alert.alert(
         "Success",
-        `You are now a ${invitation.role} for ${invitation.teamName} ${invitation.teamYear}!`
+        `You are now a ${invitation.role} for ${invitation.teamName} ${invitation.teamYear}!`,
+        [{ text: "Ok", onPress: () => router.push("seasons") }] // Redirect on success
       );
     } catch (error) {
       console.error(`Failed to accept ${invitation.role} invitation:`, error);
