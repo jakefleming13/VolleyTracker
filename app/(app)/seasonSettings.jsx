@@ -404,24 +404,54 @@ export default function SeasonSettings() {
   const deleteSeason = async () => {
     setLoading(true);
     try {
-      const batch = firestore().batch();
       const seasonRef = firestore().collection("seasons").doc(seasonID);
-
+  
+      // Fetch season data to get the access lists
+      const seasonDoc = await seasonRef.get();
+      if (!seasonDoc.exists) {
+        throw new Error("Season not found");
+      }
+  
+      const access = seasonDoc.data().access;
+      const usersToUpdate = [access.owner, ...access.editors, ...access.viewers];
+  
+      // Create a batch for all operations
+      const batch = firestore().batch();
+  
       // Remove the season document
       batch.delete(seasonRef);
-
-      // Remove the season from owner's, editors', and viewers' accounts
-      const usersToUpdate = [seasonData.access.owner, ...seasonData.access.editors, ...seasonData.access.viewers];
-      usersToUpdate.forEach(userID => {
+  
+      // Remove the season from each user's seasons array and update roles
+      for (const userID of usersToUpdate) {
         const userRef = firestore().collection("users").doc(userID);
-        batch.update(userRef, {
-          seasons: firestore.FieldValue.arrayRemove({ seasonID, teamName: seasonData.teamName, year: seasonData.year })
-        });
-      });
-
+  
+        // Fetch the user document to get current data
+        const userDoc = await userRef.get();
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          const userSeasons = userData.seasons || [];
+  
+          // Filter out the current season
+          const updatedSeasons = userSeasons.filter(season => season.seasonID !== seasonID);
+  
+          // Prepare the updates for each user
+          const updates = { seasons: updatedSeasons };
+  
+          // Only update editors and viewers if they are present in the current access list
+          if (access.editors.includes(userID)) {
+            updates['access.editors'] = firestore.FieldValue.arrayRemove(userID);
+          } else if (access.viewers.includes(userID)) {
+            updates['access.viewers'] = firestore.FieldValue.arrayRemove(userID);
+          }
+  
+          // Update the user's document
+          batch.update(userRef, updates);
+        }
+      }
+  
       // Commit the batch
       await batch.commit();
-
+  
       Alert.alert("Success", "Season deleted successfully!");
       setActiveSeason(null);
       router.push({
@@ -433,6 +463,7 @@ export default function SeasonSettings() {
     }
     setLoading(false);
   };
+  
 
   if (loading) {
     return (
