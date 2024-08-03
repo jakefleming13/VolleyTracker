@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, TextInput, Modal, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  TextInput,
+  Modal,
+  Alert,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { SafeView } from "../../components/SafeView";
 import {
@@ -12,7 +21,13 @@ import { AntDesign } from "@expo/vector-icons";
 import { useAuth } from "../../context/authContext";
 import firestore from "@react-native-firebase/firestore";
 import Loading from "../../components/Loading";
-import { Menu, MenuProvider, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
+import {
+  Menu,
+  MenuProvider,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from "react-native-popup-menu";
 
 export default function SeasonSettings() {
   const router = useRouter();
@@ -30,12 +45,12 @@ export default function SeasonSettings() {
   const [viewers, setViewers] = useState([]);
   const [addViewerModalVisible, setAddViewerModalVisible] = useState(false);
   const [newViewerEmail, setNewViewerEmail] = useState("");
-  const [deleteSeasonModalVisible, setDeleteSeasonModalVisible] = useState(false);
+  const [deleteSeasonModalVisible, setDeleteSeasonModalVisible] =
+    useState(false);
   const [confirmationText, setConfirmationText] = useState("");
 
   useEffect(() => {
     const fetchSeasonData = async () => {
-      setLoading(true);
       try {
         const seasonDoc = await firestore()
           .collection("seasons")
@@ -48,7 +63,10 @@ export default function SeasonSettings() {
           const fetchUserData = async (userIds) => {
             const users = await Promise.all(
               userIds.map(async (userId) => {
-                const userDoc = await firestore().collection("users").doc(userId).get();
+                const userDoc = await firestore()
+                  .collection("users")
+                  .doc(userId)
+                  .get();
                 if (userDoc.exists) {
                   return { id: userId, ...userDoc.data() };
                 }
@@ -58,58 +76,68 @@ export default function SeasonSettings() {
             return users.filter((user) => user !== null);
           };
 
+          const promises = [];
+
           if (data.access) {
             if (data.access.owner) {
-              const ownerData = await fetchUserData([data.access.owner]);
-              setOwners(ownerData);
+              promises.push(
+                fetchUserData([data.access.owner]).then((ownerData) =>
+                  setOwners(ownerData)
+                )
+              );
             }
             if (data.access.editors && data.access.editors.length > 0) {
-              const editorsData = await fetchUserData(data.access.editors);
-              setEditors(editorsData);
+              promises.push(
+                fetchUserData(data.access.editors).then((editorsData) =>
+                  setEditors(editorsData)
+                )
+              );
             }
             if (data.access.viewers && data.access.viewers.length > 0) {
-              const viewersData = await fetchUserData(data.access.viewers);
-              setViewers(viewersData);
+              promises.push(
+                fetchUserData(data.access.viewers).then((viewersData) =>
+                  setViewers(viewersData)
+                )
+              );
             }
           }
+
+          await Promise.all(promises);
         } else {
           console.log("No season data found.");
         }
       } catch (error) {
         console.error("Failed to fetch season data:", error);
       }
-      setLoading(false);
     };
 
-    if (seasonID && user) {
-      fetchSeasonData();
-    }
-  }, [seasonID, user]);
-
-  useEffect(() => {
     const fetchPlayerStats = async () => {
-      setLoading(true);
       try {
         const playerStatsCollection = firestore()
-          .collection('seasons')
+          .collection("seasons")
           .doc(seasonID)
-          .collection('playerStats');
+          .collection("playerStats");
 
         const snapshot = await playerStatsCollection.get();
-        const stats = snapshot.docs.map(doc => ({
+        const stats = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
 
         setPlayerStats(stats[0]?.roster || []);
       } catch (error) {
-        console.error('Failed to fetch player stats:', error);
+        console.error("Failed to fetch player stats:", error);
       }
+    };
+
+    const fetchData = async () => {
+      setLoading(true);
+      await Promise.all([fetchSeasonData(), fetchPlayerStats()]);
       setLoading(false);
     };
 
     if (seasonID && user) {
-      fetchPlayerStats();
+      fetchData();
     }
   }, [seasonID, user]);
 
@@ -117,8 +145,8 @@ export default function SeasonSettings() {
     setLoading(true);
     try {
       const userSnapshot = await firestore()
-        .collection('users')
-        .where('email', '==', newOwnerEmail)
+        .collection("users")
+        .where("email", "==", newOwnerEmail)
         .get();
 
       if (userSnapshot.empty) {
@@ -130,19 +158,40 @@ export default function SeasonSettings() {
       const newOwner = userSnapshot.docs[0];
       const newOwnerID = newOwner.id;
 
-      if (seasonData.access.editors.includes(newOwnerID) || seasonData.access.viewers.includes(newOwnerID)) {
-        setModalVisible(false)
-        Alert.alert("User already an editor/viewer", `User is already a ${seasonData.access.editors.includes(newOwnerID) ? 'editor' : 'viewer'} of your season. If you would like to change their role, simply remove them as a ${seasonData.access.editors.includes(newOwnerID) ? 'editor' : 'viewer'} and send another invitation`);
+      if (
+        seasonData.access.editors.includes(newOwnerID) ||
+        seasonData.access.viewers.includes(newOwnerID)
+      ) {
+        setModalVisible(false);
+        Alert.alert(
+          "User already an editor/viewer",
+          `User is already a ${
+            seasonData.access.editors.includes(newOwnerID) ? "editor" : "viewer"
+          } of your season. If you would like to change their role, simply remove them as a ${
+            seasonData.access.editors.includes(newOwnerID) ? "editor" : "viewer"
+          } and send another invitation`
+        );
         setLoading(false);
         return;
       }
 
-      const userDoc = await firestore().collection("users").doc(newOwnerID).get();
+      const userDoc = await firestore()
+        .collection("users")
+        .doc(newOwnerID)
+        .get();
       const invitations = userDoc.data().seasonInvitations || [];
 
-      if (invitations.some(invite => invite.ownerUserID === userID && invite.seasonID === seasonID)) {
-        setModalVisible(false)
-        Alert.alert("Request already sent", "Request to join this season already sent to the user, please wait for user to accept or decline before trying again.");
+      if (
+        invitations.some(
+          (invite) =>
+            invite.ownerUserID === userID && invite.seasonID === seasonID
+        )
+      ) {
+        setModalVisible(false);
+        Alert.alert(
+          "Request already sent",
+          "Request to join this season already sent to the user, please wait for user to accept or decline before trying again."
+        );
         setLoading(false);
         return;
       }
@@ -154,14 +203,14 @@ export default function SeasonSettings() {
         teamName: seasonData.teamName,
         teamYear: seasonData.year,
         seasonID: seasonID,
-        role: 'editor'
+        role: "editor",
       };
 
       await firestore()
-        .collection('users')
+        .collection("users")
         .doc(newOwnerID)
         .update({
-          seasonInvitations: firestore.FieldValue.arrayUnion(invitation)
+          seasonInvitations: firestore.FieldValue.arrayUnion(invitation),
         });
 
       Alert.alert("Success", "Editor invitation sent successfully!");
@@ -169,7 +218,10 @@ export default function SeasonSettings() {
       setNewOwnerEmail("");
     } catch (error) {
       console.error("Failed to send editor invitation:", error);
-      Alert.alert("Error", "Failed to send editor invitation. Please try again.");
+      Alert.alert(
+        "Error",
+        "Failed to send editor invitation. Please try again."
+      );
     }
     setLoading(false);
   };
@@ -178,8 +230,8 @@ export default function SeasonSettings() {
     setLoading(true);
     try {
       const userSnapshot = await firestore()
-        .collection('users')
-        .where('email', '==', newViewerEmail)
+        .collection("users")
+        .where("email", "==", newViewerEmail)
         .get();
 
       if (userSnapshot.empty) {
@@ -191,19 +243,40 @@ export default function SeasonSettings() {
       const newViewer = userSnapshot.docs[0];
       const newViewerID = newViewer.id;
 
-      if (seasonData.access.editors.includes(newViewerID) || seasonData.access.viewers.includes(newViewerID)) {
-        setAddViewerModalVisible(false)
-        Alert.alert("User already an editor/viewer", `User is already a ${seasonData.access.editors.includes(newViewerID) ? 'editor' : 'viewer'} of your season. If you would like to change their role, simply remove them as a ${seasonData.access.editors.includes(newViewerID) ? 'editor' : 'viewer'} and send another invitation`);
+      if (
+        seasonData.access.editors.includes(newViewerID) ||
+        seasonData.access.viewers.includes(newViewerID)
+      ) {
+        setAddViewerModalVisible(false);
+        Alert.alert(
+          "User already an editor/viewer",
+          `User is already a ${
+            seasonData.access.editors.includes(newViewerID) ? "editor" : "viewer"
+          } of your season. If you would like to change their role, simply remove them as a ${
+            seasonData.access.editors.includes(newViewerID) ? "editor" : "viewer"
+          } and send another invitation`
+        );
         setLoading(false);
         return;
       }
 
-      const userDoc = await firestore().collection("users").doc(newViewerID).get();
+      const userDoc = await firestore()
+        .collection("users")
+        .doc(newViewerID)
+        .get();
       const invitations = userDoc.data().seasonInvitations || [];
 
-      if (invitations.some(invite => invite.ownerUserID === userID && invite.seasonID === seasonID)) {
-        setAddViewerModalVisible(false)
-        Alert.alert("Request already sent", "Request to join this season already sent to the user, please wait for user to accept or decline before trying again.");
+      if (
+        invitations.some(
+          (invite) =>
+            invite.ownerUserID === userID && invite.seasonID === seasonID
+        )
+      ) {
+        setAddViewerModalVisible(false);
+        Alert.alert(
+          "Request already sent",
+          "Request to join this season already sent to the user, please wait for user to accept or decline before trying again."
+        );
         setLoading(false);
         return;
       }
@@ -215,14 +288,14 @@ export default function SeasonSettings() {
         teamName: seasonData.teamName,
         teamYear: seasonData.year,
         seasonID: seasonID,
-        role: 'viewer'
+        role: "viewer",
       };
 
       await firestore()
-        .collection('users')
+        .collection("users")
         .doc(newViewerID)
         .update({
-          seasonInvitations: firestore.FieldValue.arrayUnion(invitation)
+          seasonInvitations: firestore.FieldValue.arrayUnion(invitation),
         });
 
       Alert.alert("Success", "Viewer invitation sent successfully!");
@@ -230,7 +303,10 @@ export default function SeasonSettings() {
       setNewViewerEmail("");
     } catch (error) {
       console.error("Failed to send viewer invitation:", error);
-      Alert.alert("Error", "Failed to send viewer invitation. Please try again.");
+      Alert.alert(
+        "Error",
+        "Failed to send viewer invitation. Please try again."
+      );
     }
     setLoading(false);
   };
@@ -242,51 +318,61 @@ export default function SeasonSettings() {
       [
         {
           text: "Cancel",
-          style: "cancel"
+          style: "cancel",
         },
         {
           text: "OK",
           onPress: async () => {
             setLoading(true);
             try {
-              const seasonRef = firestore().collection('seasons').doc(seasonID);
-              const userRef = firestore().collection('users').doc(userID);
-  
-              if (role === 'editor') {
+              const seasonRef = firestore()
+                .collection("seasons")
+                .doc(seasonID);
+              const userRef = firestore().collection("users").doc(userID);
+
+              if (role === "editor") {
                 await seasonRef.update({
-                  'access.editors': firestore.FieldValue.arrayRemove(userID)
+                  "access.editors": firestore.FieldValue.arrayRemove(userID),
                 });
-              } else if (role === 'viewer') {
+              } else if (role === "viewer") {
                 await seasonRef.update({
-                  'access.viewers': firestore.FieldValue.arrayRemove(userID)
+                  "access.viewers": firestore.FieldValue.arrayRemove(userID),
                 });
               }
-  
+
               // Remove the season from the user's seasons array
               const userDoc = await userRef.get();
               if (userDoc.exists) {
                 const userSeasons = userDoc.data().seasons || [];
-                const updatedSeasons = userSeasons.filter(season => season.seasonID !== seasonID);
-  
+                const updatedSeasons = userSeasons.filter(
+                  (season) => season.seasonID !== seasonID
+                );
+
                 await userRef.update({
-                  seasons: updatedSeasons
+                  seasons: updatedSeasons,
                 });
               }
-  
-              Alert.alert("Success", `${role.charAt(0).toUpperCase() + role.slice(1)} removed successfully!`);
-  
-              if (role === 'editor') {
-                setEditors(editors.filter(editor => editor.id !== userID));
-              } else if (role === 'viewer') {
-                setViewers(viewers.filter(viewer => viewer.id !== userID));
+
+              Alert.alert(
+                "Success",
+                `${role.charAt(0).toUpperCase() + role.slice(1)} removed successfully!`
+              );
+
+              if (role === "editor") {
+                setEditors(editors.filter((editor) => editor.id !== userID));
+              } else if (role === "viewer") {
+                setViewers(viewers.filter((viewer) => viewer.id !== userID));
               }
             } catch (error) {
               console.error(`Failed to remove ${role}:`, error);
-              Alert.alert("Error", `Failed to remove ${role}. Please try again.`);
+              Alert.alert(
+                "Error",
+                `Failed to remove ${role}. Please try again.`
+              );
             }
             setLoading(false);
-          }
-        }
+          },
+        },
       ]
     );
   };
@@ -298,31 +384,37 @@ export default function SeasonSettings() {
       [
         {
           text: "Cancel",
-          style: "cancel"
+          style: "cancel",
         },
         {
           text: "OK",
           onPress: async () => {
             setLoading(true);
             try {
-              const userRef = firestore().collection('users').doc(userID);
+              const userRef = firestore().collection("users").doc(userID);
 
               await userRef.update({
-                seasons: firestore.FieldValue.arrayRemove(seasonID)
+                seasons: firestore.FieldValue.arrayRemove(seasonID),
               });
 
-              Alert.alert("Success", "Season removed from your account successfully!");
+              Alert.alert(
+                "Success",
+                "Season removed from your account successfully!"
+              );
               setActiveSeason(null);
               router.push({
                 pathname: "seasons",
               });
             } catch (error) {
               console.error("Failed to remove season from account:", error);
-              Alert.alert("Error", "Failed to remove season from account. Please try again.");
+              Alert.alert(
+                "Error",
+                "Failed to remove season from account. Please try again."
+              );
             }
             setLoading(false);
-          }
-        }
+          },
+        },
       ]
     );
   };
@@ -330,7 +422,10 @@ export default function SeasonSettings() {
   const addPlayer = async () => {
     setLoading(true);
     try {
-      const playerStatsCollectionRef = firestore().collection('seasons').doc(seasonID).collection('playerStats');
+      const playerStatsCollectionRef = firestore()
+        .collection("seasons")
+        .doc(seasonID)
+        .collection("playerStats");
 
       const snapshot = await playerStatsCollectionRef.get();
       if (snapshot.empty) {
@@ -377,11 +472,11 @@ export default function SeasonSettings() {
         twoPasses: 0,
         threePasses: 0,
         pts: 0,
-        ptsPerSet: 0.0
+        ptsPerSet: 0.0,
       };
 
       await playerStatsRef.update({
-        roster: firestore.FieldValue.arrayUnion(newPlayer)
+        roster: firestore.FieldValue.arrayUnion(newPlayer),
       });
 
       Alert.alert("Success", "Player added successfully!");
@@ -405,53 +500,55 @@ export default function SeasonSettings() {
     setLoading(true);
     try {
       const seasonRef = firestore().collection("seasons").doc(seasonID);
-  
+
       // Fetch season data to get the access lists
       const seasonDoc = await seasonRef.get();
       if (!seasonDoc.exists) {
         throw new Error("Season not found");
       }
-  
+
       const access = seasonDoc.data().access;
       const usersToUpdate = [access.owner, ...access.editors, ...access.viewers];
-  
+
       // Create a batch for all operations
       const batch = firestore().batch();
-  
+
       // Remove the season document
       batch.delete(seasonRef);
-  
+
       // Remove the season from each user's seasons array and update roles
       for (const userID of usersToUpdate) {
         const userRef = firestore().collection("users").doc(userID);
-  
+
         // Fetch the user document to get current data
         const userDoc = await userRef.get();
         if (userDoc.exists) {
           const userData = userDoc.data();
           const userSeasons = userData.seasons || [];
-  
+
           // Filter out the current season
-          const updatedSeasons = userSeasons.filter(season => season.seasonID !== seasonID);
-  
+          const updatedSeasons = userSeasons.filter(
+            (season) => season.seasonID !== seasonID
+          );
+
           // Prepare the updates for each user
           const updates = { seasons: updatedSeasons };
-  
+
           // Only update editors and viewers if they are present in the current access list
           if (access.editors.includes(userID)) {
-            updates['access.editors'] = firestore.FieldValue.arrayRemove(userID);
+            updates["access.editors"] = firestore.FieldValue.arrayRemove(userID);
           } else if (access.viewers.includes(userID)) {
-            updates['access.viewers'] = firestore.FieldValue.arrayRemove(userID);
+            updates["access.viewers"] = firestore.FieldValue.arrayRemove(userID);
           }
-  
+
           // Update the user's document
           batch.update(userRef, updates);
         }
       }
-  
+
       // Commit the batch
       await batch.commit();
-  
+
       Alert.alert("Success", "Season deleted successfully!");
       setActiveSeason(null);
       router.push({
@@ -463,7 +560,6 @@ export default function SeasonSettings() {
     }
     setLoading(false);
   };
-  
 
   if (loading) {
     return (
@@ -475,8 +571,10 @@ export default function SeasonSettings() {
 
   const renderUser = ({ item, role }) => (
     <View style={styles.userItem}>
-      <Text style={styles.sectionText}>- {item.coachName} ({item.email})</Text>
-      {isOwner && role !== 'owner' && (
+      <Text style={styles.sectionText}>
+        - {item.coachName} ({item.email})
+      </Text>
+      {isOwner && role !== "owner" && (
         <TouchableOpacity onPress={() => removeUser(item.id, role)}>
           <AntDesign name="closecircleo" size={hp(3)} color={COLORS.red} />
         </TouchableOpacity>
@@ -486,7 +584,9 @@ export default function SeasonSettings() {
 
   const renderPlayer = ({ item }) => (
     <View style={styles.playerItem}>
-      <Text style={styles.playerText}>{item.playerName} - #{item.playerNumber}</Text>
+      <Text style={styles.playerText}>
+        {item.playerName} - #{item.playerNumber}
+      </Text>
     </View>
   );
 
@@ -514,12 +614,14 @@ export default function SeasonSettings() {
       <View style={styles.divider} />
 
       <FlatList
-        data={[{ key: 'sections' }]}
+        data={[{ key: "sections" }]}
         renderItem={() => (
           <View>
             {/* Current Season Section */}
             <View style={styles.sectionContainer}>
-              <Text style={styles.currentSeasonText}>Current Season: {seasonData.teamName} {seasonData.year}</Text>
+              <Text style={styles.currentSeasonText}>
+                Current Season: {seasonData.teamName} {seasonData.year}
+              </Text>
               <TouchableOpacity
                 style={styles.changeSeasonButton}
                 onPress={() => {
@@ -548,11 +650,16 @@ export default function SeasonSettings() {
                     />
                   </MenuTrigger>
                   <MenuOptions>
-                    <MenuOption onSelect={() => {}} text="The owner has full permissions for a season, such as statting, viewing stats, adding new editors/viewers, and deleting the season." />
+                    <MenuOption
+                      onSelect={() => {}}
+                      text="The owner has full permissions for a season, such as statting, viewing stats, adding new editors/viewers, and deleting the season."
+                    />
                   </MenuOptions>
                 </Menu>
               </View>
-              {owners.map((owner, index) => renderUser({ item: owner, role: 'owner', key: index }))}
+              {owners.map((owner, index) =>
+                renderUser({ item: owner, role: "owner", key: index })
+              )}
             </View>
             <View style={styles.divider} />
 
@@ -570,13 +677,21 @@ export default function SeasonSettings() {
                     />
                   </MenuTrigger>
                   <MenuOptions>
-                    <MenuOption onSelect={() => {}} text="Editors have full permissions for a season, with the exception that they cannot delete a season or add new editors or viewers. They can stat games, view stats, and perform any other actions that an owner can take." />
+                    <MenuOption
+                      onSelect={() => {}}
+                      text="Editors have full permissions for a season, with the exception that they cannot delete a season or add new editors or viewers. They can stat games, view stats, and perform any other actions that an owner can take."
+                    />
                   </MenuOptions>
                 </Menu>
               </View>
-              {editors.map((editor, index) => renderUser({ item: editor, role: 'editor', key: index }))}
+              {editors.map((editor, index) =>
+                renderUser({ item: editor, role: "editor", key: index })
+              )}
               {isOwner && (
-                <TouchableOpacity style={styles.addOwnerButton} onPress={() => setModalVisible(true)}>
+                <TouchableOpacity
+                  style={styles.addOwnerButton}
+                  onPress={() => setModalVisible(true)}
+                >
                   <Text style={styles.buttonText}>Add Editor</Text>
                 </TouchableOpacity>
               )}
@@ -597,13 +712,21 @@ export default function SeasonSettings() {
                     />
                   </MenuTrigger>
                   <MenuOptions>
-                    <MenuOption onSelect={() => {}} text="Viewers can only view various player and season stats. Viewers cannot add any stats, delete a season, or add new editors or viewers" />
+                    <MenuOption
+                      onSelect={() => {}}
+                      text="Viewers can only view various player and season stats. Viewers cannot add any stats, delete a season, or add new editors or viewers"
+                    />
                   </MenuOptions>
                 </Menu>
               </View>
-              {viewers.map((viewer, index) => renderUser({ item: viewer, role: 'viewer', key: index }))}
+              {viewers.map((viewer, index) =>
+                renderUser({ item: viewer, role: "viewer", key: index })
+              )}
               {isOwner && (
-                <TouchableOpacity style={styles.addOwnerButton} onPress={() => setAddViewerModalVisible(true)}>
+                <TouchableOpacity
+                  style={styles.addOwnerButton}
+                  onPress={() => setAddViewerModalVisible(true)}
+                >
                   <Text style={styles.buttonText}>Add Viewer</Text>
                 </TouchableOpacity>
               )}
@@ -620,8 +743,11 @@ export default function SeasonSettings() {
                 numColumns={3}
                 columnWrapperStyle={styles.columnWrapper}
                 ListFooterComponent={
-                  (isOwner) && (
-                    <TouchableOpacity style={styles.addPlayerButton} onPress={() => setAddPlayerModalVisible(true)}>
+                  isOwner && (
+                    <TouchableOpacity
+                      style={styles.addPlayerButton}
+                      onPress={() => setAddPlayerModalVisible(true)}
+                    >
                       <Text style={styles.buttonText}>Add Player</Text>
                     </TouchableOpacity>
                   )
@@ -632,12 +758,18 @@ export default function SeasonSettings() {
 
             {/* Delete Season Button */}
             {isOwner && (
-              <TouchableOpacity style={styles.deleteSeasonButton} onPress={() => setDeleteSeasonModalVisible(true)}>
+              <TouchableOpacity
+                style={styles.deleteSeasonButton}
+                onPress={() => setDeleteSeasonModalVisible(true)}
+              >
                 <Text style={styles.buttonText}>Delete Season</Text>
               </TouchableOpacity>
             )}
             {(isEditor || isViewer) && (
-              <TouchableOpacity style={styles.deleteSeasonButton} onPress={removeSeasonFromAccount}>
+              <TouchableOpacity
+                style={styles.deleteSeasonButton}
+                onPress={removeSeasonFromAccount}
+              >
                 <Text style={styles.buttonText}>Remove Season</Text>
               </TouchableOpacity>
             )}
@@ -661,10 +793,16 @@ export default function SeasonSettings() {
             value={newOwnerEmail}
             onChangeText={setNewOwnerEmail}
           />
-          <TouchableOpacity style={styles.addOwnerModalButton} onPress={addOwner}>
+          <TouchableOpacity
+            style={styles.addOwnerModalButton}
+            onPress={addOwner}
+          >
             <Text style={styles.buttonText}>Add Editor</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => setModalVisible(false)}
+          >
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
         </View>
@@ -685,10 +823,16 @@ export default function SeasonSettings() {
             value={newViewerEmail}
             onChangeText={setNewViewerEmail}
           />
-          <TouchableOpacity style={styles.addOwnerModalButton} onPress={addViewer}>
+          <TouchableOpacity
+            style={styles.addOwnerModalButton}
+            onPress={addViewer}
+          >
             <Text style={styles.buttonText}>Add Viewer</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.cancelButton} onPress={() => setAddViewerModalVisible(false)}>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => setAddViewerModalVisible(false)}
+          >
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
         </View>
@@ -715,10 +859,16 @@ export default function SeasonSettings() {
             value={newPlayerNumber}
             onChangeText={setNewPlayerNumber}
           />
-          <TouchableOpacity style={styles.addOwnerModalButton} onPress={addPlayer}>
+          <TouchableOpacity
+            style={styles.addOwnerModalButton}
+            onPress={addPlayer}
+          >
             <Text style={styles.buttonText}>Add Player</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.cancelButton} onPress={() => setAddPlayerModalVisible(false)}>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => setAddPlayerModalVisible(false)}
+          >
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
         </View>
@@ -732,7 +882,10 @@ export default function SeasonSettings() {
         onRequestClose={() => setDeleteSeasonModalVisible(false)}
       >
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>Type {seasonData.teamName.toUpperCase()}{seasonData.year} if you would like to delete your season</Text>
+          <Text style={styles.modalText}>
+            Type {seasonData.teamName.toUpperCase()}
+            {seasonData.year} if you would like to delete your season
+          </Text>
           <TextInput
             style={styles.input}
             placeholder="Type here"
@@ -742,9 +895,18 @@ export default function SeasonSettings() {
           <TouchableOpacity
             style={[
               styles.addOwnerModalButton,
-              { backgroundColor: confirmationText === `${seasonData.teamName.toUpperCase()}${seasonData.year}` ? COLORS.primary : COLORS.grey }
+              {
+                backgroundColor:
+                  confirmationText ===
+                  `${seasonData.teamName.toUpperCase()}${seasonData.year}`
+                    ? COLORS.primary
+                    : COLORS.grey,
+              },
             ]}
-            disabled={confirmationText !== `${seasonData.teamName.toUpperCase()}${seasonData.year}`}
+            disabled={
+              confirmationText !==
+              `${seasonData.teamName.toUpperCase()}${seasonData.year}`
+            }
             onPress={() => {
               setDeleteSeasonModalVisible(false);
               Alert.alert(
@@ -753,19 +915,22 @@ export default function SeasonSettings() {
                 [
                   {
                     text: "Cancel",
-                    style: "cancel"
+                    style: "cancel",
                   },
                   {
                     text: "OK",
-                    onPress: deleteSeason
-                  }
+                    onPress: deleteSeason,
+                  },
                 ]
               );
             }}
           >
             <Text style={styles.buttonText}>Delete Season</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.cancelButton} onPress={() => setDeleteSeasonModalVisible(false)}>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => setDeleteSeasonModalVisible(false)}
+          >
             <Text style={styles.buttonText}>Cancel</Text>
           </TouchableOpacity>
         </View>
@@ -783,7 +948,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "start",
     height: hp(11),
-    marginBottom: 30
+    marginBottom: 30,
   },
   headerBtn: {
     flexDirection: "row",
@@ -843,7 +1008,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: COLORS.primary,
     marginBottom: hp(1),
-    marginTop: hp(2)
+    marginTop: hp(2),
   },
   changeSeasonButton: {
     backgroundColor: COLORS.primary,
@@ -852,7 +1017,7 @@ const styles = StyleSheet.create({
     marginBottom: hp(2),
     marginTop: hp(2),
     alignItems: "center",
-    width: wp(20)
+    width: wp(20),
   },
   addOwnerButton: {
     backgroundColor: COLORS.primary,
@@ -861,7 +1026,7 @@ const styles = StyleSheet.create({
     marginTop: hp(2),
     marginBottom: hp(2),
     alignItems: "center",
-    width: wp(20)
+    width: wp(20),
   },
   addPlayerButton: {
     backgroundColor: COLORS.primary,
@@ -869,7 +1034,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: hp(2),
     alignItems: "center",
-    width: wp(20)
+    width: wp(20),
   },
   deleteSeasonButton: {
     backgroundColor: COLORS.red,
@@ -878,7 +1043,7 @@ const styles = StyleSheet.create({
     marginTop: hp(5),
     marginHorizontal: wp(5),
     alignItems: "center",
-    alignSelf: 'center',
+    alignSelf: "center",
     width: wp(20),
     marginBottom: hp(10),
   },
@@ -951,15 +1116,15 @@ const styles = StyleSheet.create({
     marginBottom: hp(2),
   },
   sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   questionIcon: {
     marginLeft: wp(1),
   },
   userItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 });
