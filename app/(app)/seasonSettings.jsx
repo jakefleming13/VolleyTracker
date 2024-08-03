@@ -654,7 +654,7 @@ export default function SeasonSettings() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>Enter Owner's Email</Text>
+          <Text style={styles.modalText}>Enter Editor's Email</Text>
           <TextInput
             style={styles.input}
             placeholder="Email"
