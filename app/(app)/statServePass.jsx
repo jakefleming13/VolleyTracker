@@ -31,7 +31,7 @@ export default function statServePass() {
   // JSON.parse to deal with an array that is being prop drilled
   //const roster = JSON.parse(params.currentLocalRoster);
 
-  const [screenState, setScreenState] = useState(true);
+  const [screenState, setScreenState] = useState(false);
 
   const cancelAlert = () => {
     Alert.alert("Are you sure?", "All game data will be lost.", [
@@ -311,6 +311,83 @@ export default function statServePass() {
             />
           </TouchableOpacity>
         </View>
+        <View style={styles.servingBodyContainer}>
+          <View style={styles.servingContainer}>
+            <Text style={styles.ServingFormText}>Serving Form</Text>
+            <View style={styles.servingFormSlotContainer}>
+              <View style={styles.servingFormTextContainer}>
+                <Text style={styles.servingFormText}>Player</Text>
+              </View>
+              <View style={styles.servingSeperator} />
+              <View style={styles.servingFormBtnContainer}></View>
+            </View>
+            <View style={styles.servingFormSlotContainer}>
+              <View style={styles.servingFormTextContainer}>
+                <Text style={styles.servingFormText}>Serve</Text>
+                <Text style={styles.servingFormText}>Grade</Text>
+              </View>
+              <View style={styles.servingSeperator} />
+              <View style={styles.servingFormBtnContainer}>
+                <TouchableOpacity style={styles.servingFormBtn2}>
+                  <Text style={styles.servingFormBtnText}>0</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.servingFormBtn2}>
+                  <Text style={styles.servingFormBtnText}>1</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.servingFormBtn2}>
+                  <Text style={styles.servingFormBtnText}>2</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.servingFormBtn2}>
+                  <Text style={styles.servingFormBtnText}>3</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.servingFormBtn2}>
+                  <Text style={styles.servingFormBtnText}>4</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.servingFormBtn2}>
+                  <Text style={styles.servingFormBtnText}>5</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.servingFormSlotContainer}>
+              <View style={styles.servingFormTextContainer}>
+                <Text style={styles.servingFormText}>Speed</Text>
+                <Text style={styles.servingFormTextOptional}>(Optional)</Text>
+              </View>
+              <View style={styles.servingSeperator} />
+              <View style={styles.servingFormBtnContainer}></View>
+            </View>
+            <View style={styles.servingFormSlotContainer}>
+              <View style={styles.servingFormTextContainer}>
+                <Text style={styles.servingFormText}>Passing</Text>
+                <Text style={styles.servingFormText}>Grade</Text>
+              </View>
+              <View style={styles.servingSeperator} />
+              <View style={styles.servingFormBtnContainer}>
+                <TouchableOpacity style={styles.servingFormBtn}>
+                  <Text style={styles.servingFormBtnText}>0</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.servingFormBtn}>
+                  <Text style={styles.servingFormBtnText}>1</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.servingFormBtn}>
+                  <Text style={styles.servingFormBtnText}>2</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.servingFormBtn}>
+                  <Text style={styles.servingFormBtnText}>3</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.servingFormBtn}>
+                  <Text style={styles.servingFormBtnText}>4</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.servingFormSubmit}>
+              <Text style={styles.servingSubmitText}>Submit</Text>
+            </View>
+          </View>
+          <View style={styles.servingContainer}>
+            <View style={styles.courtOutline}></View>
+          </View>
+        </View>
       </SafeView>
     );
   }
@@ -545,5 +622,105 @@ const styles = StyleSheet.create({
   },
   widthSpacer3: {
     width: wp(3),
+  },
+  servingBodyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: wp(1),
+    marginVertical: hp(1),
+    flexDirection: "row",
+  },
+  servingContainer: {
+    width: wp(45),
+    height: hp(75),
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: wp(1),
+  },
+  servingSeperator: {
+    borderColor: COLORS.black,
+    borderWidth: StyleSheet.hairlineWidth,
+    height: hp(7.5),
+    alignSelf: "center",
+    justifyContent: "center",
+    marginHorizontal: wp(1),
+  },
+  servingFormSlotContainer: {
+    backgroundColor: COLORS.secondary,
+    width: wp(42.5),
+    height: hp(10),
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: hp(1),
+    flexDirection: "row",
+  },
+  servingFormBtnContainer: {
+    width: wp(27.5),
+    height: hp(7),
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  servingFormBtn: {
+    width: wp(4.5),
+    height: hp(6),
+    backgroundColor: COLORS.grey,
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: wp(0.5),
+  },
+  servingFormBtn2: {
+    width: wp(4),
+    height: hp(6),
+    backgroundColor: COLORS.grey,
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: wp(0.4),
+  },
+  servingFormTextContainer: {
+    width: wp(8),
+    height: hp(7),
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  servingFormText: {
+    fontSize: RFValue(10),
+    fontWeight: "bold",
+  },
+  servingFormBtnText: {
+    fontSize: RFValue(14),
+  },
+  servingFormTextOptional: {
+    fontSize: RFValue(8),
+  },
+  servingFormSubmit: {
+    backgroundColor: COLORS.secondary,
+    width: wp(15),
+    height: hp(7.5),
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: hp(2),
+  },
+  servingSubmitText: {
+    fontSize: RFValue(12),
+    fontWeight: "bold",
+  },
+  ServingFormText: {
+    fontSize: RFValue(16),
+    fontWeight: "bold",
+    marginBottom: hp(2),
+  },
+  courtOutline: {
+    width: wp(35),
+    height: hp(60),
+    backgroundColor: COLORS.secondary,
+    borderWidth: 2.5,
   },
 });
