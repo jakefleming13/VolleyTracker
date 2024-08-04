@@ -129,7 +129,7 @@ const SeasonHome = () => {
               <View style={styles.featureListContainer}>
                 <Text style={styles.featureListText}>
                   Stat Passing
-                  <Text style={styles.inDevelopmentText}> (In Development)</Text>
+                  <Text style={styles.inDevelopmentText}>  (In Development)</Text>
                 </Text>
                 <AntDesign
                   style={styles.featureListIcon}
@@ -143,7 +143,7 @@ const SeasonHome = () => {
               <View style={styles.featureListContainer}>
                 <Text style={styles.featureListText}>
                   Scout Opponent
-                  <Text style={styles.inDevelopmentText}> (In Development)</Text>
+                  <Text style={styles.inDevelopmentText}>  (In Development)</Text>
                 </Text>
                 <AntDesign
                   style={styles.featureListIcon}
