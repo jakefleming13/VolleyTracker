@@ -20,6 +20,7 @@ import {
 } from "react-native-popup-menu";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { FontAwesome6 } from "@expo/vector-icons";
+import Feather from "@expo/vector-icons/Feather";
 
 export default function statServePass() {
   // Get props that are being drilled
@@ -66,91 +67,253 @@ export default function statServePass() {
     setScreenState(!screenState);
   };
 
-  return (
-    <SafeView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={cancelAlert} style={styles.exitBtn}>
-          <AntDesign
-            style={styles.backIcon}
-            name="left"
-            size={hp(3.7)}
-            color={COLORS.white}
-          />
-          <Text style={styles.headerBtnText}>EXIT</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={
-            screenState
-              ? styles.servePassSelectContainerSelected
-              : styles.servePassSelectContainer
-          }
-          onPress={handleScreenState}
-          disabled={screenState ? true : false}
-        >
-          <Text
+  if (screenState === true) {
+    return (
+      <SafeView style={styles.container}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={cancelAlert} style={styles.exitBtn}>
+            <AntDesign
+              style={styles.backIcon}
+              name="left"
+              size={hp(3.7)}
+              color={COLORS.white}
+            />
+            <Text style={styles.headerBtnText}>EXIT</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={
               screenState
-                ? styles.headerTitleFontSelected
-                : styles.headerTitleFont
+                ? styles.servePassSelectContainerSelected
+                : styles.servePassSelectContainer
             }
+            onPress={handleScreenState}
+            disabled={screenState ? true : false}
           >
-            Passing
-          </Text>
-        </TouchableOpacity>
-        <View style={styles.viewStatsContainer}>
-          <TouchableOpacity style={styles.liveStatsContainer}>
-            <FontAwesome6
-              name="chart-bar"
-              size={RFValue(12)}
-              color={COLORS.primary}
+            <Text
+              style={
+                screenState
+                  ? styles.headerTitleFontSelected
+                  : styles.headerTitleFont
+              }
+            >
+              Passing
+            </Text>
+          </TouchableOpacity>
+          <View style={styles.viewStatsContainer}>
+            <TouchableOpacity style={styles.liveStatsContainer}>
+              <FontAwesome6
+                name="chart-bar"
+                size={RFValue(12)}
+                color={COLORS.primary}
+              />
+              <Text style={styles.liveStatsRotationText}>Live Stats</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            style={
+              screenState
+                ? styles.servePassSelectContainer
+                : styles.servePassSelectContainerSelected
+            }
+            disabled={screenState ? false : true}
+            onPress={handleScreenState}
+          >
+            <Text
+              style={
+                screenState
+                  ? styles.headerTitleFont
+                  : styles.headerTitleFontSelected
+              }
+            >
+              Serving
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={saveAlert} style={styles.exitBtn}>
+            <Text style={styles.headerBtnText}>Save</Text>
+            <MaterialIcons
+              style={styles.saveIcon}
+              name="save-alt"
+              size={hp(3.2)}
+              color={COLORS.white}
             />
-            <Text style={styles.liveStatsRotationText}>Live Stats</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={
-            screenState
-              ? styles.servePassSelectContainer
-              : styles.servePassSelectContainerSelected
-          }
-          disabled={screenState ? false : true}
-          onPress={handleScreenState}
-        >
-          <Text
+        <View style={styles.passingHeaderContainer}>
+          <View style={styles.widthSpacer2} />
+          <Text style={styles.passingHeaderText}>Serving Zone (Optional)</Text>
+          <Text style={styles.passingHeaderText}>Serve Type</Text>
+          <Text style={styles.passingHeaderText}>Pass Type</Text>
+          <View style={styles.widthSpacer3} />
+          <Text style={styles.passingHeaderText}>Passing Grade</Text>
+          <View style={styles.widthSpacer} />
+        </View>
+
+        <ScrollView>
+          <View style={styles.playerCardContiner}>
+            <View style={styles.playerHeader}>
+              <Text style={styles.playerNumber}>10</Text>
+              <Text style={styles.playerName}>Temp Passing Card</Text>
+            </View>
+            <TouchableOpacity>
+              <View style={styles.passingMinimizeContainer}>
+                <Feather
+                  name="minimize-2"
+                  size={RFValue(12)}
+                  color={COLORS.white}
+                />
+              </View>
+            </TouchableOpacity>
+            <View style={styles.passingSeperator} />
+            <View style={styles.passingServingZoneContainer}>
+              <TouchableOpacity>
+                <View style={styles.passingServingZoneBtnContainer}>
+                  <Text style={styles.passingGradeBtnText}>1</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <View style={styles.passingServingZoneBtnContainer}>
+                  <Text style={styles.passingGradeBtnText}>6</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <View style={styles.passingServingZoneBtnContainer}>
+                  <Text style={styles.passingGradeBtnText}>5</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.passingSeperator} />
+            <View style={styles.passingTypeContainer}>
+              <TouchableOpacity>
+                <View style={styles.passingTypeBtnContainer}>
+                  <Text style={styles.passingTypeText}>Float</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <View style={styles.passingTypeBtnContainer}>
+                  <Text style={styles.passingTypeText}>Spin</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.passingSeperator} />
+            <View style={styles.passingTypeContainer}>
+              <TouchableOpacity>
+                <View style={styles.passingTypeBtnContainer}>
+                  <Text style={styles.passingTypeText}>Forearm</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <View style={styles.passingTypeBtnContainer}>
+                  <Text style={styles.passingTypeText}>Hand</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.passingSeperator} />
+            <View style={styles.passingGradeContainer}>
+              <TouchableOpacity>
+                <View style={styles.passingGradeBtnContainer}>
+                  <Text style={styles.passingGradeBtnText}>0</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <View style={styles.passingGradeBtnContainer}>
+                  <Text style={styles.passingGradeBtnText}>1</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <View style={styles.passingGradeBtnContainer}>
+                  <Text style={styles.passingGradeBtnText}>2</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <View style={styles.passingGradeBtnContainer}>
+                  <Text style={styles.passingGradeBtnText}>3</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <View style={styles.passingGradeBtnContainer}>
+                  <Text style={styles.passingGradeBtnText}>4</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeView>
+    );
+  } else {
+    return (
+      <SafeView style={styles.container}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={cancelAlert} style={styles.exitBtn}>
+            <AntDesign
+              style={styles.backIcon}
+              name="left"
+              size={hp(3.7)}
+              color={COLORS.white}
+            />
+            <Text style={styles.headerBtnText}>EXIT</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={
               screenState
-                ? styles.headerTitleFont
-                : styles.headerTitleFontSelected
+                ? styles.servePassSelectContainerSelected
+                : styles.servePassSelectContainer
             }
+            onPress={handleScreenState}
+            disabled={screenState ? true : false}
           >
-            Serving
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={saveAlert} style={styles.exitBtn}>
-          <Text style={styles.headerBtnText}>Save</Text>
-          <MaterialIcons
-            style={styles.saveIcon}
-            name="save-alt"
-            size={hp(3.2)}
-            color={COLORS.white}
-          />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.passingHeaderContainer}>
-        <Text style={styles.passingHeaderText}>Serving Zone</Text>
-        <Text style={styles.passingHeaderText}>Pass Type</Text>
-        <Text style={styles.passingHeaderText}>Passing Grade</Text>
-      </View>
-      <ScrollView>
-        <View style={styles.playerCardContiner}>
-          <View style={styles.playerHeader}>
-            <Text style={styles.playerNumber}>10</Text>
-            <Text style={styles.playerName}>Ben Alexander</Text>
+            <Text
+              style={
+                screenState
+                  ? styles.headerTitleFontSelected
+                  : styles.headerTitleFont
+              }
+            >
+              Passing
+            </Text>
+          </TouchableOpacity>
+          <View style={styles.viewStatsContainer}>
+            <TouchableOpacity style={styles.liveStatsContainer}>
+              <FontAwesome6
+                name="chart-bar"
+                size={RFValue(12)}
+                color={COLORS.primary}
+              />
+              <Text style={styles.liveStatsRotationText}>Live Stats</Text>
+            </TouchableOpacity>
           </View>
+          <TouchableOpacity
+            style={
+              screenState
+                ? styles.servePassSelectContainer
+                : styles.servePassSelectContainerSelected
+            }
+            disabled={screenState ? false : true}
+            onPress={handleScreenState}
+          >
+            <Text
+              style={
+                screenState
+                  ? styles.headerTitleFont
+                  : styles.headerTitleFontSelected
+              }
+            >
+              Serving
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={saveAlert} style={styles.exitBtn}>
+            <Text style={styles.headerBtnText}>Save</Text>
+            <MaterialIcons
+              style={styles.saveIcon}
+              name="save-alt"
+              size={hp(3.2)}
+              color={COLORS.white}
+            />
+          </TouchableOpacity>
         </View>
-      </ScrollView>
-    </SafeView>
-  );
+      </SafeView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -227,6 +390,77 @@ const styles = StyleSheet.create({
     shadowRadius: 4.65,
     elevation: 6,
   },
+  passingSeperator: {
+    borderColor: COLORS.black,
+    borderWidth: StyleSheet.hairlineWidth,
+    height: hp(11),
+    alignSelf: "center",
+    justifyContent: "center",
+    marginHorizontal: wp(1.25),
+  },
+  passingServingZoneContainer: {
+    width: wp(20),
+    height: hp(10),
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  passingServingZoneBtnContainer: {
+    width: wp(5),
+    height: hp(7),
+    backgroundColor: COLORS.secondary,
+    borderRadius: 15,
+    marginHorizontal: wp(0.5),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  passingGradeContainer: {
+    width: wp(30),
+    height: hp(12),
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  passingGradeBtnContainer: {
+    width: wp(5),
+    height: hp(7),
+    backgroundColor: COLORS.secondary,
+    borderRadius: 15,
+    marginHorizontal: wp(0.5),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  passingTypeContainer: {
+    width: wp(10),
+    height: hp(12),
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  passingTypeBtnContainer: {
+    width: wp(8),
+    height: hp(5),
+    backgroundColor: COLORS.secondary,
+    borderRadius: 12,
+    marginVertical: wp(0.4),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  passingTypeText: {
+    fontSize: RFValue(9),
+  },
+  passingGradeBtnText: {
+    fontSize: RFValue(16),
+  },
+  passingMinimizeContainer: {
+    width: RFValue(20),
+    height: RFValue(20),
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.primary,
+    borderRadius: 20,
+    marginRight: wp(1),
+  },
   viewStatsContainer: {
     justifyContent: "center",
     alignItems: "center",
@@ -295,11 +529,21 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
+    marginRight: wp(1.25),
   },
   playerNumber: {
     fontSize: RFValue(25),
   },
   playerName: {
     fontSize: RFValue(7.5),
+  },
+  widthSpacer: {
+    width: wp(8),
+  },
+  widthSpacer2: {
+    width: wp(15),
+  },
+  widthSpacer3: {
+    width: wp(3),
   },
 });
