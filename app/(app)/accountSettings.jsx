@@ -123,7 +123,13 @@ export default function Settings() {
                   if (seasonDoc.exists) {
                     const seasonData = seasonDoc.data();
 
+                    const batch = firestore().batch();
+                    const seasonRef = firestore()
+                      .collection("seasons")
+                      .doc(seasonID);
+
                     if (seasonData.access.owner === user.userID) {
+                      // If the user is the owner, delete the season for everyone
                       const access = seasonData.access;
                       const usersToUpdate = [
                         access.owner,
@@ -131,11 +137,7 @@ export default function Settings() {
                         ...access.viewers,
                       ];
 
-                      const batch = firestore().batch();
-
-                      batch.delete(
-                        firestore().collection("seasons").doc(seasonID)
-                      );
+                      batch.delete(seasonRef);
 
                       for (const userID of usersToUpdate) {
                         const userRef = firestore()
@@ -152,9 +154,19 @@ export default function Settings() {
                           batch.update(userRef, { seasons: updatedSeasons });
                         }
                       }
-
-                      await batch.commit();
+                    } else {
+                      // If the user is not the owner, remove them from viewers/editors
+                      batch.update(seasonRef, {
+                        "access.viewers": firestore.FieldValue.arrayRemove(
+                          user.userID
+                        ),
+                        "access.editors": firestore.FieldValue.arrayRemove(
+                          user.userID
+                        ),
+                      });
                     }
+
+                    await batch.commit();
                   }
                 }
 
@@ -299,6 +311,8 @@ export default function Settings() {
               value={emailConfirmation}
               onChangeText={setEmailConfirmation}
               placeholder="Email"
+              keyboardType="email-address"
+              autoCapitalize="none"
             />
             <View style={styles.modalButtons}>
               <TouchableOpacity
@@ -317,7 +331,7 @@ export default function Settings() {
                   emailConfirmation.toLowerCase() !== user.email.toLowerCase()
                 }
               >
-                <Text style={styles.buttonText}>Confirm Delete</Text>
+                <Text style={styles.buttonText}>Delete</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.cancelButton}
