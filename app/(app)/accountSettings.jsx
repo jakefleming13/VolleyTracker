@@ -87,14 +87,31 @@ export default function Settings() {
   };
 
   const confirmDeleteAccount = async () => {
-    if (emailConfirmation.toLowerCase() === user.email.toLowerCase()) {
-      // Prompt for password if not already set
-      if (!password) {
-        Alert.alert("Authentication Required", "Please enter your password to proceed with account deletion.");
-        return;
-      }
+    if (emailConfirmation.toLowerCase() !== user.email.toLowerCase()) {
+      Alert.alert(
+        "Invalid Email",
+        "The email you entered does not match your account email."
+      );
+      return;
+    }
 
-      setModalVisible(false); // Hide the modal
+    if (!password) {
+      Alert.alert(
+        "Authentication Required",
+        "Please enter your password to proceed with account deletion."
+      );
+      return;
+    }
+
+    try {
+      // Re-authenticate the user
+      const credential = auth.EmailAuthProvider.credential(
+        user.email,
+        password
+      );
+      await auth().currentUser.reauthenticateWithCredential(credential);
+
+      // If re-authentication is successful, show the final confirmation dialog
       Alert.alert(
         "Final Account Deletion Confirmation",
         "Deleting your account will also delete all your seasons and remove access for any viewers or editors of those seasons. Do you want to proceed?",
@@ -107,10 +124,6 @@ export default function Settings() {
             text: "Delete",
             onPress: async () => {
               try {
-                // Re-authenticate the user
-                const credential = auth.EmailAuthProvider.credential(user.email, password);
-                await auth().currentUser.reauthenticateWithCredential(credential);
-
                 const userDoc = await firestore()
                   .collection("users")
                   .doc(user.userID)
@@ -193,26 +206,20 @@ export default function Settings() {
                 router.push("welcome");
               } catch (error) {
                 console.error("Failed to delete account:", error);
-                if (error.code === "auth/requires-recent-login") {
-                  Alert.alert(
-                    "Authentication Required",
-                    "Please re-enter your password to proceed with account deletion."
-                  );
-                } else {
-                  Alert.alert(
-                    "Error",
-                    "Failed to delete account. Please try again."
-                  );
-                }
+                Alert.alert(
+                  "Error",
+                  "Failed to delete account. Please try again."
+                );
               }
             },
           },
         ]
       );
-    } else {
+    } catch (error) {
+      console.error("Re-authentication failed:", error);
       Alert.alert(
-        "Invalid Email",
-        "The email you entered does not match your account email."
+        "Re-authentication Failed",
+        "Your credentials were incorrect. Please try again."
       );
     }
   };
