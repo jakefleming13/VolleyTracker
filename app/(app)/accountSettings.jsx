@@ -17,7 +17,7 @@ import firestore from "@react-native-firebase/firestore";
 
 export default function Settings() {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, logout, setActiveSeason } = useAuth();
 
   const [coachName, setCoachName] = useState(user.coachName);
   const [isEditing, setIsEditing] = useState(false);
@@ -200,8 +200,10 @@ export default function Settings() {
                   "Success",
                   "Your account and associated data have been deleted successfully."
                 );
-                logout();
-                router.push("welcome");
+                
+                setActiveSeason(null)
+                await logout();
+                router.push("signIn");
               } catch {
                 Alert.alert(
                   "Error",
@@ -315,7 +317,7 @@ export default function Settings() {
 
       <View style={styles.separator} />
 
-      <TouchableOpacity onPress={handleDeleteAccount}>
+      {/* <TouchableOpacity onPress={handleDeleteAccount}>
         <View style={styles.actionContainer}>
           <AntDesign
             name="deleteuser"
@@ -327,7 +329,7 @@ export default function Settings() {
         </View>
       </TouchableOpacity>
 
-      <View style={styles.separator} />
+      <View style={styles.separator} /> */}
 
       <Modal
         animationType="slide"
