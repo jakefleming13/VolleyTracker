@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, TextInput, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeView } from "../../components/SafeView";
 import { TouchableOpacity } from "react-native";
@@ -9,10 +9,99 @@ import {
 import { COLORS } from "../../constants/Colors";
 import { StyleSheet } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import { useAuth } from "../../context/authContext";
+import { useState } from "react";
+import auth from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
 
-export default function settings() {
+export default function Settings() {
   const router = useRouter();
+  const { user, logout } = useAuth();
+
+  const [coachName, setCoachName] = useState(user.coachName);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleChangeCoachName = async () => {
+    try {
+      await firestore()
+        .collection("users")
+        .doc(user.userID)
+        .update({ coachName });
+
+      Alert.alert("Success", "Coach name updated successfully!");
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Failed to update coach name:", error);
+      Alert.alert("Error", "Failed to update coach name. Please try again.");
+    }
+  };
+
+  const handleResetPassword = () => {
+    auth()
+      .sendPasswordResetEmail(user.email)
+      .then(() => {
+        Alert.alert(
+          "Success",
+          "Password reset email sent! Please check your email."
+        );
+      })
+      .catch((error) => {
+        console.error("Failed to send password reset email:", error);
+        Alert.alert(
+          "Error",
+          "Failed to send password reset email. Please try again."
+        );
+      });
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Confirm Account Deletion",
+      "Are you sure you want to delete your account? This action cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            try {
+              await firestore()
+                .collection("users")
+                .doc(user.userID)
+                .delete();
+
+              auth()
+                .currentUser.delete()
+                .then(() => {
+                  Alert.alert(
+                    "Success",
+                    "Your account has been deleted successfully."
+                  );
+                  logout();
+                  router.push("welcome");
+                })
+                .catch((error) => {
+                  console.error("Failed to delete account:", error);
+                  Alert.alert(
+                    "Error",
+                    "Failed to delete account. Please try again."
+                  );
+                });
+            } catch (error) {
+              console.error("Failed to delete account:", error);
+              Alert.alert(
+                "Error",
+                "Failed to delete account. Please try again."
+              );
+            }
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <SafeView style={styles.container}>
@@ -22,19 +111,91 @@ export default function settings() {
             <AntDesign
               style={styles.seasonListIcon}
               name="left"
-              size={hp(3.7)}
+              size={hp(4.5)}
               color={COLORS.white}
             />
             <Text style={styles.headerBtnText}>SETTINGS</Text>
           </View>
         </TouchableOpacity>
       </View>
-   
 
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>Account Settings</Text>
+      </View>
 
+      <View style={styles.seperator} />
+
+      <View style={styles.infoContainer}>
+        <MaterialIcons
+          name="email"
+          size={hp(4)}
+          color={COLORS.primary}
+          style={styles.infoIcon}
+        />
+        <Text style={styles.infoText}>{user.email}</Text>
+      </View>
+
+      <View style={styles.infoContainer}>
+        <FontAwesome5
+          name="user-alt"
+          size={hp(4)}
+          color={COLORS.primary}
+          style={styles.infoIcon}
+        />
+        {isEditing ? (
+          <TextInput
+            style={styles.infoInput}
+            value={coachName}
+            onChangeText={setCoachName}
+            placeholder="Coach Name"
+          />
+        ) : (
+          <Text style={styles.infoText}>{coachName}</Text>
+        )}
+        <TouchableOpacity
+          onPress={() => {
+            if (isEditing) {
+              handleChangeCoachName();
+            } else {
+              setIsEditing(true);
+            }
+          }}
+        >
+          <AntDesign
+            name={isEditing ? "checkcircle" : "edit"}
+            size={hp(3.5)}
+            color={isEditing ? COLORS.green : COLORS.primary}
+            style={styles.infoIcon}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.seperator} />
+
+      <TouchableOpacity onPress={handleResetPassword}>
+        <View style={styles.actionContainer}>
+          <AntDesign
+            name="unlock"
+            size={hp(4)}
+            color={COLORS.primary}
+            style={styles.actionIcon}
+          />
+          <Text style={styles.actionText}>Reset Password</Text>
+        </View>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={handleDeleteAccount}>
+        <View style={styles.actionContainer}>
+          <AntDesign
+            name="deleteuser"
+            size={hp(4)}
+            color={COLORS.red}
+            style={styles.actionIcon}
+          />
+          <Text style={styles.actionText}>Delete Account</Text>
+        </View>
+      </TouchableOpacity>
     </SafeView>
-
-    
   );
 }
 
@@ -84,22 +245,41 @@ const styles = StyleSheet.create({
   seasonListIcon: {
     paddingRight: 1,
   },
-
-  featureListContainer: {
+  infoContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: COLORS.white,
-    height: hp(9),
     alignItems: "center",
-    borderWidth: 0.5,
-    borderColor: COLORS.primary,
+    paddingVertical: hp(2),
+    paddingHorizontal: wp(5),
   },
-  featureListText: {
+  infoIcon: {
+    marginRight: wp(3),
+  },
+  infoText: {
     fontSize: RFValue(18),
-    paddingLeft: 20,
     color: COLORS.black,
+    flex: 1,
   },
-  featureListIcon: {
-    paddingRight: 20,
+  infoInput: {
+    fontSize: RFValue(18),
+    color: COLORS.black,
+    flex: 1,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.grey,
+  },
+  actionContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: hp(2),
+    paddingHorizontal: wp(5),
+    backgroundColor: COLORS.lightGrey,
+    marginVertical: hp(1),
+    borderRadius: 10,
+  },
+  actionIcon: {
+    marginRight: wp(3),
+  },
+  actionText: {
+    fontSize: RFValue(18),
+    color: COLORS.black,
   },
 });
