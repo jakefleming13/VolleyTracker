@@ -323,8 +323,8 @@ export default function statServePass() {
             </View>
             <View style={styles.servingFormSlotContainer}>
               <View style={styles.servingFormTextContainer}>
-                <Text style={styles.servingFormText}>Serve</Text>
-                <Text style={styles.servingFormText}>Grade</Text>
+                <Text style={styles.servingFormText}>Serve Grade</Text>
+                <Text style={styles.servingFormTextOptional}>(Optional)</Text>
               </View>
               <View style={styles.servingSeperator} />
               <View style={styles.servingFormBtnContainer}>
