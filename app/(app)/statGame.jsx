@@ -67,7 +67,7 @@ export default function statGame() {
   //Structure of what the  `setsBeingPlayed` param looks like:
   //   key: "BO3", key: "BO5", key: "1", key: "2", key: "3", key: "4", key: "5",
   //TODO: replace with `setsBeingPlayed` param
-  const [gameConditions, setGameConditions] = useState("1");
+  const [gameConditions, setGameConditions] = useState("2");
 
   //State hook to store the current set
   const [currentSet, setCurrentSet] = useState(1);
@@ -743,6 +743,30 @@ export default function statGame() {
         onPress: () => router.push("seasonHome"),
       },
     ]);
+  };
+
+  const blankPlayerAlert = () => {
+    Alert.alert(
+      "Invalid Line-Up Detected",
+      "All Player fields need to be filled out.",
+      [
+        {
+          text: "Ok",
+        },
+      ]
+    );
+  };
+
+  const duplicatePlayerAlert = () => {
+    Alert.alert(
+      "Duplicate Players Detected",
+      "Duplicate players within the line-up is not allowed.",
+      [
+        {
+          text: "Ok",
+        },
+      ]
+    );
   };
 
   const [isLiveStatsModalVisible, setLiveStatsModalVisible] = useState(false);
@@ -2743,6 +2767,41 @@ export default function statGame() {
     }
   }, [setsFinished, homeSetsWon, opponentSetsWon]);
 
+  const handleInBetweenConfirmation = () => {
+    // Logic to handle in-between confirmation
+    const selectedPlayers = [
+      positionOne,
+      positionTwo,
+      positionThree,
+      positionFour,
+      positionFive,
+      positionSix,
+      firstLibero,
+      secondLibero,
+    ];
+
+    if (
+      positionOne === "" ||
+      positionTwo === "" ||
+      positionThree === "" ||
+      positionFour === "" ||
+      positionFive === "" ||
+      positionSix === ""
+    ) {
+      blankPlayerAlert();
+    } else {
+      const uniquePlayers = new Set(selectedPlayers);
+      if (uniquePlayers.size !== selectedPlayers.length) {
+        duplicatePlayerAlert();
+      } else {
+        //Success
+        setEndSetState(false);
+        handleStartersSetsPlayed();
+        setUndoAvailable(false);
+      }
+    }
+  };
+
   if (endGameState === true) {
     return (
       <SafeView style={styles.container}>
@@ -2788,7 +2847,7 @@ export default function statGame() {
               <View />
             )}
             <View style={styles.liveStatsModalBody}>
-              <View style={styles.liveStatsTitleRow}>
+              <View style={styles.endGameStatsTitleRow}>
                 <View style={styles.liveStatsStatHeader}>
                   <Text style={styles.liveStatsPlayerHeader}>
                     #{"  "}Player
@@ -2815,7 +2874,7 @@ export default function statGame() {
               {rosterStats.map((player) => {
                 return (
                   <View
-                    style={styles.liveStatsTitleRow}
+                    style={styles.endGameStatsTitleRow}
                     key={player.playerNumber}
                   >
                     <View style={styles.liveStatsStatHeader}>
@@ -2906,7 +2965,7 @@ export default function statGame() {
                   </View>
                 );
               })}
-              <View style={styles.liveStatsTitleRow}>
+              <View style={styles.endGameStatsTitleRow}>
                 <View style={styles.liveStatsStatHeader}>
                   <Text style={styles.liveStatsPlayerHeader}>
                     Team
@@ -3046,14 +3105,10 @@ export default function statGame() {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              setEndSetState(false);
+              handleInBetweenConfirmation();
 
               //TODOs:
               //Reset onCourtPositionValues and subs to reaspect positions
-              //Input validation, ensure rotation is proper ->
-
-              handleStartersSetsPlayed();
-              setUndoAvailable(false);
             }}
           >
             <View style={styles.nextSetBtn}>
@@ -4778,6 +4833,14 @@ const styles = StyleSheet.create({
     paddingRight: 3,
     fontWeight: "bold",
     textAlign: "center",
+    color: COLORS.white,
+  },
+  endGameStatsTitleRow: {
+    flexDirection: "row",
+    height: hp(6),
+    borderBlockColor: COLORS.black,
+    borderWidth: StyleSheet.hairlineWidth,
+    backgroundColor: COLORS.secondary,
     color: COLORS.white,
   },
   inBetweenBodyContainer: {
