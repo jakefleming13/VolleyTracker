@@ -23,18 +23,46 @@ export default function Settings() {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleChangeCoachName = async () => {
-    try {
-      await firestore()
-        .collection("users")
-        .doc(user.userID)
-        .update({ coachName });
+    // Validate the coach name before updating
+    if (validateCoachName(coachName)) {
+      try {
+        await firestore()
+          .collection("users")
+          .doc(user.userID)
+          .update({ coachName });
 
-      Alert.alert("Success", "Coach name updated successfully!");
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Failed to update coach name:", error);
-      Alert.alert("Error", "Failed to update coach name. Please try again.");
+        Alert.alert("Success", "Coach name updated successfully!");
+        setIsEditing(false);
+      } catch (error) {
+        console.error("Failed to update coach name:", error);
+        Alert.alert("Error", "Failed to update coach name. Please try again.");
+      }
     }
+  };
+
+  const validateCoachName = (name) => {
+    const specialCharacterRegex = /[^a-zA-Z\s]/;
+
+    if (!name.trim()) {
+      Alert.alert("Invalid Input", "Coach name cannot be empty.");
+      return false;
+    }
+    if (name.length > 30) {
+      Alert.alert(
+        "Invalid Input",
+        "Coach name cannot exceed 30 characters."
+      );
+      return false;
+    }
+    if (specialCharacterRegex.test(name)) {
+      Alert.alert(
+        "Invalid Input",
+        "Coach name cannot contain special characters."
+      );
+      return false;
+    }
+
+    return true;
   };
 
   const handleResetPassword = () => {
@@ -143,6 +171,7 @@ export default function Settings() {
               value={coachName}
               onChangeText={setCoachName}
               placeholder="Coach Name"
+              maxLength={30} // Restrict max length in input
             />
           ) : (
             <Text style={styles.infoText}>{coachName}</Text>
@@ -235,7 +264,7 @@ const styles = StyleSheet.create({
   separator: {
     borderBottomColor: COLORS.primary,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    width: "100%", 
+    width: "100%", // Full width
     alignSelf: "center",
     marginBottom: wp(1),
     marginTop: wp(1),
@@ -269,10 +298,10 @@ const styles = StyleSheet.create({
     flex: 1,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.grey,
-    marginRight: wp(2), 
+    marginRight: wp(2), // Space between input and icon
   },
   editIcon: {
-    marginLeft: wp(1),
+    marginLeft: wp(2),
   },
   actionContainer: {
     flexDirection: "row",
