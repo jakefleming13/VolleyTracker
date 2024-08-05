@@ -29,10 +29,7 @@ export default function settings() {
           </View>
         </TouchableOpacity>
       </View>
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>Account Settings</Text>
-      </View>
-      <View style={styles.seperator} />
+   
 
 
     </SafeView>
