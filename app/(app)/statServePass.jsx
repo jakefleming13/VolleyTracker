@@ -380,12 +380,49 @@ export default function statServePass() {
                 </TouchableOpacity>
               </View>
             </View>
-            <View style={styles.servingFormSubmit}>
+            <TouchableOpacity style={styles.servingFormSubmit}>
               <Text style={styles.servingSubmitText}>Submit</Text>
-            </View>
+            </TouchableOpacity>
           </View>
           <View style={styles.servingContainer}>
-            <View style={styles.courtOutline}></View>
+            <View style={styles.opponentCourtOutline}>
+              <View style={styles.opponentCourtContainer}>
+                <TouchableOpacity style={styles.passingZoneBackCourt} />
+                <TouchableOpacity style={styles.passingZoneBackCourt} />
+                <TouchableOpacity style={styles.passingZoneBackCourt} />
+                <TouchableOpacity style={styles.passingZoneBackCourt} />
+                <TouchableOpacity style={styles.passingZoneBackCourt} />
+              </View>
+              <View style={styles.opponentCourtContainer}>
+                <TouchableOpacity style={styles.passingZoneBackCourt} />
+                <TouchableOpacity style={styles.passingZoneBackCourt} />
+                <TouchableOpacity style={styles.passingZoneBackCourt} />
+                <TouchableOpacity style={styles.passingZoneBackCourt} />
+                <TouchableOpacity style={styles.passingZoneBackCourt} />
+              </View>
+              <View style={styles.opponentCourtAttackLineContainer}>
+                <TouchableOpacity style={styles.passingZone} />
+                <TouchableOpacity style={styles.passingZone} />
+                <TouchableOpacity style={styles.passingZone} />
+              </View>
+            </View>
+            <View style={styles.homeCourtOutline}>
+              <View style={styles.opponentCourtContainer}></View>
+
+              <View style={styles.opponentCourtAttackLineContainer}></View>
+              <View style={styles.opponentCourtContainer}></View>
+            </View>
+            <View style={styles.servingZoneContainer}>
+              <TouchableOpacity style={styles.servingZone}>
+                <Text style={styles.servingZoneText}>5</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.servingZone}>
+                <Text style={styles.servingZoneText}>6</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.servingZone}>
+                <Text style={styles.servingZoneText}>1</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </SafeView>
@@ -656,6 +693,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: hp(1),
     flexDirection: "row",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   servingFormBtnContainer: {
     width: wp(27.5),
@@ -707,6 +752,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: hp(2),
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   servingSubmitText: {
     fontSize: RFValue(12),
@@ -717,10 +770,71 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: hp(2),
   },
-  courtOutline: {
+  homeCourtOutline: {
     width: wp(35),
-    height: hp(60),
+    height: hp(30),
     backgroundColor: COLORS.secondary,
     borderWidth: 2.5,
+  },
+  opponentCourtOutline: {
+    width: wp(35),
+    height: hp(30),
+    backgroundColor: COLORS.secondary,
+    borderWidth: 3,
+  },
+  opponentCourtContainer: {
+    width: wp(35),
+    height: hp(10),
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  opponentCourtAttackLineContainer: {
+    width: wp(35),
+    height: hp(10),
+    borderTopWidth: 1,
+    flexDirection: "row",
+    padding: RFValue(2),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  servingZoneContainer: {
+    width: wp(35),
+    height: hp(10),
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    marginTop: hp(0.5),
+  },
+  servingZone: {
+    width: wp(11),
+    height: hp(10),
+    backgroundColor: COLORS.grey,
+    borderWidth: 1,
+    marginHorizontal: wp(0.5),
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  servingZoneText: {
+    fontSize: RFValue(12),
+    fontWeight: "bold",
+  },
+  passingZone: {
+    width: wp(10),
+    height: hp(7),
+    backgroundColor: COLORS.grey,
+    borderWidth: 1,
+    borderRadius: 20,
+    margin: RFValue(5),
+    paddingTop: RFValue(2),
+  },
+  passingZoneBackCourt: {
+    width: wp(6.5),
+    height: hp(9),
+    backgroundColor: COLORS.grey,
+    borderWidth: 1,
+    borderRadius: 20,
+    margin: RFValue(1),
   },
 });
