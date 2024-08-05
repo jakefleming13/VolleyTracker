@@ -119,12 +119,6 @@ export default function Settings() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>Account Settings</Text>
-      </View>
-
-      <View style={styles.seperator} />
-
       <View style={styles.infoContainer}>
         <MaterialIcons
           name="email"
@@ -142,35 +136,37 @@ export default function Settings() {
           color={COLORS.primary}
           style={styles.infoIcon}
         />
-        {isEditing ? (
-          <TextInput
-            style={styles.infoInput}
-            value={coachName}
-            onChangeText={setCoachName}
-            placeholder="Coach Name"
-          />
-        ) : (
-          <Text style={styles.infoText}>{coachName}</Text>
-        )}
-        <TouchableOpacity
-          onPress={() => {
-            if (isEditing) {
-              handleChangeCoachName();
-            } else {
-              setIsEditing(true);
-            }
-          }}
-        >
-          <AntDesign
-            name={isEditing ? "checkcircle" : "edit"}
-            size={hp(3.5)}
-            color={isEditing ? COLORS.green : COLORS.primary}
-            style={styles.infoIcon}
-          />
-        </TouchableOpacity>
+        <View style={styles.coachNameContainer}>
+          {isEditing ? (
+            <TextInput
+              style={styles.infoInput}
+              value={coachName}
+              onChangeText={setCoachName}
+              placeholder="Coach Name"
+            />
+          ) : (
+            <Text style={styles.infoText}>{coachName}</Text>
+          )}
+          <TouchableOpacity
+            onPress={() => {
+              if (isEditing) {
+                handleChangeCoachName();
+              } else {
+                setIsEditing(true);
+              }
+            }}
+            style={styles.editIcon}
+          >
+            <AntDesign
+              name={isEditing ? "checkcircle" : "edit"}
+              size={hp(4)}
+              color={isEditing ? COLORS.green : COLORS.primary}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      <View style={styles.seperator} />
+      <View style={styles.separator} />
 
       <TouchableOpacity onPress={handleResetPassword}>
         <View style={styles.actionContainer}>
@@ -208,6 +204,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "start",
     height: hp(11),
+    marginBottom: hp(10),
   },
   headerBtn: {
     flexDirection: "row",
@@ -235,12 +232,13 @@ const styles = StyleSheet.create({
   titleContainer: {
     alignItems: "center",
   },
-  seperator: {
+  separator: {
     borderBottomColor: COLORS.primary,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    width: "60%",
+    width: "100%", 
     alignSelf: "center",
-    marginBottom: 30,
+    marginBottom: wp(1),
+    marginTop: wp(1),
   },
   seasonListIcon: {
     paddingRight: 1,
@@ -254,10 +252,16 @@ const styles = StyleSheet.create({
   infoIcon: {
     marginRight: wp(3),
   },
+  coachNameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
   infoText: {
     fontSize: RFValue(18),
     color: COLORS.black,
     flex: 1,
+    marginRight: wp(2), // Space between text and icon
   },
   infoInput: {
     fontSize: RFValue(18),
@@ -265,6 +269,10 @@ const styles = StyleSheet.create({
     flex: 1,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.grey,
+    marginRight: wp(2), 
+  },
+  editIcon: {
+    marginLeft: wp(1),
   },
   actionContainer: {
     flexDirection: "row",
