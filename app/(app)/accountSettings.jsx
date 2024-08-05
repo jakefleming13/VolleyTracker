@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Alert } from "react-native";
+import { View, Text, TextInput, Alert, Modal } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeView } from "../../components/SafeView";
 import { TouchableOpacity } from "react-native";
@@ -21,9 +21,10 @@ export default function Settings() {
 
   const [coachName, setCoachName] = useState(user.coachName);
   const [isEditing, setIsEditing] = useState(false);
+  const [emailConfirmation, setEmailConfirmation] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleChangeCoachName = async () => {
-    // Validate the coach name before updating
     if (validateCoachName(coachName)) {
       try {
         await firestore()
@@ -48,10 +49,7 @@ export default function Settings() {
       return false;
     }
     if (name.length > 30) {
-      Alert.alert(
-        "Invalid Input",
-        "Coach name cannot exceed 30 characters."
-      );
+      Alert.alert("Invalid Input", "Coach name cannot exceed 30 characters.");
       return false;
     }
     if (specialCharacterRegex.test(name)) {
@@ -84,51 +82,109 @@ export default function Settings() {
   };
 
   const handleDeleteAccount = () => {
-    Alert.alert(
-      "Confirm Account Deletion",
-      "Are you sure you want to delete your account? This action cannot be undone.",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          onPress: async () => {
-            try {
-              await firestore()
-                .collection("users")
-                .doc(user.userID)
-                .delete();
+    setModalVisible(true); // Show the modal when the delete button is clicked
+  };
 
-              auth()
-                .currentUser.delete()
-                .then(() => {
-                  Alert.alert(
-                    "Success",
-                    "Your account has been deleted successfully."
-                  );
-                  logout();
-                  router.push("welcome");
-                })
-                .catch((error) => {
-                  console.error("Failed to delete account:", error);
-                  Alert.alert(
-                    "Error",
-                    "Failed to delete account. Please try again."
-                  );
-                });
-            } catch (error) {
-              console.error("Failed to delete account:", error);
-              Alert.alert(
-                "Error",
-                "Failed to delete account. Please try again."
-              );
-            }
+  const confirmDeleteAccount = async () => {
+    if (emailConfirmation.toLowerCase() === user.email.toLowerCase()) {
+      setModalVisible(false); // Hide the modal
+      Alert.alert(
+        "Final Account Deletion Confirmation",
+        "Deleting your account will also delete all your seasons and remove access for any viewers or editors of those seasons. Do you want to proceed?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
           },
-        },
-      ]
-    );
+          {
+            text: "Delete",
+            onPress: async () => {
+              try {
+                const userDoc = await firestore()
+                  .collection("users")
+                  .doc(user.userID)
+                  .get();
+
+                if (!userDoc.exists) {
+                  throw new Error("User not found");
+                }
+
+                const userData = userDoc.data();
+                const userSeasons = userData.seasons || [];
+
+                for (const season of userSeasons) {
+                  const seasonID = season.seasonID;
+
+                  const seasonDoc = await firestore()
+                    .collection("seasons")
+                    .doc(seasonID)
+                    .get();
+
+                  if (seasonDoc.exists) {
+                    const seasonData = seasonDoc.data();
+
+                    if (seasonData.access.owner === user.userID) {
+                      const access = seasonData.access;
+                      const usersToUpdate = [
+                        access.owner,
+                        ...access.editors,
+                        ...access.viewers,
+                      ];
+
+                      const batch = firestore().batch();
+
+                      batch.delete(
+                        firestore().collection("seasons").doc(seasonID)
+                      );
+
+                      for (const userID of usersToUpdate) {
+                        const userRef = firestore()
+                          .collection("users")
+                          .doc(userID);
+
+                        const userDoc = await userRef.get();
+                        if (userDoc.exists) {
+                          const userSeasons = userDoc.data().seasons || [];
+                          const updatedSeasons = userSeasons.filter(
+                            (season) => season.seasonID !== seasonID
+                          );
+
+                          batch.update(userRef, { seasons: updatedSeasons });
+                        }
+                      }
+
+                      await batch.commit();
+                    }
+                  }
+                }
+
+                await firestore().collection("users").doc(user.userID).delete();
+
+                await auth().currentUser.delete();
+
+                Alert.alert(
+                  "Success",
+                  "Your account and associated data have been deleted successfully."
+                );
+                logout();
+                router.push("welcome");
+              } catch (error) {
+                console.error("Failed to delete account:", error);
+                Alert.alert(
+                  "Error",
+                  "Failed to delete account. Please try again."
+                );
+              }
+            },
+          },
+        ]
+      );
+    } else {
+      Alert.alert(
+        "Invalid Email",
+        "The email you entered does not match your account email."
+      );
+    }
   };
 
   return (
@@ -157,6 +213,8 @@ export default function Settings() {
         <Text style={styles.infoText}>{user.email}</Text>
       </View>
 
+      <View style={styles.separator} />
+
       <View style={styles.infoContainer}>
         <FontAwesome5
           name="user-alt"
@@ -171,7 +229,7 @@ export default function Settings() {
               value={coachName}
               onChangeText={setCoachName}
               placeholder="Coach Name"
-              maxLength={30} // Restrict max length in input
+              maxLength={30}
             />
           ) : (
             <Text style={styles.infoText}>{coachName}</Text>
@@ -209,6 +267,8 @@ export default function Settings() {
         </View>
       </TouchableOpacity>
 
+      <View style={styles.separator} />
+
       <TouchableOpacity onPress={handleDeleteAccount}>
         <View style={styles.actionContainer}>
           <AntDesign
@@ -220,6 +280,55 @@ export default function Settings() {
           <Text style={styles.actionText}>Delete Account</Text>
         </View>
       </TouchableOpacity>
+
+      {/* Modal for Email Confirmation */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Confirm Account Deletion</Text>
+            <Text style={styles.modalText}>
+              Type your email to confirm deletion
+            </Text>
+            <TextInput
+              style={styles.modalInput}
+              value={emailConfirmation}
+              onChangeText={setEmailConfirmation}
+              placeholder="Email"
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[
+                  styles.confirmDeleteButton,
+                  {
+                    backgroundColor:
+                      emailConfirmation.toLowerCase() ===
+                      user.email.toLowerCase()
+                        ? COLORS.red
+                        : COLORS.grey,
+                  },
+                ]}
+                onPress={confirmDeleteAccount}
+                disabled={
+                  emailConfirmation.toLowerCase() !== user.email.toLowerCase()
+                }
+              >
+                <Text style={styles.buttonText}>Confirm Delete</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeView>
   );
 }
@@ -231,7 +340,7 @@ const styles = StyleSheet.create({
   },
   backContainer: {
     flexDirection: "row",
-    justifyContent: "start",
+    justifyContent: "flex-start",
     height: hp(11),
     marginBottom: hp(10),
   },
@@ -253,25 +362,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: COLORS.white,
   },
-  titleText: {
-    fontSize: RFValue(30),
-    color: COLORS.primary,
-    marginBottom: 35,
-  },
-  titleContainer: {
-    alignItems: "center",
-  },
-  separator: {
-    borderBottomColor: COLORS.primary,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    width: "100%", // Full width
-    alignSelf: "center",
-    marginBottom: wp(1),
-    marginTop: wp(1),
-  },
-  seasonListIcon: {
-    paddingRight: 1,
-  },
   infoContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -290,7 +380,7 @@ const styles = StyleSheet.create({
     fontSize: RFValue(18),
     color: COLORS.black,
     flex: 1,
-    marginRight: wp(2), // Space between text and icon
+    marginRight: wp(2),
   },
   infoInput: {
     fontSize: RFValue(18),
@@ -298,7 +388,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.grey,
-    marginRight: wp(2), // Space between input and icon
+    marginRight: wp(2),
   },
   editIcon: {
     marginLeft: wp(2),
@@ -318,5 +408,66 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: RFValue(18),
     color: COLORS.black,
+  },
+  separator: {
+    borderBottomColor: COLORS.primary,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    width: "100%",
+    alignSelf: "center",
+    marginBottom: wp(1),
+    marginTop: wp(1),
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    width: wp(80),
+  },
+  modalTitle: {
+    fontSize: RFValue(20),
+    fontWeight: "bold",
+    marginBottom: hp(2),
+  },
+  modalText: {
+    fontSize: RFValue(16),
+    marginBottom: hp(2),
+  },
+  modalInput: {
+    height: hp(5),
+    borderColor: COLORS.grey,
+    borderWidth: 1,
+    marginBottom: hp(2),
+    width: wp(70),
+    padding: 10,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  confirmDeleteButton: {
+    backgroundColor: COLORS.red,
+    padding: hp(1.5),
+    borderRadius: 10,
+    alignItems: "center",
+    width: "48%",
+  },
+  cancelButton: {
+    backgroundColor: COLORS.primary,
+    padding: hp(1.5),
+    borderRadius: 10,
+    alignItems: "center",
+    width: "48%",
+  },
+  buttonText: {
+    color: COLORS.white,
+    fontWeight: "bold",
   },
 });
