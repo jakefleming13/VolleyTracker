@@ -71,7 +71,7 @@ export default function Settings() {
       .then(() => {
         Alert.alert(
           "Success",
-          "Password reset email sent! Please check your email."
+          "Password reset email sent! Please check your email (email may get sent to junk email)."
         );
       })
       .catch((error) => {
