@@ -31,7 +31,7 @@ export default function statServePass() {
   // JSON.parse to deal with an array that is being prop drilled
   //const roster = JSON.parse(params.currentLocalRoster);
 
-  const [screenState, setScreenState] = useState(false);
+  const [screenState, setScreenState] = useState(true);
 
   const cancelAlert = () => {
     Alert.alert("Are you sure?", "All game data will be lost.", [
