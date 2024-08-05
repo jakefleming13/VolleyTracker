@@ -36,7 +36,6 @@ export default function Settings() {
         Alert.alert("Success", "Coach name updated successfully!");
         setIsEditing(false);
       } catch (error) {
-        console.error("Failed to update coach name:", error);
         Alert.alert("Error", "Failed to update coach name. Please try again.");
       }
     }
@@ -73,8 +72,7 @@ export default function Settings() {
           "Password reset email sent! Please check your email (email may get sent to junk email)."
         );
       })
-      .catch((error) => {
-        console.error("Failed to send password reset email:", error);
+      .catch(() => {
         Alert.alert(
           "Error",
           "Failed to send password reset email. Please try again."
@@ -204,8 +202,7 @@ export default function Settings() {
                 );
                 logout();
                 router.push("welcome");
-              } catch (error) {
-                console.error("Failed to delete account:", error);
+              } catch {
                 Alert.alert(
                   "Error",
                   "Failed to delete account. Please try again."
@@ -216,12 +213,22 @@ export default function Settings() {
         ]
       );
     } catch (error) {
-      console.error("Re-authentication failed:", error);
-      Alert.alert(
-        "Re-authentication Failed",
-        "Your credentials were incorrect. Please try again."
-      );
+      handleReauthError(error); // Call error handler function
     }
+  };
+
+  const handleReauthError = (error) => {
+    let errorMessage = "An error occurred. Please try again.";
+    if (error.code === "auth/invalid-credential") {
+      errorMessage =
+        "The email or password you entered is incorrect. Please try again.";
+    } else if (error.code === "auth/user-not-found") {
+      errorMessage = "No user found with this email. Please check and try again.";
+    } else if (error.code === "auth/wrong-password") {
+      errorMessage = "The password is incorrect. Please try again.";
+    }
+
+    Alert.alert("Error", errorMessage);
   };
 
   return (
