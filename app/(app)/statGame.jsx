@@ -67,7 +67,7 @@ export default function statGame() {
   //Structure of what the  `setsBeingPlayed` param looks like:
   //   key: "BO3", key: "BO5", key: "1", key: "2", key: "3", key: "4", key: "5",
   //TODO: replace with `setsBeingPlayed` param
-  const [gameConditions, setGameConditions] = useState("2");
+  const [gameConditions, setGameConditions] = useState("BO5");
 
   //State hook to store the current set
   const [currentSet, setCurrentSet] = useState(1);
@@ -2659,11 +2659,13 @@ export default function statGame() {
     );
   };
 
+  const [scoreLimit, setScoreLimit] = useState(24);
+
   //Function that handles the end of a set
   const endSet = () => {
     if (
-      (homeScore > 24 && homeScore - opponentScore > 1) ||
-      (opponentScore > 24 && opponentScore - homeScore > 1)
+      (homeScore > scoreLimit && homeScore - opponentScore > 1) ||
+      (opponentScore > scoreLimit && opponentScore - homeScore > 1)
     ) {
       // Update server trackers if the set ends
       if (prevServerTracker === "Opponent") {
@@ -2737,31 +2739,57 @@ export default function statGame() {
     // Check if the game is over
     switch (gameConditions) {
       case "BO3":
-        if (homeSetsWon === 2 || opponentSetsWon === 2) {
+        if (setsFinished === 2 && gameConditions === "BO3") {
+          if (homeSetsWon === 2 || opponentSetsWon === 2) {
+            setEndGameState(true);
+          } else {
+            //set score limit to 15 for third set
+
+            //TODO: Remove these two lines after testing is done
+            setHomeScore(12);
+            setOpponentScore(12);
+            setScoreLimit(14);
+          }
+        } else if (setsFinished === 3 && gameConditions === "BO3") {
           setEndGameState(true);
         }
       case "BO5":
-        if (homeSetsWon === 3 || opponentSetsWon === 3) {
+        if (setsFinished === 3 && gameConditions === "BO5") {
+          if (homeSetsWon === 3 || opponentSetsWon === 3) {
+            setEndGameState(true);
+          }
+        } else if (setsFinished === 5 && gameConditions === "BO5") {
           setEndGameState(true);
+        } else if (setsFinished === 4) {
+          if (homeSetsWon === 3 || opponentSetsWon === 3) {
+            setEndGameState(true);
+          } else {
+            //set score limit to 15 for fifth set
+
+            //TODO: Remove these two lines after testing is done
+            setHomeScore(12);
+            setOpponentScore(12);
+            setScoreLimit(14);
+          }
         }
       case "1":
-        if (setsFinished === 1) {
+        if (setsFinished === 1 && gameConditions === "1") {
           setEndGameState(true);
         }
       case "2":
-        if (setsFinished === 2) {
+        if (setsFinished === 2 && gameConditions === "2") {
           setEndGameState(true);
         }
       case "3":
-        if (setsFinished === 3) {
+        if (setsFinished === 3 && gameConditions === "3") {
           setEndGameState(true);
         }
       case "4":
-        if (setsFinished === 4) {
+        if (setsFinished === 4 && gameConditions === "4") {
           setEndGameState(true);
         }
       case "5":
-        if (setsFinished === 5) {
+        if (setsFinished === 5 && gameConditions === "5") {
           setEndGameState(true);
         }
     }
@@ -2838,8 +2866,8 @@ export default function statGame() {
             {setScores.length > 0 ? (
               <View style={styles.liveStatsModalHeader2}>
                 <Text style={styles.liveStatsModalScoreText}>
-                  {setScores.map((score) => {
-                    return <Text> {score} </Text>;
+                  {setScores.map((score, index) => {
+                    return <Text key={index}> {score} </Text>;
                   })}
                 </Text>
               </View>
