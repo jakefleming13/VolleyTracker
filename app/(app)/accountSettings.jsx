@@ -23,6 +23,7 @@ export default function Settings() {
   const [isEditing, setIsEditing] = useState(false);
   const [emailConfirmation, setEmailConfirmation] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [password, setPassword] = useState("");
 
   const handleChangeCoachName = async () => {
     if (validateCoachName(coachName)) {
@@ -87,6 +88,12 @@ export default function Settings() {
 
   const confirmDeleteAccount = async () => {
     if (emailConfirmation.toLowerCase() === user.email.toLowerCase()) {
+      // Prompt for password if not already set
+      if (!password) {
+        Alert.alert("Authentication Required", "Please enter your password to proceed with account deletion.");
+        return;
+      }
+
       setModalVisible(false); // Hide the modal
       Alert.alert(
         "Final Account Deletion Confirmation",
@@ -100,6 +107,10 @@ export default function Settings() {
             text: "Delete",
             onPress: async () => {
               try {
+                // Re-authenticate the user
+                const credential = auth.EmailAuthProvider.credential(user.email, password);
+                await auth().currentUser.reauthenticateWithCredential(credential);
+
                 const userDoc = await firestore()
                   .collection("users")
                   .doc(user.userID)
@@ -182,10 +193,17 @@ export default function Settings() {
                 router.push("welcome");
               } catch (error) {
                 console.error("Failed to delete account:", error);
-                Alert.alert(
-                  "Error",
-                  "Failed to delete account. Please try again."
-                );
+                if (error.code === "auth/requires-recent-login") {
+                  Alert.alert(
+                    "Authentication Required",
+                    "Please re-enter your password to proceed with account deletion."
+                  );
+                } else {
+                  Alert.alert(
+                    "Error",
+                    "Failed to delete account. Please try again."
+                  );
+                }
               }
             },
           },
@@ -279,8 +297,6 @@ export default function Settings() {
         </View>
       </TouchableOpacity>
 
-      <View style={styles.separator} />
-
       <TouchableOpacity onPress={handleDeleteAccount}>
         <View style={styles.actionContainer}>
           <AntDesign
@@ -293,7 +309,6 @@ export default function Settings() {
         </View>
       </TouchableOpacity>
 
-      {/* Modal for Email Confirmation */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -302,9 +317,9 @@ export default function Settings() {
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Confirm Account Deletion</Text>
+            <Text style={styles.modalTitle}>Delete Account</Text>
             <Text style={styles.modalText}>
-              Type your email to confirm deletion
+              Type your email to confirm deletion:
             </Text>
             <TextInput
               style={styles.modalInput}
@@ -313,6 +328,16 @@ export default function Settings() {
               placeholder="Email"
               keyboardType="email-address"
               autoCapitalize="none"
+            />
+            <Text style={styles.modalText}>
+              Enter your password for verification:
+            </Text>
+            <TextInput
+              style={styles.modalInput}
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Password"
+              secureTextEntry={true}
             />
             <View style={styles.modalButtons}>
               <TouchableOpacity
