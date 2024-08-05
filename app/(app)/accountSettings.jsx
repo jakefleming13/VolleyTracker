@@ -247,6 +247,8 @@ export default function Settings() {
         </TouchableOpacity>
       </View>
 
+      <View style={styles.separator} />
+
       <View style={styles.infoContainer}>
         <MaterialIcons
           name="email"
@@ -311,6 +313,8 @@ export default function Settings() {
         </View>
       </TouchableOpacity>
 
+      <View style={styles.separator} />
+
       <TouchableOpacity onPress={handleDeleteAccount}>
         <View style={styles.actionContainer}>
           <AntDesign
@@ -322,6 +326,8 @@ export default function Settings() {
           <Text style={styles.actionText}>Delete Account</Text>
         </View>
       </TouchableOpacity>
+
+      <View style={styles.separator} />
 
       <Modal
         animationType="slide"
