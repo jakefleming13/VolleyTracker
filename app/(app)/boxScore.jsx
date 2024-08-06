@@ -69,6 +69,11 @@ export default function boxScore() {
           {/* TODO: map each player, excluding the ones with no passing attempts */}
           {/* TODO: add params for TeamPassingStats from teamStats prop */}
           <TeamPassingStats />
+          <View style={styles.heightSpacer} />
+          <Text style={styles.headingText}>Team Side Out Percentages</Text>
+          <TeamSideOutRow />
+          {/* TODO: Add params for TeamSideOutStats */}
+          <TeamSideOutStats />
         </View>
       </ScrollView>
     </SafeView>
@@ -125,8 +130,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     width: "60%",
     alignSelf: "center",
-    marginBottom: 30,
-    marginTop: 20,
+    marginBottom: 40,
+    marginTop: 25,
   },
   scoreContainer: {
     flexDirection: "row",
@@ -191,7 +196,6 @@ const styles = StyleSheet.create({
     width: wp(13),
     marginRight: wp(0.5),
     marginLeft: wp(0.5),
-    backgroundColor: COLORS.darkGrey,
   },
   teamStatsTotalContainer: {
     justifyContent: "center",
@@ -226,7 +230,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: COLORS.grey,
     justifyContent: "space-between",
-    borderWidth: 0.75,
+    borderTopWidth: 0.75,
   },
   passingStatsLargeContainer: {
     justifyContent: "center",
@@ -241,7 +245,78 @@ const styles = StyleSheet.create({
     height: hp(6),
     width: wp(3),
   },
+  teamSideOutRow: {
+    width: "75%",
+    height: hp(6),
+    flexDirection: "row",
+    backgroundColor: COLORS.grey,
+    justifyContent: "center",
+    borderWidth: 0.75,
+  },
+  teamSideOutContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: hp(6),
+    width: wp(10),
+  },
 });
+
+const TeamSideOutRow = () => {
+  return (
+    <View style={styles.teamSideOutRow}>
+      <View style={styles.teamSideOutContainer}>
+        <Text style={styles.playerStatsText}>Side-Out ATT</Text>
+      </View>
+      <View style={styles.teamSideOutContainer}>
+        <Text style={styles.playerStatsText}>Side-Out%</Text>
+      </View>
+      <View style={styles.playerStatsTitleContainer}>
+        <Text style={styles.playerStatsText}> </Text>
+      </View>
+      <View style={styles.teamSideOutContainer}>
+        <Text style={styles.playerStatsText}>FBSO ATT</Text>
+      </View>
+      <View style={styles.teamSideOutContainer}>
+        <Text style={styles.playerStatsText}>FBSO%</Text>
+      </View>
+    </View>
+  );
+};
+
+const TeamSideOutStats = ({
+  sideOutAttempts = 0,
+  sideOutSuccess = 0,
+  FBSOAttempts = 0,
+  FBSOSuccess = 0,
+}) => {
+  return (
+    <View style={styles.teamSideOutRow}>
+      <View style={styles.teamSideOutContainer}>
+        <Text style={styles.playerStatsText}>{sideOutAttempts}</Text>
+      </View>
+      <View style={styles.teamSideOutContainer}>
+        <Text style={styles.playerStatsText}>
+          {isNaN(sideOutAttempts / sideOutSuccess)
+            ? "0%"
+            : sideOutAttempts / sideOutSuccess + "%"}
+        </Text>
+      </View>
+      <View style={styles.playerStatsTitleContainer}>
+        <Text style={styles.playerStatsText}> </Text>
+      </View>
+      <View style={styles.teamSideOutContainer}>
+        <Text style={styles.playerStatsText}>{FBSOAttempts}</Text>
+      </View>
+      <View style={styles.teamSideOutContainer}>
+        <Text style={styles.playerStatsText}>
+          {isNaN(FBSOAttempts / FBSOSuccess)
+            ? "0%"
+            : FBSOAttempts / FBSOSuccess + "%"}
+        </Text>
+      </View>
+    </View>
+  );
+};
 
 const TeamPassingStats = ({
   attempts = 0,
@@ -257,7 +332,7 @@ const TeamPassingStats = ({
   handValue = 0.0,
 }) => {
   return (
-    <View style={styles.playerPassingRow}>
+    <View style={styles.teamStatsRow}>
       <View style={styles.playerStatsTitleContainer}>
         <Text style={styles.playerStatsText}> </Text>
       </View>
@@ -268,7 +343,11 @@ const TeamPassingStats = ({
         <Text style={styles.playerStatsText}>{attempts}</Text>
       </View>
       <View style={styles.passingStatsLargeContainer}>
-        <Text style={styles.playerStatsText}>{passingValue}</Text>
+        <Text style={styles.playerStatsText}>
+          {isNaN(passingValue / attempts)
+            ? "0.00"
+            : (passingValue / attempts).toFixed(2)}
+        </Text>
       </View>
       <View style={styles.passingStatsContainer}>
         <Text style={styles.playerStatsText}>{fours}</Text>
@@ -289,13 +368,22 @@ const TeamPassingStats = ({
         <Text style={styles.playerStatsText}>{forearmAttempts}</Text>
       </View>
       <View style={styles.passingStatsLargeContainer}>
-        <Text style={styles.playerStatsText}>{forearmValue}</Text>
+        <Text style={styles.playerStatsText}>
+          {isNaN(forearmValue / forearmAttempts)
+            ? "0.00"
+            : (forearmValue / forearmAttempts).toFixed(2)}
+        </Text>
       </View>
       <View style={styles.passingStatsLargeContainer}>
         <Text style={styles.playerStatsText}>{handAttempts}</Text>
       </View>
       <View style={styles.passingStatsLargeContainer}>
-        <Text style={styles.playerStatsText}>{handValue}</Text>
+        <Text style={styles.playerStatsText}>
+          {" "}
+          {isNaN(handValue / handAttempts)
+            ? "0.00"
+            : (handValue / handAttempts).toFixed(2)}
+        </Text>
       </View>
     </View>
   );
