@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -74,6 +74,9 @@ export default function boxScore() {
           <TeamSideOutRow />
           {/* TODO: Add params for TeamSideOutStats */}
           <TeamSideOutStats />
+          <View style={styles.heightSpacer} />
+          <TeamSideOutByRotation />
+          <View style={styles.heightSpacer} />
         </View>
       </ScrollView>
     </SafeView>
@@ -219,10 +222,13 @@ const styles = StyleSheet.create({
   },
   playerStatsText: {
     fontSize: RFValue(10),
+  },
+  playerStatsTextBold: {
+    fontSize: RFValue(10),
     fontWeight: "bold",
   },
   heightSpacer: {
-    height: hp(5),
+    height: hp(6),
   },
   playerPassingRow: {
     width: "100%",
@@ -259,25 +265,123 @@ const styles = StyleSheet.create({
     height: hp(6),
     width: wp(10),
   },
+  teamSideOutByRotationRow: {
+    width: "50%",
+    height: hp(6),
+    flexDirection: "row",
+    backgroundColor: COLORS.grey,
+    justifyContent: "space-between",
+    borderWidth: 0.5,
+  },
+  teamSideOutByRotationContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: hp(6),
+    width: wp(10),
+  },
 });
+
+const TeamSideOutByRotation = () => {
+  return (
+    <View>
+      <View style={styles.teamSideOutByRotationRow}>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsTextBold}>Setter In</Text>
+        </View>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsTextBold}>ATT</Text>
+        </View>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsTextBold}>Side-Out%</Text>
+        </View>
+      </View>
+      <View style={styles.teamSideOutByRotationRow}>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsTextBold}>1</Text>
+        </View>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsText}>0</Text>
+        </View>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsText}>0</Text>
+        </View>
+      </View>
+      <View style={styles.teamSideOutByRotationRow}>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsTextBold}>2</Text>
+        </View>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsText}>0</Text>
+        </View>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsText}>0</Text>
+        </View>
+      </View>
+      <View style={styles.teamSideOutByRotationRow}>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsTextBold}>3</Text>
+        </View>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsText}>0</Text>
+        </View>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsText}>0</Text>
+        </View>
+      </View>
+      <View style={styles.teamSideOutByRotationRow}>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsTextBold}>4</Text>
+        </View>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsText}>0</Text>
+        </View>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsText}>0</Text>
+        </View>
+      </View>
+      <View style={styles.teamSideOutByRotationRow}>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsTextBold}>5</Text>
+        </View>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsText}>0</Text>
+        </View>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsText}>0</Text>
+        </View>
+      </View>
+      <View style={styles.teamSideOutByRotationRow}>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsTextBold}>6</Text>
+        </View>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsText}>0</Text>
+        </View>
+        <View style={styles.teamSideOutByRotationContainer}>
+          <Text style={styles.playerStatsText}>0</Text>
+        </View>
+      </View>
+    </View>
+  );
+};
 
 const TeamSideOutRow = () => {
   return (
     <View style={styles.teamSideOutRow}>
       <View style={styles.teamSideOutContainer}>
-        <Text style={styles.playerStatsText}>Side-Out ATT</Text>
+        <Text style={styles.playerStatsTextBold}>Side-Out ATT</Text>
       </View>
       <View style={styles.teamSideOutContainer}>
-        <Text style={styles.playerStatsText}>Side-Out%</Text>
+        <Text style={styles.playerStatsTextBold}>Side-Out%</Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
         <Text style={styles.playerStatsText}> </Text>
       </View>
       <View style={styles.teamSideOutContainer}>
-        <Text style={styles.playerStatsText}>FBSO ATT</Text>
+        <Text style={styles.playerStatsTextBold}>FBSO ATT</Text>
       </View>
       <View style={styles.teamSideOutContainer}>
-        <Text style={styles.playerStatsText}>FBSO%</Text>
+        <Text style={styles.playerStatsTextBold}>FBSO%</Text>
       </View>
     </View>
   );
@@ -337,7 +441,7 @@ const TeamPassingStats = ({
         <Text style={styles.playerStatsText}> </Text>
       </View>
       <View style={styles.teamStatsTotalContainer}>
-        <Text style={styles.playerStatsText}>Totals</Text>
+        <Text style={styles.playerStatsTextBold}>Totals</Text>
       </View>
       <View style={styles.passingStatsContainer}>
         <Text style={styles.playerStatsText}>{attempts}</Text>
@@ -393,43 +497,43 @@ const PlayerPassingRow = () => {
   return (
     <View style={styles.playerPassingRow}>
       <View style={styles.playerStatsTitleContainer}>
-        <Text style={styles.playerStatsText}>#</Text>
+        <Text style={styles.playerStatsTextBold}>#</Text>
       </View>
       <View style={styles.playerStatsNameContainer}>
-        <Text style={styles.playerStatsText}>Player Name</Text>
+        <Text style={styles.playerStatsTextBold}>Player Name</Text>
       </View>
       <View style={styles.passingStatsContainer}>
-        <Text style={styles.playerStatsText}>ATT</Text>
+        <Text style={styles.playerStatsTextBold}>ATT</Text>
       </View>
       <View style={styles.passingStatsLargeContainer}>
-        <Text style={styles.playerStatsText}>P. AVG</Text>
+        <Text style={styles.playerStatsTextBold}>P. AVG</Text>
       </View>
       <View style={styles.passingStatsContainer}>
-        <Text style={styles.playerStatsText}>4s</Text>
+        <Text style={styles.playerStatsTextBold}>4s</Text>
       </View>
       <View style={styles.passingStatsContainer}>
-        <Text style={styles.playerStatsText}>3s</Text>
+        <Text style={styles.playerStatsTextBold}>3s</Text>
       </View>
       <View style={styles.passingStatsContainer}>
-        <Text style={styles.playerStatsText}>2s</Text>
+        <Text style={styles.playerStatsTextBold}>2s</Text>
       </View>
       <View style={styles.passingStatsContainer}>
-        <Text style={styles.playerStatsText}>1s</Text>
+        <Text style={styles.playerStatsTextBold}>1s</Text>
       </View>
       <View style={styles.passingStatsContainer}>
-        <Text style={styles.playerStatsText}>0s</Text>
+        <Text style={styles.playerStatsTextBold}>0s</Text>
       </View>
       <View style={styles.passingStatsLargeContainer}>
-        <Text style={styles.playerStatsText}>F.ATT</Text>
+        <Text style={styles.playerStatsTextBold}>F.ATT</Text>
       </View>
       <View style={styles.passingStatsLargeContainer}>
-        <Text style={styles.playerStatsText}>F.AVG</Text>
+        <Text style={styles.playerStatsTextBold}>F.AVG</Text>
       </View>
       <View style={styles.passingStatsLargeContainer}>
-        <Text style={styles.playerStatsText}>H.ATT</Text>
+        <Text style={styles.playerStatsTextBold}>H.ATT</Text>
       </View>
       <View style={styles.passingStatsLargeContainer}>
-        <Text style={styles.playerStatsText}>H.AVG</Text>
+        <Text style={styles.playerStatsTextBold}>H.AVG</Text>
       </View>
     </View>
   );
@@ -439,49 +543,49 @@ const PlayerStatsHeader = () => {
   return (
     <View style={styles.playerStatsRow}>
       <View style={styles.playerStatsTitleContainer}>
-        <Text style={styles.playerStatsText}>#</Text>
+        <Text style={styles.playerStatsTextBold}>#</Text>
       </View>
       <View style={styles.playerStatsNameContainer}>
-        <Text style={styles.playerStatsText}>Player Name</Text>
+        <Text style={styles.playerStatsTextBold}>Player Name</Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
-        <Text style={styles.playerStatsText}>SP</Text>
+        <Text style={styles.playerStatsTextBold}>SP</Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
-        <Text style={styles.playerStatsText}>K</Text>
+        <Text style={styles.playerStatsTextBold}>K</Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
-        <Text style={styles.playerStatsText}>E</Text>
+        <Text style={styles.playerStatsTextBold}>E</Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
-        <Text style={styles.playerStatsText}>TA</Text>
+        <Text style={styles.playerStatsTextBold}>TA</Text>
       </View>
       <View style={styles.playerStatsTitleKillPercentageContainer}>
-        <Text style={styles.playerStatsText}>K%</Text>
+        <Text style={styles.playerStatsTextBold}>K%</Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
-        <Text style={styles.playerStatsText}>A</Text>
+        <Text style={styles.playerStatsTextBold}>A</Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
-        <Text style={styles.playerStatsText}>SA</Text>
+        <Text style={styles.playerStatsTextBold}>SA</Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
-        <Text style={styles.playerStatsText}>SE</Text>
+        <Text style={styles.playerStatsTextBold}>SE</Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
-        <Text style={styles.playerStatsText}>D</Text>
+        <Text style={styles.playerStatsTextBold}>D</Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
-        <Text style={styles.playerStatsText}>BS</Text>
+        <Text style={styles.playerStatsTextBold}>BS</Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
-        <Text style={styles.playerStatsText}>BA</Text>
+        <Text style={styles.playerStatsTextBold}>BA</Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
-        <Text style={styles.playerStatsText}>BE</Text>
+        <Text style={styles.playerStatsTextBold}>BE</Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
-        <Text style={styles.playerStatsText}>PTS</Text>
+        <Text style={styles.playerStatsTextBold}>PTS</Text>
       </View>
     </View>
   );
@@ -506,7 +610,7 @@ const TeamStatsRow = ({
         <Text style={styles.playerStatsText}> </Text>
       </View>
       <View style={styles.teamStatsTotalContainer}>
-        <Text style={styles.playerStatsText}>Totals</Text>
+        <Text style={styles.playerStatsTextBold}>Totals</Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
         <Text style={styles.playerStatsText}></Text>
