@@ -145,16 +145,17 @@ export default function gameLog() {
   return (
     <SafeView style={styles.container}>
       <View style={styles.backContainer}>
-        <TouchableOpacity onPress={() => router.push("seasonHome")}>
-          <View style={styles.headerBtn}>
-            <AntDesign
-              style={styles.backIcon}
-              name="left"
-              size={hp(3.7)}
-              color={COLORS.white}
-            />
-            <Text style={styles.headerBtnText}>HOME</Text>
-          </View>
+        <TouchableOpacity
+          onPress={() => router.push("seasonHome")}
+          style={styles.headerBtn}
+        >
+          <AntDesign
+            style={styles.backIcon}
+            name="left"
+            size={hp(3.7)}
+            color={COLORS.white}
+          />
+          <Text style={styles.headerBtnText}>HOME</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.titleContainer}>
@@ -214,7 +215,7 @@ const styles = StyleSheet.create({
   },
   headerBtn: {
     flexDirection: "row",
-    width: "40%",
+    width: wp(10),
     height: hp(7),
     backgroundColor: COLORS.primary,
     borderRadius: 20,
@@ -222,6 +223,14 @@ const styles = StyleSheet.create({
     marginTop: 18,
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   headerBtnText: {
     fontSize: RFValue(9),
