@@ -31,6 +31,7 @@ export default function gameLog() {
   } = useAuth();
   const router = useRouter();
   const params = useLocalSearchParams();
+  //TODO: Ensure teamname is passed to box score
   const { currentLocalTeamName, currentLocalYear } = params;
 
   const [games, setGames] = useState([]);
@@ -159,9 +160,7 @@ export default function gameLog() {
         </TouchableOpacity>
       </View>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>
-          {currentLocalTeamName}, {currentLocalYear}
-        </Text>
+        <Text style={styles.titleText}>Game Log</Text>
       </View>
       {loading ? (
         <View style={styles.loading}>
@@ -172,7 +171,7 @@ export default function gameLog() {
           <Text style={styles.featureListText}>No games found.</Text>
         </View>
       ) : (
-        // TODO: Add ScrollView
+        // TODO: Ensure Scroll property works correctly
         <FlatList
           data={games}
           keyExtractor={(item) => item.id}
