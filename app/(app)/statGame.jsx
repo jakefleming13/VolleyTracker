@@ -23,12 +23,19 @@ import {
   MenuTrigger,
 } from "react-native-popup-menu";
 import { RadioButton } from "react-native-paper";
+import { useAuth } from "../../context/authContext";
+import firestore from "@react-native-firebase/firestore";
 
 export default function statGame() {
   //Get game settings
   const router = useRouter();
 
+  //TODO: Remove Auth hook and put witin statGamePrep
+  const { seasonID } = useAuth();
+
   //Grab all of the settings from the statGamePrep Screen
+
+  //TODO: Add team name from statGamePrep
   const params = useLocalSearchParams();
   const {
     view,
@@ -67,7 +74,7 @@ export default function statGame() {
   //Structure of what the  `setsBeingPlayed` param looks like:
   //   key: "BO3", key: "BO5", key: "1", key: "2", key: "3", key: "4", key: "5",
   //TODO: replace with `setsBeingPlayed` param
-  const [gameConditions, setGameConditions] = useState("2");
+  const [gameConditions, setGameConditions] = useState("1");
 
   //State hook to store the current set
   const [currentSet, setCurrentSet] = useState(1);
@@ -2659,11 +2666,13 @@ export default function statGame() {
     );
   };
 
+  const [scoreLimit, setScoreLimit] = useState(24);
+
   //Function that handles the end of a set
   const endSet = () => {
     if (
-      (homeScore > 24 && homeScore - opponentScore > 1) ||
-      (opponentScore > 24 && opponentScore - homeScore > 1)
+      (homeScore > scoreLimit && homeScore - opponentScore > 1) ||
+      (opponentScore > scoreLimit && opponentScore - homeScore > 1)
     ) {
       // Update server trackers if the set ends
       if (prevServerTracker === "Opponent") {
@@ -2737,31 +2746,57 @@ export default function statGame() {
     // Check if the game is over
     switch (gameConditions) {
       case "BO3":
-        if (homeSetsWon === 2 || opponentSetsWon === 2) {
+        if (setsFinished === 2 && gameConditions === "BO3") {
+          if (homeSetsWon === 2 || opponentSetsWon === 2) {
+            setEndGameState(true);
+          } else {
+            //set score limit to 15 for third set
+
+            //TODO: Remove these two lines after testing is done
+            setHomeScore(12);
+            setOpponentScore(12);
+            setScoreLimit(14);
+          }
+        } else if (setsFinished === 3 && gameConditions === "BO3") {
           setEndGameState(true);
         }
       case "BO5":
-        if (homeSetsWon === 3 || opponentSetsWon === 3) {
+        if (setsFinished === 3 && gameConditions === "BO5") {
+          if (homeSetsWon === 3 || opponentSetsWon === 3) {
+            setEndGameState(true);
+          }
+        } else if (setsFinished === 5 && gameConditions === "BO5") {
           setEndGameState(true);
+        } else if (setsFinished === 4) {
+          if (homeSetsWon === 3 || opponentSetsWon === 3) {
+            setEndGameState(true);
+          } else {
+            //set score limit to 15 for fifth set
+
+            //TODO: Remove these two lines after testing is done
+            setHomeScore(12);
+            setOpponentScore(12);
+            setScoreLimit(14);
+          }
         }
       case "1":
-        if (setsFinished === 1) {
+        if (setsFinished === 1 && gameConditions === "1") {
           setEndGameState(true);
         }
       case "2":
-        if (setsFinished === 2) {
+        if (setsFinished === 2 && gameConditions === "2") {
           setEndGameState(true);
         }
       case "3":
-        if (setsFinished === 3) {
+        if (setsFinished === 3 && gameConditions === "3") {
           setEndGameState(true);
         }
       case "4":
-        if (setsFinished === 4) {
+        if (setsFinished === 4 && gameConditions === "4") {
           setEndGameState(true);
         }
       case "5":
-        if (setsFinished === 5) {
+        if (setsFinished === 5 && gameConditions === "5") {
           setEndGameState(true);
         }
     }
@@ -2802,15 +2837,39 @@ export default function statGame() {
     }
   };
 
+  const saveGame = async () => {
+    try {
+      //TODO: figure out complete list of fields that need to be saved
+      const newGame = {
+        opponent: "Test Opponent",
+        date: new Date().toISOString(),
+        location: "Test Location",
+        setsPlayed: setsFinished,
+        homeSetsWon: homeSetsWon,
+        opponentSetsWon: opponentSetsWon,
+        stats: rosterStats,
+        teamStats: teamStats,
+      };
+      //Add new doc to games collection, works fine if its empty
+      await firestore()
+        .collection("seasons")
+        .doc(seasonID)
+        .collection("gameLog")
+        .add(newGame);
+
+      router.push("seasonHome");
+    } catch (error) {
+      console.error("Error saving game: ", error);
+      router.push("seasonHome");
+    }
+  };
+
   if (endGameState === true) {
     return (
       <SafeView style={styles.container}>
         <View style={styles.endGameHeaderContainer}>
-          <TouchableOpacity>
-            <View style={styles.endGameBtn}>
-              {/* TODO: Write to firestore, navigate to box score */}
-              <Text style={styles.endGameBtnText}>Save Game</Text>
-            </View>
+          <TouchableOpacity style={styles.endGameBtn} onPress={saveGame}>
+            <Text style={styles.endGameBtnText}>Save Game</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.inBetweenTitleContainer}>
@@ -2838,8 +2897,8 @@ export default function statGame() {
             {setScores.length > 0 ? (
               <View style={styles.liveStatsModalHeader2}>
                 <Text style={styles.liveStatsModalScoreText}>
-                  {setScores.map((score) => {
-                    return <Text> {score} </Text>;
+                  {setScores.map((score, index) => {
+                    return <Text key={index}> {score} </Text>;
                   })}
                 </Text>
               </View>
@@ -3058,16 +3117,14 @@ export default function statGame() {
               </View>
             </View>
             <View style={styles.endGameButtonsContainer}>
-              <TouchableOpacity onPress={cancelAlert}>
-                <View style={styles.endGameDeleteBtn}>
-                  <Text style={styles.endGameBtnText}>Delete Game</Text>
-                </View>
+              <TouchableOpacity
+                onPress={cancelAlert}
+                style={styles.endGameDeleteBtn}
+              >
+                <Text style={styles.endGameBtnText}>Delete Game</Text>
               </TouchableOpacity>
-              <TouchableOpacity>
-                <View style={styles.endGameBtn}>
-                  {/* TODO: Write to firestore, navigate to box score */}
-                  <Text style={styles.endGameBtnText}>Save Game</Text>
-                </View>
+              <TouchableOpacity style={styles.endGameBtn} onPress={saveGame}>
+                <Text style={styles.endGameBtnText}>Save Game</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.heightSpacer} />
@@ -3578,7 +3635,6 @@ export default function statGame() {
               </View>
             </TouchableOpacity>
           </View>
-          {/* TODO: Add undo functionality onPress*/}
           <View style={styles.undoContainer}>
             <TouchableOpacity
               onPress={() => undoLastStat()}
