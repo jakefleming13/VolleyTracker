@@ -23,12 +23,19 @@ import {
   MenuTrigger,
 } from "react-native-popup-menu";
 import { RadioButton } from "react-native-paper";
+import { useAuth } from "../../context/authContext";
+import firestore from "@react-native-firebase/firestore";
 
 export default function statGame() {
   //Get game settings
   const router = useRouter();
 
+  //TODO: Remove Auth hook and put witin statGamePrep
+  const { seasonID } = useAuth();
+
   //Grab all of the settings from the statGamePrep Screen
+
+  //TODO: Add team name from statGamePrep
   const params = useLocalSearchParams();
   const {
     view,
@@ -67,7 +74,7 @@ export default function statGame() {
   //Structure of what the  `setsBeingPlayed` param looks like:
   //   key: "BO3", key: "BO5", key: "1", key: "2", key: "3", key: "4", key: "5",
   //TODO: replace with `setsBeingPlayed` param
-  const [gameConditions, setGameConditions] = useState("BO5");
+  const [gameConditions, setGameConditions] = useState("1");
 
   //State hook to store the current set
   const [currentSet, setCurrentSet] = useState(1);
@@ -2830,15 +2837,39 @@ export default function statGame() {
     }
   };
 
+  const saveGame = async () => {
+    try {
+      //TODO: figure out complete list of fields that need to be saved
+      const newGame = {
+        opponent: "Test Opponent",
+        date: new Date().toISOString(),
+        location: "Test Location",
+        setsPlayed: setsFinished,
+        homeSetsWon: homeSetsWon,
+        opponentSetsWon: opponentSetsWon,
+        stats: rosterStats,
+        teamStats: teamStats,
+      };
+      //Add new doc to games collection, works fine if its empty
+      await firestore()
+        .collection("seasons")
+        .doc(seasonID)
+        .collection("gameLog")
+        .add(newGame);
+
+      router.push("seasonHome");
+    } catch (error) {
+      console.error("Error saving game: ", error);
+      router.push("seasonHome");
+    }
+  };
+
   if (endGameState === true) {
     return (
       <SafeView style={styles.container}>
         <View style={styles.endGameHeaderContainer}>
-          <TouchableOpacity>
-            <View style={styles.endGameBtn}>
-              {/* TODO: Write to firestore, navigate to box score */}
-              <Text style={styles.endGameBtnText}>Save Game</Text>
-            </View>
+          <TouchableOpacity style={styles.endGameBtn} onPress={saveGame}>
+            <Text style={styles.endGameBtnText}>Save Game</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.inBetweenTitleContainer}>
@@ -3086,16 +3117,14 @@ export default function statGame() {
               </View>
             </View>
             <View style={styles.endGameButtonsContainer}>
-              <TouchableOpacity onPress={cancelAlert}>
-                <View style={styles.endGameDeleteBtn}>
-                  <Text style={styles.endGameBtnText}>Delete Game</Text>
-                </View>
+              <TouchableOpacity
+                onPress={cancelAlert}
+                style={styles.endGameDeleteBtn}
+              >
+                <Text style={styles.endGameBtnText}>Delete Game</Text>
               </TouchableOpacity>
-              <TouchableOpacity>
-                <View style={styles.endGameBtn}>
-                  {/* TODO: Write to firestore, navigate to box score */}
-                  <Text style={styles.endGameBtnText}>Save Game</Text>
-                </View>
+              <TouchableOpacity style={styles.endGameBtn} onPress={saveGame}>
+                <Text style={styles.endGameBtnText}>Save Game</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.heightSpacer} />
@@ -3606,7 +3635,6 @@ export default function statGame() {
               </View>
             </TouchableOpacity>
           </View>
-          {/* TODO: Add undo functionality onPress*/}
           <View style={styles.undoContainer}>
             <TouchableOpacity
               onPress={() => undoLastStat()}
