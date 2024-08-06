@@ -8,13 +8,14 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeView } from "../../components/SafeView";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import { COLORS } from "../../constants/Colors";
 import { RFValue } from "react-native-responsive-fontsize";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 export default function boxScore() {
   const router = useRouter();
@@ -24,16 +25,26 @@ export default function boxScore() {
     <SafeView style={styles.container}>
       <ScrollView>
         <View style={styles.backContainer}>
-          <TouchableOpacity onPress={() => router.push("gameLog")}>
-            <View style={styles.headerBtn}>
-              <AntDesign
-                style={styles.backIcon}
-                name="left"
-                size={hp(3.7)}
-                color={COLORS.white}
-              />
-              <Text style={styles.headerBtnText}>GAME LOG</Text>
-            </View>
+          <TouchableOpacity
+            onPress={() => router.push("gameLog")}
+            style={styles.headerBtn}
+          >
+            <AntDesign
+              style={styles.backIcon}
+              name="left"
+              size={hp(3.7)}
+              color={COLORS.white}
+            />
+            <Text style={styles.headerBtnText}>GAME LOG</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.headerBtn}>
+            <MaterialCommunityIcons
+              name="export-variant"
+              size={hp(3.7)}
+              style={styles.backIcon}
+              color={COLORS.white}
+            />
+            <Text style={styles.headerBtnText}>EXPORT</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.scoreContainer}>
@@ -92,21 +103,32 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
   },
+  backIcon: {
+    paddingRight: 3,
+  },
   backContainer: {
     flexDirection: "row",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
     height: hp(11),
+    marginHorizontal: wp(1),
+    marginVertical: hp(1),
   },
   headerBtn: {
     flexDirection: "row",
-    width: "45%",
+    width: wp(10),
     height: hp(7),
     backgroundColor: COLORS.primary,
     borderRadius: 20,
-    marginHorizontal: 20,
-    marginTop: 18,
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   headerBtnText: {
     fontSize: RFValue(9),
