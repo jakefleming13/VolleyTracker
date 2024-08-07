@@ -105,6 +105,7 @@ export default function statGamePrep() {
       onePasses: 0,
       twoPasses: 0,
       threePasses: 0,
+      fourPasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
       firstTimeOnCourt: true,
