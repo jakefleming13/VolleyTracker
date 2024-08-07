@@ -160,7 +160,7 @@ export default function statGame() {
       matchesPlayed: 0,
       onePasses: 0,
       passingAttempts: 0,
-      playerName: "Ben",
+      playerName: "Benjamin",
       playerNumber: "10",
       pts: 0,
       ptsPerSet: 0,
@@ -2157,10 +2157,11 @@ export default function statGame() {
                     >
                       <View style={styles.liveStatsStatHeader}>
                         <Text style={styles.liveStatsPlayerHeader}>
-                          {/* TODO: validation for length of players name */}
                           {player.playerNumber}
                           {"  "}
-                          {player.playerName}
+                          {player.playerName.length > 16
+                            ? player.playerName.substring(0, 16) + "..."
+                            : player.playerName}
                         </Text>
                         <Text style={styles.liveStatsModalSecondaryText2}>
                           {player.kills.toString().length > 1
@@ -2383,10 +2384,11 @@ export default function statGame() {
                       >
                         <View style={styles.liveStatsStatHeader}>
                           <Text style={styles.liveStatsPlayerHeader}>
-                            {/* TODO: validation for length of players name */}
                             {player.playerNumber}
                             {"  "}
-                            {player.playerName}
+                            {player.playerName.length > 16
+                              ? player.playerName.substring(0, 16) + "..."
+                              : player.playerName}
                           </Text>
                           <Text style={styles.liveStatsModalSecondaryText2}>
                             {player.passingAttempts.toString().length > 1
@@ -2968,6 +2970,9 @@ export default function statGame() {
               <View style={styles.scoreContainer}>
                 {/* TODO: Inputvalidation to ensure team name is not too long */}
                 <Text style={styles.scoreTeamNameText}>Your Team</Text>
+                {/* {teamName.length > 12
+                          ? teamName.substring(0, 12) + "..."
+                          : teamName} */}
                 <View style={styles.scoreAmountContainer}>
                   <Text style={styles.scoreText}>{homeSetsWon}</Text>
                 </View>
@@ -3024,10 +3029,11 @@ export default function statGame() {
                   >
                     <View style={styles.liveStatsStatHeader}>
                       <Text style={styles.liveStatsPlayerHeader}>
-                        {/* TODO: validation for length of players name */}
                         {player.playerNumber}
                         {"  "}
-                        {player.playerName}
+                        {player.playerName.length > 16
+                          ? player.playerName.substring(0, 16) + "..."
+                          : player.playerName}
                       </Text>
                       <Text style={styles.liveStatsModalSecondaryText2}>
                         {player.kills.toString().length > 1
@@ -3621,6 +3627,9 @@ export default function statGame() {
             <View style={styles.scoreContainer}>
               {/* TODO: Inputvalidation to ensure team name is not too long */}
               <Text style={styles.scoreTeamNameText}>Your Team</Text>
+              {/* {teamName.length > 12
+                          ? teamName.substring(0, 12) + "..."
+                          : teamName} */}
               <TouchableOpacity
                 onPress={() => {
                   //Increment Server attempts
@@ -4027,9 +4036,10 @@ export default function statGame() {
                       <Text style={styles.playerNumberText}>
                         {player.playerNumber}
                       </Text>
-                      {/* TODO: Input validation to keep player name less that 15 chars */}
                       <Text style={styles.playerNameText}>
-                        {player.playerName}
+                        {player.playerName.length > 15
+                          ? player.playerName.substring(0, 15) + "..."
+                          : player.playerName}
                       </Text>
                     </View>
                     <View style={styles.widthSpacer2} />
@@ -5833,7 +5843,7 @@ const styles = StyleSheet.create({
     fontSize: RFValue(28),
   },
   playerNameText: {
-    fontSize: RFValue(9),
+    fontSize: RFValue(8.5),
     fontWeight: "bold",
   },
   playerOffenseContainer: {
