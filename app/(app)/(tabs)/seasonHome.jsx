@@ -140,7 +140,7 @@ const SeasonHome = () => {
               <View style={styles.featureListContainer}>
                 <Text style={styles.featureListText}>
                   Stat Serving and Passing
-                  <Text style={styles.inDevelopmentText}>  (In Development)</Text>
+              
                 </Text>
                 <AntDesign
                   style={styles.featureListIcon}
