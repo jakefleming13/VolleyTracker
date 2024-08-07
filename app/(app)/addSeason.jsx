@@ -96,6 +96,7 @@ export default function AddSeason() {
       onePasses: 0,
       twoPasses: 0,
       threePasses: 0,
+      fourPasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -131,6 +132,7 @@ export default function AddSeason() {
       onePasses: 0,
       twoPasses: 0,
       threePasses: 0,
+      fourPasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -166,6 +168,7 @@ export default function AddSeason() {
       onePasses: 0,
       twoPasses: 0,
       threePasses: 0,
+      fourPasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -201,6 +204,7 @@ export default function AddSeason() {
       onePasses: 0,
       twoPasses: 0,
       threePasses: 0,
+      fourPasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -236,6 +240,7 @@ export default function AddSeason() {
       onePasses: 0,
       twoPasses: 0,
       threePasses: 0,
+      fourPasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -271,6 +276,7 @@ export default function AddSeason() {
       onePasses: 0,
       twoPasses: 0,
       threePasses: 0,
+      fourPasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -306,6 +312,7 @@ export default function AddSeason() {
       onePasses: 0,
       twoPasses: 0,
       threePasses: 0,
+      fourPasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -341,6 +348,7 @@ export default function AddSeason() {
       onePasses: 0,
       twoPasses: 0,
       threePasses: 0,
+      fourPasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     },
@@ -350,7 +358,10 @@ export default function AddSeason() {
     const fetchInvitations = async () => {
       try {
         setIsLoading(true); // Show loading when fetching invitations
-        const userDoc = await firestore().collection("users").doc(user.userID).get();
+        const userDoc = await firestore()
+          .collection("users")
+          .doc(user.userID)
+          .get();
         if (userDoc.exists) {
           const data = userDoc.data();
           setSeasonInvitations(data.seasonInvitations || []);
@@ -417,6 +428,7 @@ export default function AddSeason() {
       onePasses: 0,
       twoPasses: 0,
       threePasses: 0,
+      fourPasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
     });
@@ -505,6 +517,7 @@ export default function AddSeason() {
       delete newLocal[index].onePasses;
       delete newLocal[index].twoPasses;
       delete newLocal[index].threePasses;
+      delete newLocal[index].fourPasses;
       delete newLocal[index].pts;
       delete newLocal[index].ptsPerSet;
     }
@@ -545,54 +558,51 @@ export default function AddSeason() {
     //Create sub-collection "seasonStats"
     //TODO: re-name all values -> add `team` to the front of each value for clarity
     firestore().collection("seasons").doc(newID).collection("seasonStats").add({
-      setsWon: 0,
-      setsLost: 0,
-      matchesPlayed: 0,
-      matchesWon: 0,
-      matchesLost: 0,
-      setsPlayed: 0,
-      attempts: 0,
-      kills: 0,
-      attackErrors: 0,
-      assists: 0,
-      assistsPerSet: 0.0,
-      digs: 0,
-      digErrors: 0,
-      digsPerSet: 0,
-      totalBlocks: 0,
-      blockSolos: 0,
-      blockAssists: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      passingAttempts: 0,
-      handPassingAttempts: 0,
-      forearmPassingAttempts: 0,
-      totalPassValue: 0,
-      totalHandPassValue: 0,
-      totalForearmPassValue: 0,
-      receptionErrors: 0,
-      onePasses: 0,
-      twoPasses: 0,
-      threePasses: 0,
-      pts: 0,
-      ptsPerSet: 0.0,
-      totalSideOutAttempts: 0,
-      successfulSideOuts: 0,
-      firstBallSideOutAttempts: 0,
-      successfulFirstBallSideOuts: 0,
-      totalSideOutAttemptsPos1: 0,
-      successfulSideOutsPos1: 0,
-      totalSideOutAttemptsPos2: 0,
-      successfulSideOutsPos2: 0,
-      totalSideOutAttemptsPos3: 0,
-      successfulSideOutsPos3: 0,
-      totalSideOutAttemptsPos4: 0,
-      successfulSideOutsPos4: 0,
-      totalSideOutAttemptsPos5: 0,
-      successfulSideOutsPos5: 0,
-      totalSideOutAttemptsPos6: 0,
-      successfulSideOutsPos6: 0,
+      teamSetsWon: 0,
+      teamSetsLost: 0,
+      teamSetsPlayed: 0,
+      teamMatchesPlayed: 0,
+      teamAttempts: 0,
+      teamKills: 0,
+      teamAttackErrors: 0,
+      teamAssists: 0,
+      teamDigs: 0,
+      teamDigErrors: 0,
+      teamTotalBlocks: 0,
+      teamBlockSolos: 0,
+      teamBlockAssists: 0,
+      teamBlockErrors: 0,
+      teamServiceAces: 0,
+      teamServiceAttempts: 0,
+      teamServiceErrors: 0,
+      teamPassingAttempts: 0,
+      teamHandPassingAttempts: 0,
+      teamForearmPassingAttempts: 0,
+      teamTotalPassValue: 0,
+      teamTotalHandPassValue: 0,
+      teamTotalForearmPassValue: 0,
+      teamReceptionErrors: 0,
+      teamOnePasses: 0,
+      teamTwoPasses: 0,
+      teamThreePasses: 0,
+      teamFourPasses: 0,
+      teamPts: 0,
+      teamTotalSideOutAttempts: 0,
+      teamSuccessfulSideOuts: 0,
+      teamFirstBallSideOutAttempts: 0,
+      teamSuccessfulFirstBallSideOuts: 0,
+      teamTotalSideOutAttemptsPos1: 0,
+      teamSuccessfulSideOutsPos1: 0,
+      teamTotalSideOutAttemptsPos2: 0,
+      teamSuccessfulSideOutsPos2: 0,
+      teamTotalSideOutAttemptsPos3: 0,
+      teamSuccessfulSideOutsPos3: 0,
+      teamTotalSideOutAttemptsPos4: 0,
+      teamSuccessfulSideOutsPos4: 0,
+      teamTotalSideOutAttemptsPos5: 0,
+      teamSuccessfulSideOutsPos5: 0,
+      teamTotalSideOutAttemptsPos6: 0,
+      teamSuccessfulSideOutsPos6: 0,
     });
 
     //Sort the roster by number
@@ -611,7 +621,9 @@ export default function AddSeason() {
 
   const handleAcceptInvitation = async (invitation) => {
     try {
-      const seasonRef = firestore().collection("seasons").doc(invitation.seasonID);
+      const seasonRef = firestore()
+        .collection("seasons")
+        .doc(invitation.seasonID);
       const userRef = firestore().collection("users").doc(user.userID);
 
       if (invitation.role === "editor") {
@@ -641,7 +653,10 @@ export default function AddSeason() {
       );
     } catch (error) {
       console.error(`Failed to accept ${invitation.role} invitation:`, error);
-      Alert.alert("Error", `Failed to accept ${invitation.role} invitation. Please try again.`);
+      Alert.alert(
+        "Error",
+        `Failed to accept ${invitation.role} invitation. Please try again.`
+      );
     }
   };
 
@@ -664,7 +679,10 @@ export default function AddSeason() {
   const fetchLatestInvitations = async () => {
     setIsRefreshing(true);
     try {
-      const userDoc = await firestore().collection("users").doc(user.userID).get();
+      const userDoc = await firestore()
+        .collection("users")
+        .doc(user.userID)
+        .get();
       if (userDoc.exists) {
         const data = userDoc.data();
         setSeasonInvitations(data.seasonInvitations || []);
@@ -673,7 +691,6 @@ export default function AddSeason() {
       console.error("Failed to fetch latest invitations:", error);
     } finally {
       setTimeout(() => setIsRefreshing(false), 5000); // Disable the button for 5 seconds
-     
     }
   };
 
@@ -839,18 +856,17 @@ export default function AddSeason() {
           </View>
           {isLoading ? (
             <View style={styles.loading}>
-               <Loading  size={hp(10)} />
+              <Loading size={hp(10)} />
             </View>
-           
           ) : (
             <ScrollView style={styles.modalContent}>
               {seasonInvitations.length > 0 ? (
                 seasonInvitations.map((invitation, index) => (
                   <View key={index} style={styles.invitationItem}>
                     <Text style={styles.invitationText}>
-                      {invitation.ownerName} ({invitation.ownerEmail}) has invited
-                      you to be an {invitation.role} for {invitation.teamName}{" "}
-                      {invitation.teamYear}.
+                      {invitation.ownerName} ({invitation.ownerEmail}) has
+                      invited you to be an {invitation.role} for{" "}
+                      {invitation.teamName} {invitation.teamYear}.
                     </Text>
                     <View style={styles.invitationButtons}>
                       <TouchableOpacity
@@ -1119,7 +1135,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   noInvitationsText: {
-
     textAlign: "center",
     color: COLORS.grey,
     marginTop: 20,
