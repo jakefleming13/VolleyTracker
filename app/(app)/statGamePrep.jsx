@@ -19,12 +19,15 @@ import {
   MenuOption,
   MenuTrigger,
 } from "react-native-popup-menu";
+import { useAuth } from "../../context/authContext";
 
 export default function statGamePrep() {
   // Get props that are being drilled
   const router = useRouter();
   const params = useLocalSearchParams();
   const { currentLocalTeamName, currentLocalYear } = params;
+
+  const { seasonID } = useAuth();
 
   // JSON.parse to deal with an array that is being prop drilled
   const roster = JSON.parse(params.currentLocalRoster);
@@ -291,7 +294,6 @@ export default function statGamePrep() {
                 params: {
                   teamName: currentLocalTeamName,
                   currentLocalRoster: JSON.stringify(localRoster),
-                  view: selectedView,
                   gameType: selectedGameType,
                   firstServe: selectedFirstServe,
                   location: selectedLocation,
@@ -306,6 +308,8 @@ export default function statGamePrep() {
                   firstL: firstLibero,
                   secondL: secondLibero,
                   onCourtSetter: setter,
+                  seasonID: seasonID,
+                  teamName: currentLocalTeamName,
                 },
               });
             }
@@ -590,17 +594,9 @@ export default function statGamePrep() {
           <View style={styles.radioGroup}>
             <View style={styles.radioButton}>
               <RadioButton
-                value={
-                  currentLocalTeamName.length > 12
-                    ? currentLocalTeamName.substring(0, 12) + "..."
-                    : currentLocalTeamName
-                }
-                status={
-                  selectedFirstServe === currentLocalTeamName
-                    ? "checked"
-                    : "unchecked"
-                }
-                onPress={() => setSelectedFirstServe(currentLocalTeamName)}
+                value={"Home"}
+                status={selectedFirstServe === "Home" ? "checked" : "unchecked"}
+                onPress={() => setSelectedFirstServe("Home")}
                 color={COLORS.primary}
               />
               <Text style={styles.radioLabel}>{currentLocalTeamName}</Text>
@@ -770,7 +766,6 @@ export default function statGamePrep() {
               placeholderStyle={styles.setterPlaceHolderDropDown}
               selectedTextStyle={styles.selectedDropDownText}
               itemTextStyle={styles.dropDownText}
-              //TODO: Ensure selection is only from on court players
               data={setterList}
               search={false}
               maxHeight={300}
@@ -853,7 +848,6 @@ export default function statGamePrep() {
         <View style={styles.confirmContainer}>
           <TouchableOpacity
             onPress={() => {
-              //TODO: Input validation
               rotationInputValidation();
             }}
             style={styles.confirmBtn}
