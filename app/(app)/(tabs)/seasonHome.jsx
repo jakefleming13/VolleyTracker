@@ -1,5 +1,5 @@
 import { View, Text, ScrollView } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter } from "expo-router";
 import { SafeView } from "../../../components/SafeView";
 import { TouchableOpacity } from "react-native";
 import {
@@ -21,20 +21,22 @@ const SeasonHome = () => {
   const { seasonID, user, setActiveSeason } = useAuth();
 
   const [seasonData, setSeasonData] = useState(null);
-
+  const [userRole, setUserRole] = useState(""); // State to hold the user role
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Grab season by season ID from firebase, then setSeasonData
-    if (seasonID && user) {
-      const fetchSeasonData = async () => {
+    const fetchSeasonData = async () => {
+      if (seasonID && user) {
         try {
           const seasonDoc = await firestore()
             .collection("seasons")
             .doc(seasonID)
             .get();
           if (seasonDoc.exists) {
-            setSeasonData(seasonDoc.data());
+            const data = seasonDoc.data();
+            setSeasonData(data);
+            determineUserRole(data); // Determine user role based on season data
           } else {
             console.log("No season data found.");
           }
@@ -42,11 +44,21 @@ const SeasonHome = () => {
           console.error("Failed to fetch season data:", error);
         }
         setLoading(false);
-      };
+      }
+    };
 
-      fetchSeasonData();
-    }
+    fetchSeasonData();
   }, [seasonID, user]);
+
+  const determineUserRole = (seasonData) => {
+    if (user.userID === seasonData.access.owner) {
+      setUserRole("owner");
+    } else if (seasonData.access.editors.includes(user.userID)) {
+      setUserRole("editor");
+    } else if (seasonData.access.viewers.includes(user.userID)) {
+      setUserRole("viewer");
+    }
+  };
 
   if (loading || !seasonData) {
     if (loading) {
@@ -86,32 +98,34 @@ const SeasonHome = () => {
       <ScrollView>
         <View style={styles.seperator} />
 
-        <View style={styles.titleContainer}>
-          <Text style={styles.secondaryTitleText}>Record Stats</Text>
-        </View>
-        <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "statGamePrep",
-              params: {
-                currentLocalTeamName: seasonData.teamName,
-                currentLocalYear: seasonData.year,
-                currentLocalRoster: JSON.stringify(seasonData.roster),
-              },
-            })
-          }
-        >
-          <View style={styles.featureListContainer}>
-            <Text style={styles.featureListText}>Stat Game</Text>
-            <AntDesign
-              style={styles.featureListIcon}
-              name="right"
-              size={hp(3.7)}
-              color={COLORS.black}
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
+        {userRole !== "viewer" && ( // Render only if the user is not a viewer
+          <>
+            <View style={styles.titleContainer}>
+              <Text style={styles.secondaryTitleText}>Record Stats</Text>
+            </View>
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: "statGamePrep",
+                  params: {
+                    currentLocalTeamName: seasonData.teamName,
+                    currentLocalYear: seasonData.year,
+                    currentLocalRoster: JSON.stringify(seasonData.roster),
+                  },
+                })
+              }
+            >
+              <View style={styles.featureListContainer}>
+                <Text style={styles.featureListText}>Stat Game</Text>
+                <AntDesign
+                  style={styles.featureListIcon}
+                  name="right"
+                  size={hp(3.7)}
+                  color={COLORS.black}
+                />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
           onPress={() =>
             router.push({
               pathname: "statServePass",
@@ -123,27 +137,35 @@ const SeasonHome = () => {
             })
           }
         >
-          <View style={styles.featureListContainer}>
-            <Text style={styles.featureListText}>Stat Serving and Passing</Text>
-            <AntDesign
-              style={styles.featureListIcon}
-              name="right"
-              size={hp(3.7)}
-              color={COLORS.black}
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <View style={styles.featureListContainer}>
-            <Text style={styles.featureListText}>Scout Opponent</Text>
-            <AntDesign
-              style={styles.featureListIcon}
-              name="right"
-              size={hp(3.7)}
-              color={COLORS.black}
-            />
-          </View>
-        </TouchableOpacity>
+              <View style={styles.featureListContainer}>
+                <Text style={styles.featureListText}>
+                  Stat Serving and Passing
+              
+                </Text>
+                <AntDesign
+                  style={styles.featureListIcon}
+                  name="right"
+                  size={hp(3.7)}
+                  color={COLORS.black}
+                />
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <View style={styles.featureListContainer}>
+                <Text style={styles.featureListText}>
+                  Scout Opponent
+                  <Text style={styles.inDevelopmentText}>  (In Development)</Text>
+                </Text>
+                <AntDesign
+                  style={styles.featureListIcon}
+                  name="right"
+                  size={hp(3.7)}
+                  color={COLORS.black}
+                />
+              </View>
+            </TouchableOpacity>
+          </>
+        )}
         <View style={styles.titleContainer}>
           <Text style={styles.tertiaryTitleText}>Season Stats</Text>
         </View>
@@ -304,6 +326,10 @@ const styles = StyleSheet.create({
   },
   featureListIcon: {
     paddingRight: 20,
+  },
+  inDevelopmentText: {
+    fontSize: RFValue(10),
+    color: COLORS.grey,
   },
 });
 

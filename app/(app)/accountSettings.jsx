@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, TextInput, Alert, Modal } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeView } from "../../components/SafeView";
 import { TouchableOpacity } from "react-native";
@@ -9,10 +9,229 @@ import {
 import { COLORS } from "../../constants/Colors";
 import { StyleSheet } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import { useAuth } from "../../context/authContext";
+import { useState } from "react";
+import auth from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
 
-export default function settings() {
+export default function Settings() {
   const router = useRouter();
+  const { user, logout, setActiveSeason } = useAuth();
+
+  const [coachName, setCoachName] = useState(user.coachName);
+  const [isEditing, setIsEditing] = useState(false);
+  const [emailConfirmation, setEmailConfirmation] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [password, setPassword] = useState("");
+
+  const handleChangeCoachName = async () => {
+    if (validateCoachName(coachName)) {
+      try {
+        await firestore()
+          .collection("users")
+          .doc(user.userID)
+          .update({ coachName });
+
+        Alert.alert("Success", "Coach name updated successfully!");
+        setIsEditing(false);
+      } catch (error) {
+        Alert.alert("Error", "Failed to update coach name. Please try again.");
+      }
+    }
+  };
+
+  const validateCoachName = (name) => {
+    const specialCharacterRegex = /[^a-zA-Z\s]/;
+
+    if (!name.trim()) {
+      Alert.alert("Invalid Input", "Coach name cannot be empty.");
+      return false;
+    }
+    if (name.length > 30) {
+      Alert.alert("Invalid Input", "Coach name cannot exceed 30 characters.");
+      return false;
+    }
+    if (specialCharacterRegex.test(name)) {
+      Alert.alert(
+        "Invalid Input",
+        "Coach name cannot contain special characters."
+      );
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleResetPassword = () => {
+    auth()
+      .sendPasswordResetEmail(user.email)
+      .then(() => {
+        Alert.alert(
+          "Success",
+          "Password reset email sent! Please check your email (email may get sent to junk email)."
+        );
+      })
+      .catch(() => {
+        Alert.alert(
+          "Error",
+          "Failed to send password reset email. Please try again."
+        );
+      });
+  };
+
+  const handleDeleteAccount = () => {
+    setModalVisible(true); // Show the modal when the delete button is clicked
+  };
+
+  const confirmDeleteAccount = async () => {
+    if (emailConfirmation.toLowerCase() !== user.email.toLowerCase()) {
+      Alert.alert(
+        "Invalid Email",
+        "The email you entered does not match your account email."
+      );
+      return;
+    }
+
+    if (!password) {
+      Alert.alert(
+        "Authentication Required",
+        "Please enter your password to proceed with account deletion."
+      );
+      return;
+    }
+
+    try {
+      // Re-authenticate the user
+      const credential = auth.EmailAuthProvider.credential(
+        user.email,
+        password
+      );
+      await auth().currentUser.reauthenticateWithCredential(credential);
+
+      // If re-authentication is successful, show the final confirmation dialog
+      Alert.alert(
+        "Final Account Deletion Confirmation",
+        "Deleting your account will also delete all your seasons and remove access for any viewers or editors of those seasons. Do you want to proceed?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Delete",
+            onPress: async () => {
+              try {
+                const userDoc = await firestore()
+                  .collection("users")
+                  .doc(user.userID)
+                  .get();
+
+                if (!userDoc.exists) {
+                  throw new Error("User not found");
+                }
+
+                const userData = userDoc.data();
+                const userSeasons = userData.seasons || [];
+
+                for (const season of userSeasons) {
+                  const seasonID = season.seasonID;
+
+                  const seasonDoc = await firestore()
+                    .collection("seasons")
+                    .doc(seasonID)
+                    .get();
+
+                  if (seasonDoc.exists) {
+                    const seasonData = seasonDoc.data();
+
+                    const batch = firestore().batch();
+                    const seasonRef = firestore()
+                      .collection("seasons")
+                      .doc(seasonID);
+
+                    if (seasonData.access.owner === user.userID) {
+                      // If the user is the owner, delete the season for everyone
+                      const access = seasonData.access;
+                      const usersToUpdate = [
+                        access.owner,
+                        ...access.editors,
+                        ...access.viewers,
+                      ];
+
+                      batch.delete(seasonRef);
+
+                      for (const userID of usersToUpdate) {
+                        const userRef = firestore()
+                          .collection("users")
+                          .doc(userID);
+
+                        const userDoc = await userRef.get();
+                        if (userDoc.exists) {
+                          const userSeasons = userDoc.data().seasons || [];
+                          const updatedSeasons = userSeasons.filter(
+                            (season) => season.seasonID !== seasonID
+                          );
+
+                          batch.update(userRef, { seasons: updatedSeasons });
+                        }
+                      }
+                    } else {
+                      // If the user is not the owner, remove them from viewers/editors
+                      batch.update(seasonRef, {
+                        "access.viewers": firestore.FieldValue.arrayRemove(
+                          user.userID
+                        ),
+                        "access.editors": firestore.FieldValue.arrayRemove(
+                          user.userID
+                        ),
+                      });
+                    }
+
+                    await batch.commit();
+                  }
+                }
+
+                await firestore().collection("users").doc(user.userID).delete();
+
+                await auth().currentUser.delete();
+
+                Alert.alert(
+                  "Success",
+                  "Your account and associated data have been deleted successfully."
+                );
+                
+                setActiveSeason(null)
+                await logout();
+                router.push("signIn");
+              } catch {
+                Alert.alert(
+                  "Error",
+                  "Failed to delete account. Please try again."
+                );
+              }
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      handleReauthError(error); // Call error handler function
+    }
+  };
+
+  const handleReauthError = (error) => {
+    let errorMessage = "An error occurred. Please try again.";
+    if (error.code === "auth/invalid-credential") {
+      errorMessage =
+        "The email or password you entered is incorrect. Please try again.";
+    } else if (error.code === "auth/user-not-found") {
+      errorMessage = "No user found with this email. Please check and try again.";
+    } else if (error.code === "auth/wrong-password") {
+      errorMessage = "The password is incorrect. Please try again.";
+    }
+
+    Alert.alert("Error", errorMessage);
+  };
 
   return (
     <SafeView style={styles.container}>
@@ -22,22 +241,156 @@ export default function settings() {
             <AntDesign
               style={styles.seasonListIcon}
               name="left"
-              size={hp(3.7)}
+              size={hp(4.5)}
               color={COLORS.white}
             />
             <Text style={styles.headerBtnText}>SETTINGS</Text>
           </View>
         </TouchableOpacity>
       </View>
-      <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>Account Settings</Text>
+
+      <View style={styles.separator} />
+
+      <View style={styles.infoContainer}>
+        <MaterialIcons
+          name="email"
+          size={hp(4)}
+          color={COLORS.primary}
+          style={styles.infoIcon}
+        />
+        <Text style={styles.infoText}>{user.email}</Text>
       </View>
-      <View style={styles.seperator} />
 
+      <View style={styles.separator} />
 
+      <View style={styles.infoContainer}>
+        <FontAwesome5
+          name="user-alt"
+          size={hp(4)}
+          color={COLORS.primary}
+          style={styles.infoIcon}
+        />
+        <View style={styles.coachNameContainer}>
+          {isEditing ? (
+            <TextInput
+              style={styles.infoInput}
+              value={coachName}
+              onChangeText={setCoachName}
+              placeholder="Coach Name"
+              maxLength={30}
+            />
+          ) : (
+            <Text style={styles.infoText}>{coachName}</Text>
+          )}
+          <TouchableOpacity
+            onPress={() => {
+              if (isEditing) {
+                handleChangeCoachName();
+              } else {
+                setIsEditing(true);
+              }
+            }}
+            style={styles.editIcon}
+          >
+            <AntDesign
+              name={isEditing ? "checkcircle" : "edit"}
+              size={hp(4)}
+              color={isEditing ? COLORS.green : COLORS.primary}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.separator} />
+
+      <TouchableOpacity onPress={handleResetPassword}>
+        <View style={styles.actionContainer}>
+          <AntDesign
+            name="unlock"
+            size={hp(4)}
+            color={COLORS.primary}
+            style={styles.actionIcon}
+          />
+          <Text style={styles.actionText}>Reset Password</Text>
+        </View>
+      </TouchableOpacity>
+
+      <View style={styles.separator} />
+
+      {/* <TouchableOpacity onPress={handleDeleteAccount}>
+        <View style={styles.actionContainer}>
+          <AntDesign
+            name="deleteuser"
+            size={hp(4)}
+            color={COLORS.red}
+            style={styles.actionIcon}
+          />
+          <Text style={styles.actionText}>Delete Account</Text>
+        </View>
+      </TouchableOpacity>
+
+      <View style={styles.separator} /> */}
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Delete Account</Text>
+            <Text style={styles.modalText}>
+              Type your email to confirm deletion:
+            </Text>
+            <TextInput
+              style={styles.modalInput}
+              value={emailConfirmation}
+              onChangeText={setEmailConfirmation}
+              placeholder="Email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <Text style={styles.modalText}>
+              Enter your password for verification:
+            </Text>
+            <TextInput
+              style={styles.modalInput}
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Password"
+              secureTextEntry={true}
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[
+                  styles.confirmDeleteButton,
+                  {
+                    backgroundColor:
+                      emailConfirmation.toLowerCase() ===
+                      user.email.toLowerCase()
+                        ? COLORS.red
+                        : COLORS.grey,
+                  },
+                ]}
+                onPress={confirmDeleteAccount}
+                disabled={
+                  emailConfirmation.toLowerCase() !== user.email.toLowerCase()
+                }
+              >
+                <Text style={styles.buttonText}>Delete</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeView>
-
-    
   );
 }
 
@@ -48,8 +401,9 @@ const styles = StyleSheet.create({
   },
   backContainer: {
     flexDirection: "row",
-    justifyContent: "start",
+    justifyContent: "flex-start",
     height: hp(11),
+    marginBottom: hp(10),
   },
   headerBtn: {
     flexDirection: "row",
@@ -69,40 +423,112 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: COLORS.white,
   },
-  titleText: {
-    fontSize: RFValue(30),
-    color: COLORS.primary,
-    marginBottom: 35,
-  },
-  titleContainer: {
-    alignItems: "center",
-  },
-  seperator: {
-    borderBottomColor: COLORS.primary,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    width: "60%",
-    alignSelf: "center",
-    marginBottom: 30,
-  },
-  seasonListIcon: {
-    paddingRight: 1,
-  },
-
-  featureListContainer: {
+  infoContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: COLORS.white,
-    height: hp(9),
     alignItems: "center",
-    borderWidth: 0.5,
-    borderColor: COLORS.primary,
+    paddingVertical: hp(2),
+    paddingHorizontal: wp(5),
   },
-  featureListText: {
+  infoIcon: {
+    marginRight: wp(3),
+  },
+  coachNameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  infoText: {
     fontSize: RFValue(18),
-    paddingLeft: 20,
+    color: COLORS.black,
+    flex: 1,
+    marginRight: wp(2),
+  },
+  infoInput: {
+    fontSize: RFValue(18),
+    color: COLORS.black,
+    flex: 1,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.grey,
+    marginRight: wp(2),
+  },
+  editIcon: {
+    marginLeft: wp(2),
+  },
+  actionContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: hp(2),
+    paddingHorizontal: wp(5),
+    backgroundColor: COLORS.lightGrey,
+    marginVertical: hp(1),
+    borderRadius: 10,
+  },
+  actionIcon: {
+    marginRight: wp(3),
+  },
+  actionText: {
+    fontSize: RFValue(18),
     color: COLORS.black,
   },
-  featureListIcon: {
-    paddingRight: 20,
+  separator: {
+    borderBottomColor: COLORS.primary,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    width: "100%",
+    alignSelf: "center",
+    marginBottom: wp(1),
+    marginTop: wp(1),
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    width: wp(80),
+  },
+  modalTitle: {
+    fontSize: RFValue(20),
+    fontWeight: "bold",
+    marginBottom: hp(2),
+  },
+  modalText: {
+    fontSize: RFValue(16),
+    marginBottom: hp(2),
+  },
+  modalInput: {
+    height: hp(5),
+    borderColor: COLORS.grey,
+    borderWidth: 1,
+    marginBottom: hp(2),
+    width: wp(70),
+    padding: 10,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  confirmDeleteButton: {
+    backgroundColor: COLORS.red,
+    padding: hp(1.5),
+    borderRadius: 10,
+    alignItems: "center",
+    width: "48%",
+  },
+  cancelButton: {
+    backgroundColor: COLORS.primary,
+    padding: hp(1.5),
+    borderRadius: 10,
+    alignItems: "center",
+    width: "48%",
+  },
+  buttonText: {
+    color: COLORS.white,
+    fontWeight: "bold",
   },
 });
