@@ -2333,6 +2333,7 @@ export default function statGame() {
                     <Text style={styles.liveStatsPlayerHeader}>
                       #{"  "}Player
                     </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>SP</Text>
                     <Text style={styles.liveStatsModalSecondaryText}>K </Text>
                     <Text style={styles.liveStatsModalSecondaryText}>E</Text>
                     <Text style={styles.liveStatsModalSecondaryText}>TA</Text>
@@ -2369,6 +2370,11 @@ export default function statGame() {
                           {player.playerName.length > 16
                             ? player.playerName.substring(0, 16) + "..."
                             : player.playerName}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.setsPlayed.toString().length > 1
+                            ? player.setsPlayed
+                            : player.setsPlayed + " "}
                         </Text>
                         <Text style={styles.liveStatsModalSecondaryText2}>
                           {player.kills.toString().length > 1
@@ -2458,6 +2464,11 @@ export default function statGame() {
                       Team
                       {"  "}
                       Total
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {currentSet.toString().length > 1
+                        ? currentSet
+                        : currentSet + " "}
                     </Text>
                     <Text style={styles.liveStatsModalSecondaryText2}>
                       {teamStats.teamKills.toString().length > 1
@@ -2967,7 +2978,9 @@ export default function statGame() {
   const endSet = () => {
     if (
       (homeScore > scoreLimit && homeScore - opponentScore > 1) ||
-      (opponentScore > scoreLimit && opponentScore - homeScore > 1)
+      (opponentScore > scoreLimit && opponentScore - homeScore > 1) ||
+      opponentScore > 59 ||
+      homeScore > 59
     ) {
       // Update server trackers if the set ends
       if (prevServerTracker === "Opponent") {
