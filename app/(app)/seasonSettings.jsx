@@ -142,6 +142,14 @@ export default function SeasonSettings() {
   }, [seasonID, user]);
 
   const addOwner = async () => {
+    if (newOwnerEmail.toLowerCase() === user.email.toLowerCase()) {
+      Alert.alert(
+        "Invalid Invitation",
+        "You cannot send an invitation to yourself."
+      );
+      return;
+    }
+    
     setLoading(true);
     try {
       const userSnapshot = await firestore()
@@ -227,6 +235,15 @@ export default function SeasonSettings() {
   };
 
   const addViewer = async () => {
+
+    if (newViewerEmail.toLowerCase() === user.email.toLowerCase()) {
+      Alert.alert(
+        "Invalid Invitation",
+        "You cannot send an invitation to yourself."
+      );
+      return;
+    }
+
     setLoading(true);
     try {
       const userSnapshot = await firestore()
