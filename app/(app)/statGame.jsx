@@ -649,66 +649,148 @@ export default function statGame() {
   //Function that handles the Revert Sub Button
   const handleQuickSub = (playerNumber) => {
     //Handle if the setter needs to be changed
-    if (playerNumber == positionOne) {
+    if (playerNumber === onCourtPositionOne) {
+      //Find the player and set the position
+      if (playerNumber === positionOne) {
+        setPositionOne(onCourtPositionOneSub);
+      } else if (playerNumber === positionTwo) {
+        setPositionTwo(onCourtPositionOneSub);
+      } else if (playerNumber === positionThree) {
+        setPositionThree(onCourtPositionOneSub);
+      } else if (playerNumber === positionFour) {
+        setPositionFour(onCourtPositionOneSub);
+      } else if (playerNumber === positionFive) {
+        setPositionFive(onCourtPositionOneSub);
+      } else if (playerNumber === positionSix) {
+        setPositionSix(onCourtPositionOneSub);
+      }
+
       if (playerNumber === setter) {
         setSetter(onCourtPositionOneSub);
       }
-      setPositionOne(onCourtPositionOneSub);
-    } else if (playerNumber === positionTwo) {
-      if (playerNumber === setter) {
-        setSetter(onCourtPositionTwoSub);
-      }
-      setPositionTwo(onCourtPositionTwoSub);
-    } else if (playerNumber === positionThree) {
-      if (playerNumber === setter) {
-        setSetter(onCourtPositionThreeSub);
-      }
-      setPositionThree(onCourtPositionThreeSub);
-    } else if (playerNumber === positionFour) {
-      if (playerNumber === setter) {
-        setSetter(onCourtPositionFourSub);
-      }
-      setPositionFour(onCourtPositionFourSub);
-    } else if (playerNumber === positionFive) {
-      if (playerNumber === setter) {
-        setSetter(onCourtPositionFiveSub);
-      }
-      setPositionFive(onCourtPositionFiveSub);
-    } else if (playerNumber === positionSix) {
-      if (playerNumber === setter) {
-        setSetter(onCourtPositionSixSub);
-      }
-      setPositionSix(onCourtPositionSixSub);
-    }
 
-    //Find players position and swap
-    if (playerNumber === onCourtPositionOne) {
       //Swap onCourt and Sub values, set sub to ""
       setOnCourtPositionOne(onCourtPositionOneSub);
       setOnCourtPositionOneSub("");
     } else if (playerNumber === onCourtPositionTwo) {
+      //Find the player and set the position
+      if (playerNumber === positionOne) {
+        setPositionOne(onCourtPositionTwoSub);
+      } else if (playerNumber === positionTwo) {
+        setPositionTwo(onCourtPositionTwoSub);
+      } else if (playerNumber === positionThree) {
+        setPositionThree(onCourtPositionTwoSub);
+      } else if (playerNumber === positionFour) {
+        setPositionFour(onCourtPositionTwoSub);
+      } else if (playerNumber === positionFive) {
+        setPositionFive(onCourtPositionTwoSub);
+      } else if (playerNumber === positionSix) {
+        setPositionSix(onCourtPositionTwoSub);
+      }
+
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionTwoSub);
+      }
+
       //Swap onCourt and Sub values, set sub to ""
       setOnCourtPositionTwo(onCourtPositionTwoSub);
       setOnCourtPositionTwoSub("");
     } else if (playerNumber === onCourtPositionThree) {
+      //Find the player and set the position
+      if (playerNumber === positionOne) {
+        setPositionOne(onCourtPositionThreeSub);
+      } else if (playerNumber === positionTwo) {
+        setPositionTwo(onCourtPositionThreeSub);
+      } else if (playerNumber === positionThree) {
+        setPositionThree(onCourtPositionThreeSub);
+      } else if (playerNumber === positionFour) {
+        setPositionFour(onCourtPositionThreeSub);
+      } else if (playerNumber === positionFive) {
+        setPositionFive(onCourtPositionThreeSub);
+      } else if (playerNumber === positionSix) {
+        setPositionSix(onCourtPositionThreeSub);
+      }
+
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionThreeSub);
+      }
+
       //Swap onCourt and Sub values, set sub to ""
       setOnCourtPositionThree(onCourtPositionThreeSub);
       setOnCourtPositionThreeSub("");
     } else if (playerNumber === onCourtPositionFour) {
+      //Find the player and set the position
+      if (playerNumber === positionOne) {
+        setPositionOne(onCourtPositionFourSub);
+      } else if (playerNumber === positionTwo) {
+        setPositionTwo(onCourtPositionFourSub);
+      } else if (playerNumber === positionThree) {
+        setPositionThree(onCourtPositionFourSub);
+      } else if (playerNumber === positionFour) {
+        setPositionFour(onCourtPositionFourSub);
+      } else if (playerNumber === positionFive) {
+        setPositionFive(onCourtPositionFourSub);
+      } else if (playerNumber === positionSix) {
+        setPositionSix(onCourtPositionFourSub);
+      }
+
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionFourSub);
+      }
+
       //Swap onCourt and Sub values, set sub to ""
       setOnCourtPositionFour(onCourtPositionFourSub);
       setOnCourtPositionFourSub("");
     } else if (playerNumber === onCourtPositionFive) {
+      //Find the player and set the position
+      if (playerNumber === positionOne) {
+        setPositionOne(onCourtPositionFiveSub);
+      } else if (playerNumber === positionTwo) {
+        setPositionTwo(onCourtPositionFiveSub);
+      } else if (playerNumber === positionThree) {
+        setPositionThree(onCourtPositionFiveSub);
+      } else if (playerNumber === positionFour) {
+        setPositionFour(onCourtPositionFiveSub);
+      } else if (playerNumber === positionFive) {
+        setPositionFive(onCourtPositionFiveSub);
+      } else if (playerNumber === positionSix) {
+        setPositionSix(onCourtPositionFiveSub);
+      }
+
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionFiveSub);
+      }
+
       //Swap onCourt and Sub values, set sub to ""
       setOnCourtPositionFive(onCourtPositionFiveSub);
       setOnCourtPositionFiveSub("");
     } else if (playerNumber === onCourtPositionSix) {
+      //Find the player and set the position
+      if (playerNumber === positionOne) {
+        setPositionOne(onCourtPositionSixSub);
+      } else if (playerNumber === positionTwo) {
+        setPositionTwo(onCourtPositionSixSub);
+      } else if (playerNumber === positionThree) {
+        setPositionThree(onCourtPositionSixSub);
+      } else if (playerNumber === positionFour) {
+        setPositionFour(onCourtPositionSixSub);
+      } else if (playerNumber === positionFive) {
+        setPositionFive(onCourtPositionSixSub);
+      } else if (playerNumber === positionSix) {
+        setPositionSix(onCourtPositionSixSub);
+      }
+
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionSixSub);
+      }
+
       //Swap onCourt and Sub values, set sub to ""
       setOnCourtPositionSix(onCourtPositionSixSub);
       setOnCourtPositionSixSub("");
     }
   };
 
+  //Function that will determine if the quick sub button needs to be displayed
   const displayQuickSubBtn = (playerNumber) => {
     if (playerNumber === onCourtPositionOne) {
       if (onCourtPositionOneSub === "") {
