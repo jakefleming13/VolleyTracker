@@ -30,15 +30,11 @@ export default function statGame() {
   //Get game settings
   const router = useRouter();
 
-  //TODO: Remove Auth hook and put witin statGamePrep
-  const { seasonID } = useAuth();
-
   //Grab all of the settings from the statGamePrep Screen
 
   //TODO: Add team name from statGamePrep
   const params = useLocalSearchParams();
   const {
-    view,
     gameType,
     firstServe,
     location,
@@ -53,10 +49,12 @@ export default function statGame() {
     firstL,
     secondL,
     onCourtSetter,
+    seasonID,
+    teamName,
   } = params;
 
-  //Variable for which team is serving -> TODO: replace with 'firstServe' prop
-  const [serverTracker, setServerTracker] = useState("Opponent");
+  //Variable for which team is serving 
+  const [serverTracker, setServerTracker] = useState(firstServe);
 
   //Keeps the state of the previous serve for undo functionality
   const [prevServerTracker, setPrevServerTracker] = useState(serverTracker);
@@ -72,9 +70,7 @@ export default function statGame() {
   //Sets being played, which is passed from statGamePrep
 
   //Structure of what the  `setsBeingPlayed` param looks like:
-  //   key: "BO3", key: "BO5", key: "1", key: "2", key: "3", key: "4", key: "5",
-  //TODO: replace with `setsBeingPlayed` param
-  const [gameConditions, setGameConditions] = useState("1");
+  const [gameConditions, setGameConditions] = useState(setsBeingPlayed);
 
   //State hook to store the current set
   const [currentSet, setCurrentSet] = useState(1);
@@ -838,7 +834,7 @@ export default function statGame() {
     let display;
     if (homeTimeOuts == 2) {
       display = (
-        <View style={styles.timeouts}>
+        <View style={{ flexDirection: "row" }}>
           <MaterialCommunityIcons
             name="numeric-1-circle"
             size={RFValue(22)}
@@ -854,7 +850,7 @@ export default function statGame() {
       );
     } else if (homeTimeOuts == 1) {
       display = (
-        <View style={styles.timeouts}>
+        <View style={{ flexDirection: "row" }}>
           <MaterialCommunityIcons
             name="numeric-1-circle"
             size={RFValue(22)}
@@ -863,7 +859,7 @@ export default function statGame() {
         </View>
       );
     } else {
-      display = <View style={styles.timeouts}></View>;
+      display = <View style={{ flexDirection: "row" }}></View>;
     }
 
     return <View>{display}</View>;
@@ -874,7 +870,7 @@ export default function statGame() {
     let display;
     if (opponentTimeOuts == 2) {
       display = (
-        <View style={styles.timeouts}>
+        <View style={{ flexDirection: "row" }}>
           <MaterialCommunityIcons
             name="numeric-1-circle"
             size={RFValue(22)}
@@ -890,7 +886,7 @@ export default function statGame() {
       );
     } else if (opponentTimeOuts == 1) {
       display = (
-        <View style={styles.timeouts}>
+        <View style={{ flexDirection: "row" }}>
           <MaterialCommunityIcons
             name="numeric-1-circle"
             size={RFValue(22)}
@@ -899,7 +895,7 @@ export default function statGame() {
         </View>
       );
     } else {
-      display = <View style={styles.timeouts}></View>;
+      display = <View style={{ flexDirection: "row" }}></View>;
     }
 
     return <View>{display}</View>;
@@ -991,6 +987,18 @@ export default function statGame() {
     );
   };
 
+  const missingSetterAlert = () => {
+    Alert.alert(
+      "You must choose an on court setter",
+      "Each set you must select one player to be a setter.",
+      [
+        {
+          text: "Ok",
+        },
+      ]
+    );
+  };
+
   const [isLiveStatsModalVisible, setLiveStatsModalVisible] = useState(false);
 
   const toggleLiveStatsModal = () => {
@@ -1011,7 +1019,9 @@ export default function statGame() {
   };
 
   //Holds the state of if it's currently FBSO
-  const [isFBSO, setIsFBSO] = useState(true);
+  const [isFBSO, setIsFBSO] = useState(
+    firstServe === "Opponent" ? true : false
+  );
 
   //Holds the previous FBSO for undo functionality
   const [prevFBSO, setPrevFBSO] = useState({
@@ -1402,7 +1412,7 @@ export default function statGame() {
           setServerTracker(prevServerTracker);
           handleUndoRotation();
         }
-      } else if (lastStat.playerNumber === "Your Team") {
+      } else if (lastStat.playerNumber === "Home") {
         setHomeScore(homeScore - 1);
         //if prevServerTracker === "Opponent" -> Handle undo Side Outs
         if (prevServerTracker === "Opponent") {
@@ -3137,28 +3147,58 @@ export default function statGame() {
       if (uniquePlayers.size !== selectedPlayers.length) {
         duplicatePlayerAlert();
       } else {
-        //Success
-        setEndSetState(false);
-        handleStartersSetsPlayed();
-        setUndoAvailable(false);
+        if (
+          setter === positionOne ||
+          setter === positionTwo ||
+          setter === positionThree ||
+          setter === positionFour ||
+          setter === positionFive ||
+          setter === positionSix
+        ) {
+          //Success
+          setEndSetState(false);
+          handleStartersSetsPlayed();
+          setUndoAvailable(false);
+          handleOnCourtPlayers();
+        } else {
+          missingSetterAlert();
+        }
       }
     }
   };
 
+  const handleOnCourtPlayers = () => {
+    // Logic to handle on-court players
+    setOnCourtPositionOne(positionOne);
+    setOnCourtPositionTwo(positionTwo);
+    setOnCourtPositionThree(positionThree);
+    setOnCourtPositionFour(positionFour);
+    setOnCourtPositionFive(positionFive);
+    setOnCourtPositionSix(positionSix);
+
+    setOnCourtPositionOneSub("");
+    setOnCourtPositionTwoSub("");
+    setOnCourtPositionThreeSub("");
+    setOnCourtPositionFourSub("");
+    setOnCourtPositionFiveSub("");
+    setOnCourtPositionSixSub("");
+  };
+
   const saveGame = async () => {
+    //TODO: Add conditions that allow games to be saved as a practice or scrimmage
     try {
-      //TODO: figure out complete list of fields that need to be saved & test Date field
       const newGame = {
-        opponent: "Test Opponent",
+        opponent: opponent,
         date: new Date().toISOString().split("T")[0],
-        location: "Test Location",
+        location: location,
+        gameType: gameType,
         setsPlayed: setsFinished,
         homeSetsWon: homeSetsWon,
         opponentSetsWon: opponentSetsWon,
         stats: rosterStats,
         teamStats: teamStats,
       };
-      //Add new doc to games collection, works fine if its empty
+      //Add new doc to games collection
       await firestore()
         .collection("seasons")
         .doc(seasonID)
@@ -3188,11 +3228,12 @@ export default function statGame() {
           <View style={styles.endGameBodyContainer}>
             <View style={styles.endGameScoresContainer}>
               <View style={styles.scoreContainer}>
-                {/* TODO: Inputvalidation to ensure team name is not too long */}
-                <Text style={styles.scoreTeamNameText}>Your Team</Text>
-                {/* {teamName.length > 12
-                          ? teamName.substring(0, 12) + "..."
-                          : teamName} */}
+                <Text style={styles.scoreTeamNameText}>
+                  {teamName.length > 12
+                    ? teamName.substring(0, 12) + "..."
+                    : teamName}
+                </Text>
+
                 <View style={styles.scoreAmountContainer}>
                   <Text style={styles.scoreText}>{homeSetsWon}</Text>
                 </View>
@@ -3449,15 +3490,15 @@ export default function statGame() {
     return (
       <SafeView style={styles.container}>
         <View style={styles.inBetweenHeaderContainer}>
-          <TouchableOpacity onPress={cancelAlert}>
-            <View style={styles.exitBtn}>
+          <TouchableOpacity onPress={cancelAlert} style={styles.exitBtn}>
+            <View style={{ flexDirection: "row" }}>
               <AntDesign
                 style={styles.backIcon}
                 name="left"
                 size={hp(3.7)}
                 color={COLORS.white}
               />
-              <Text style={styles.headerBtnText}>EXIT</Text>
+              <Text style={styles.exitBtnText}>EXIT</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
@@ -3476,12 +3517,10 @@ export default function statGame() {
           <TouchableOpacity
             onPress={() => {
               handleInBetweenConfirmation();
-
-              //TODOs:
-              //Reset onCourtPositionValues and subs to reaspect positions
             }}
+            style={styles.nextSetBtn}
           >
-            <View style={styles.nextSetBtn}>
+            <View style={{ flexDirection: "row" }}>
               <View style={styles.NextSetTextContainer}>
                 <Text style={styles.nextSetBtnText}>NEXT</Text>
                 <Text style={styles.nextSetBtnText}>SET</Text>
@@ -3510,12 +3549,20 @@ export default function statGame() {
             <View style={styles.radioGroup}>
               <View style={styles.radioButton}>
                 <RadioButton
-                  value="Your Team"
+                  value={
+                    teamName.length > 16
+                      ? teamName.substring(0, 16) + "..."
+                      : teamName
+                  }
                   status={serverTracker === "Home" ? "checked" : "unchecked"}
                   onPress={() => setServerTracker("Home")}
                   color={COLORS.primary}
                 />
-                <Text style={styles.radioLabel}>Your Team</Text>
+                <Text style={styles.radioLabel}>
+                  {teamName.length > 16
+                    ? teamName.substring(0, 16) + "..."
+                    : teamName}
+                </Text>
               </View>
               <View style={styles.radioButton}>
                 <RadioButton
@@ -3652,7 +3699,6 @@ export default function statGame() {
                 placeholderStyle={styles.setterPlaceHolderDropDown}
                 selectedTextStyle={styles.selectedDropDownText2}
                 itemTextStyle={styles.dropDownText2}
-                //TODO: Ensure selection is only from on court players
                 data={inBetweenSetsRosterList()}
                 search={false}
                 maxHeight={300}
@@ -3716,21 +3762,24 @@ export default function statGame() {
     return (
       <SafeView style={styles.container}>
         <View style={styles.headerContainer}>
-          <TouchableOpacity onPress={cancelAlert}>
-            <View style={styles.exitBtn}>
+          <TouchableOpacity onPress={cancelAlert} style={styles.exitBtn}>
+            <View style={{ flexDirection: "row" }}>
               <AntDesign
                 style={styles.backIcon}
                 name="left"
                 size={hp(3.7)}
                 color={COLORS.white}
               />
-              <Text style={styles.headerBtnText}>EXIT</Text>
+              <Text style={styles.exitBtnText}>EXIT</Text>
             </View>
           </TouchableOpacity>
           <View style={styles.scoreboardContainer}>
             <View style={styles.liveStatsSubContainer}>
-              <TouchableOpacity onPress={toggleLiveStatsModal}>
-                <View style={styles.liveStatsContainer}>
+              <TouchableOpacity
+                onPress={toggleLiveStatsModal}
+                style={styles.liveStatsContainer}
+              >
+                <View style={{ flexDirection: "row" }}>
                   <FontAwesome6
                     name="chart-bar"
                     size={RFValue(12)}
@@ -3740,8 +3789,11 @@ export default function statGame() {
                 </View>
               </TouchableOpacity>
               <View style={styles.subContainer}>
-                <TouchableOpacity onPress={toggleSubModal}>
-                  <View style={styles.liveStatsContainer}>
+                <TouchableOpacity
+                  onPress={toggleSubModal}
+                  style={styles.liveStatsContainer}
+                >
+                  <View style={{ flexDirection: "row" }}>
                     <MaterialIcons
                       name="swap-horizontal-circle"
                       size={RFValue(14)}
@@ -3829,6 +3881,7 @@ export default function statGame() {
                   setHomeTimeOuts(homeTimeOuts - 1);
                 }}
                 disabled={homeTimeOuts < 1 ? true : false}
+                style={styles.timeouts}
               >
                 <HomeTimeOutsDisplay />
               </TouchableOpacity>
@@ -3845,11 +3898,12 @@ export default function statGame() {
               </View>
             </View>
             <View style={styles.scoreContainer}>
-              {/* TODO: Inputvalidation to ensure team name is not too long */}
-              <Text style={styles.scoreTeamNameText}>Your Team</Text>
-              {/* {teamName.length > 12
-                          ? teamName.substring(0, 12) + "..."
-                          : teamName} */}
+              <Text style={styles.scoreTeamNameText}>
+                {teamName.length > 12
+                  ? teamName.substring(0, 12) + "..."
+                  : teamName}
+              </Text>
+
               <TouchableOpacity
                 onPress={() => {
                   //Increment Server attempts
@@ -3872,14 +3926,15 @@ export default function statGame() {
                   setStatStack((oldStack) => [
                     ...oldStack,
                     {
-                      playerNumber: "Your Team",
+                      playerNumber: "Home",
                       statType: "+1",
                     },
                   ]);
                   setUndoAvailable(true);
                 }}
+                style={styles.scoreAmountContainer}
               >
-                <View style={styles.scoreAmountContainer}>
+                <View>
                   <Text style={styles.scoreText}>{homeScore}</Text>
                 </View>
               </TouchableOpacity>
@@ -3915,9 +3970,9 @@ export default function statGame() {
                   ]);
                   setUndoAvailable(true);
                 }}
-                delayPressIn={0}
+                style={styles.scoreAmountContainer}
               >
-                <View style={styles.scoreAmountContainer}>
+                <View>
                   <Text style={styles.scoreText}>{opponentScore}</Text>
                 </View>
               </TouchableOpacity>
@@ -3929,6 +3984,7 @@ export default function statGame() {
                   setOpponentTimeOuts(opponentTimeOuts - 1);
                 }}
                 disabled={opponentTimeOuts < 1 ? true : false}
+                style={styles.timeouts}
               >
                 <OpponentTimeOutsDisplay />
               </TouchableOpacity>
@@ -3945,8 +4001,11 @@ export default function statGame() {
               </View>
             </View>
             <View style={styles.widthSpacer2} />
-            <TouchableOpacity onPress={toggleRotationCheckModal}>
-              <View style={styles.rotationCheckContianer}>
+            <TouchableOpacity
+              onPress={toggleRotationCheckModal}
+              style={styles.rotationCheckContianer}
+            >
+              <View>
                 <Text style={styles.liveStatsRotationText}>Rotation Check</Text>
               </View>
             </TouchableOpacity>
@@ -3955,22 +4014,19 @@ export default function statGame() {
             <TouchableOpacity
               onPress={() => undoLastStat()}
               disabled={undoAvailable === false ? true : false}
+              style={
+                undoAvailable === false
+                  ? styles.undoBtnDisabled
+                  : styles.undoBtn
+              }
             >
-              <View
-                style={
-                  undoAvailable === false
-                    ? styles.undoBtnDisabled
-                    : styles.undoBtn
-                }
-              >
-                <View style={styles.undoIcon}>
-                  <AntDesign
-                    style={styles.backIcon}
-                    name="back"
-                    size={hp(3.7)}
-                    color={COLORS.white}
-                  />
-                </View>
+              <View style={styles.undoIcon}>
+                <AntDesign
+                  style={styles.backIcon}
+                  name="back"
+                  size={hp(3.7)}
+                  color={COLORS.white}
+                />
                 <View style={styles.undoTextContainer}>
                   <Text style={styles.undoBtnText}>UNDO</Text>
                   <Text style={styles.undoBtnText}>STAT</Text>
@@ -5537,7 +5593,7 @@ const styles = StyleSheet.create({
     fontSize: RFValue(11),
   },
   selectedDropDownText2: {
-    fontSize: RFValue(11),
+    fontSize: RFValue(9.5),
     color: COLORS.black,
   },
   dropDownText2: {
@@ -5558,7 +5614,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     borderRadius: 20,
     marginHorizontal: 5,
-    marginTop: 5,
+    marginTop: 7,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
@@ -5673,6 +5729,14 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     paddingLeft: 3,
   },
+  exitBtnText: {
+    fontSize: RFValue(9),
+    paddingRight: 3,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: COLORS.white,
+    paddingTop: 3,
+  },
   headerBtnText: {
     fontSize: RFValue(9),
     paddingRight: 3,
@@ -5732,6 +5796,7 @@ const styles = StyleSheet.create({
   },
   subConfirmContainer: { justifyContent: "center", alignItems: "center" },
   undoIcon: {
+    flexDirection: "row",
     marginLeft: 4,
   },
   popUpContainer: {
@@ -5766,7 +5831,7 @@ const styles = StyleSheet.create({
     width: wp(1),
   },
   scoreTeamNameText: {
-    fontSize: RFValue(13),
+    fontSize: RFValue(11),
     fontWeight: "bold",
   },
   scoreAmountContainer: {
