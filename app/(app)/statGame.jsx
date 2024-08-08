@@ -92,23 +92,23 @@ export default function statGame() {
 
   //Starters and subs for each position
   const [onCourtPositionOne, setOnCourtPositionOne] = useState(positionOne);
-  const [onCourtPositionOneSub, setOnCourtPositionOneSub] = useState(null);
+  const [onCourtPositionOneSub, setOnCourtPositionOneSub] = useState("");
 
   const [onCourtPositionTwo, setOnCourtPositionTwo] = useState(positionTwo);
-  const [onCourtPositionTwoSub, setOnCourtPositionTwoSub] = useState(null);
+  const [onCourtPositionTwoSub, setOnCourtPositionTwoSub] = useState("");
 
   const [onCourtPositionThree, setOnCourtPositionThree] =
     useState(positionThree);
-  const [onCourtPositionThreeSub, setOnCourtPositionThreeSub] = useState(null);
+  const [onCourtPositionThreeSub, setOnCourtPositionThreeSub] = useState("");
 
   const [onCourtPositionFour, setOnCourtPositionFour] = useState(positionFour);
-  const [onCourtPositionFourSub, setOnCourtPositionFourSub] = useState(null);
+  const [onCourtPositionFourSub, setOnCourtPositionFourSub] = useState("");
 
   const [onCourtPositionFive, setOnCourtPositionFive] = useState(positionFive);
-  const [onCourtPositionFiveSub, setOnCourtPositionFiveSub] = useState(null);
+  const [onCourtPositionFiveSub, setOnCourtPositionFiveSub] = useState("");
 
   const [onCourtPositionSix, setOnCourtPositionSix] = useState(positionSix);
-  const [onCourtPositionSixSub, setOnCourtPositionSixSub] = useState(null);
+  const [onCourtPositionSixSub, setOnCourtPositionSixSub] = useState("");
 
   //Function that rotates the players on the court
   const handleRotation = () => {
@@ -562,20 +562,40 @@ export default function statGame() {
   const [benchDropDownValue, setBenchDropDownValue] = useState("");
 
   const handleSubstitution = () => {
-    //find the players current position
-    courtDropDownValue === positionOne
-      ? setPositionOne(benchDropDownValue)
-      : courtDropDownValue === positionTwo
-      ? setPositionTwo(benchDropDownValue)
-      : courtDropDownValue === positionThree
-      ? setPositionThree(benchDropDownValue)
-      : courtDropDownValue === positionFour
-      ? setPositionFour(benchDropDownValue)
-      : courtDropDownValue === positionFive
-      ? setPositionFive(benchDropDownValue)
-      : courtDropDownValue === positionSix
-      ? setPositionSix(benchDropDownValue)
-      : null;
+    //Handle if the setter needs to be changed
+    if (courtDropDownValue === setter) {
+      setSetter(benchDropDownValue);
+    }
+
+    //Check if the player being subbed in is currently attatched to a player
+    if (benchDropDownValue === onCourtPositionOneSub) {
+      setOnCourtPositionOneSub("");
+    } else if (benchDropDownValue === onCourtPositionTwoSub) {
+      setOnCourtPositionTwoSub("");
+    } else if (benchDropDownValue === onCourtPositionThreeSub) {
+      setOnCourtPositionThreeSub("");
+    } else if (benchDropDownValue === onCourtPositionFourSub) {
+      setOnCourtPositionFourSub("");
+    } else if (benchDropDownValue === onCourtPositionFiveSub) {
+      setOnCourtPositionFiveSub("");
+    } else if (benchDropDownValue === onCourtPositionSixSub) {
+      setOnCourtPositionSixSub("");
+    }
+
+    //find and set the players current position
+    if (courtDropDownValue === positionOne) {
+      setPositionOne(benchDropDownValue);
+    } else if (courtDropDownValue === positionTwo) {
+      setPositionTwo(benchDropDownValue);
+    } else if (courtDropDownValue === positionThree) {
+      setPositionThree(benchDropDownValue);
+    } else if (courtDropDownValue === positionFour) {
+      setPositionFour(benchDropDownValue);
+    } else if (courtDropDownValue === positionFive) {
+      setPositionFive(benchDropDownValue);
+    } else if (courtDropDownValue === positionSix) {
+      setPositionSix(benchDropDownValue);
+    }
 
     //set onCourt and sub values
     if (courtDropDownValue === onCourtPositionOne) {
@@ -624,6 +644,111 @@ export default function statGame() {
 
     toggleSubModal(!isSubModalVisible);
     return;
+  };
+
+  //Function that handles the Revert Sub Button
+  const handleQuickSub = (playerNumber) => {
+    //Handle if the setter needs to be changed
+    if (playerNumber == positionOne) {
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionOneSub);
+      }
+      setPositionOne(onCourtPositionOneSub);
+    } else if (playerNumber === positionTwo) {
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionTwoSub);
+      }
+      setPositionTwo(onCourtPositionTwoSub);
+    } else if (playerNumber === positionThree) {
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionThreeSub);
+      }
+      setPositionThree(onCourtPositionThreeSub);
+    } else if (playerNumber === positionFour) {
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionFourSub);
+      }
+      setPositionFour(onCourtPositionFourSub);
+    } else if (playerNumber === positionFive) {
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionFiveSub);
+      }
+      setPositionFive(onCourtPositionFiveSub);
+    } else if (playerNumber === positionSix) {
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionSixSub);
+      }
+      setPositionSix(onCourtPositionSixSub);
+    }
+
+    //Find players position and swap
+    if (playerNumber === onCourtPositionOne) {
+      //Swap onCourt and Sub values, set sub to ""
+      setOnCourtPositionOne(onCourtPositionOneSub);
+      setOnCourtPositionOneSub("");
+    } else if (playerNumber === onCourtPositionTwo) {
+      //Swap onCourt and Sub values, set sub to ""
+      setOnCourtPositionTwo(onCourtPositionTwoSub);
+      setOnCourtPositionTwoSub("");
+    } else if (playerNumber === onCourtPositionThree) {
+      //Swap onCourt and Sub values, set sub to ""
+      setOnCourtPositionThree(onCourtPositionThreeSub);
+      setOnCourtPositionThreeSub("");
+    } else if (playerNumber === onCourtPositionFour) {
+      //Swap onCourt and Sub values, set sub to ""
+      setOnCourtPositionFour(onCourtPositionFourSub);
+      setOnCourtPositionFourSub("");
+    } else if (playerNumber === onCourtPositionFive) {
+      //Swap onCourt and Sub values, set sub to ""
+      setOnCourtPositionFive(onCourtPositionFiveSub);
+      setOnCourtPositionFiveSub("");
+    } else if (playerNumber === onCourtPositionSix) {
+      //Swap onCourt and Sub values, set sub to ""
+      setOnCourtPositionSix(onCourtPositionSixSub);
+      setOnCourtPositionSixSub("");
+    }
+  };
+
+  const displayQuickSubBtn = (playerNumber) => {
+    if (playerNumber === onCourtPositionOne) {
+      if (onCourtPositionOneSub === "") {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (playerNumber === onCourtPositionTwo) {
+      if (onCourtPositionTwoSub === "") {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (playerNumber === onCourtPositionThree) {
+      if (onCourtPositionThreeSub === "") {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (playerNumber === onCourtPositionFour) {
+      if (onCourtPositionFourSub === "") {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (playerNumber === onCourtPositionFive) {
+      if (onCourtPositionFiveSub === "") {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (playerNumber === onCourtPositionSix) {
+      if (onCourtPositionSixSub === "") {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
   };
 
   //Function to allow user to decrement number of home timeouts
@@ -4042,7 +4167,24 @@ export default function statGame() {
                           : player.playerName}
                       </Text>
                     </View>
-                    <View style={styles.widthSpacer2} />
+                    <View style={styles.playerReverseSubContainer}>
+                      {displayQuickSubBtn(player.playerNumber) === true ? (
+                        <TouchableOpacity
+                          onPress={() => handleQuickSub(player.playerNumber)}
+                        >
+                          <Text style={styles.revertText}>Revert</Text>
+                          <MaterialIcons
+                            name="swap-horizontal-circle"
+                            size={RFValue(20)}
+                            color={COLORS.primary}
+                            style={styles.swapIcon}
+                          />
+                          <Text style={styles.revertSubText}>Sub</Text>
+                        </TouchableOpacity>
+                      ) : (
+                        <View></View>
+                      )}
+                    </View>
                     <View style={styles.playerOffenseContainer}>
                       <View style={styles.offenseSubContainer}>
                         <TouchableOpacity
@@ -5574,6 +5716,14 @@ const styles = StyleSheet.create({
   },
   widthSpacer2: {
     width: wp(2.5),
+    height: hp(1),
+  },
+  playerReverseSubContainer: {
+    width: wp(4),
+    height: hp(14),
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: wp(1),
   },
   widthSpacer3: {
     width: wp(0.7),
@@ -5846,12 +5996,24 @@ const styles = StyleSheet.create({
     fontSize: RFValue(8.5),
     fontWeight: "bold",
   },
+  revertText: {
+    fontSize: RFValue(8.5),
+    fontWeight: "bold",
+  },
+  revertSubText: {
+    fontSize: RFValue(8.5),
+    fontWeight: "bold",
+    paddingLeft: 6,
+  },
+  swapIcon: {
+    paddingLeft: 3,
+  },
   playerOffenseContainer: {
     width: wp(14),
     height: hp(14),
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: wp(2),
+    marginLeft: wp(0.75),
   },
   offenseSubContainer: {
     flexDirection: "row",
@@ -5981,7 +6143,7 @@ const styles = StyleSheet.create({
     zIndex: 999,
     paddingHorizontal: wp(1.5),
     height: hp(6),
-    width: wp(12),
+    width: wp(18),
     justifyContent: "center",
     alignItems: "center",
   },
@@ -5990,7 +6152,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   selectedDropDownText: {
-    fontSize: RFValue(11),
+    fontSize: RFValue(9.5),
     color: COLORS.black,
   },
   dropDownText: {
