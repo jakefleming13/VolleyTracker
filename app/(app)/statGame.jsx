@@ -160,7 +160,7 @@ export default function statGame() {
       matchesPlayed: 0,
       onePasses: 0,
       passingAttempts: 0,
-      playerName: "Benjamin",
+      playerName: "Benjamin Benjamin Benjamin",
       playerNumber: "10",
       pts: 0,
       ptsPerSet: 0,
@@ -2367,8 +2367,8 @@ export default function statGame() {
                         <Text style={styles.liveStatsPlayerHeader}>
                           {player.playerNumber}
                           {"  "}
-                          {player.playerName.length > 16
-                            ? player.playerName.substring(0, 16) + "..."
+                          {player.playerName.length > 20
+                            ? player.playerName.substring(0, 20) + "..."
                             : player.playerName}
                         </Text>
                         <Text style={styles.liveStatsModalSecondaryText2}>
@@ -4284,24 +4284,26 @@ export default function statGame() {
                       <View style={styles.offenseSubContainer}>
                         <TouchableOpacity
                           onPress={() => {
-                            //Increment attempts
-                            handleAttemptIncrement(player.playerNumber);
+                            if (player.attempts < 200) {
+                              //Increment attempts
+                              handleAttemptIncrement(player.playerNumber);
 
-                            //Increment Team attempts
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamAttempts: teamStats.teamAttempts + 1,
-                            }));
+                              //Increment Team attempts
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamAttempts: teamStats.teamAttempts + 1,
+                              }));
 
-                            //Add stat to stat log
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "ATK",
-                              },
-                            ]);
-                            setUndoAvailable(true);
+                              //Add stat to stat log
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  statType: "ATK",
+                                },
+                              ]);
+                              setUndoAvailable(true);
+                            }
                           }}
                         >
                           <View style={styles.statBtn}>
@@ -4402,24 +4404,26 @@ export default function statGame() {
                         </TouchableOpacity>
                         <TouchableOpacity
                           onPress={() => {
-                            //Incrcement assists
-                            handleAssistsIncrement(player.playerNumber);
+                            if (player.assists < 200) {
+                              //Incrcement assists
+                              handleAssistsIncrement(player.playerNumber);
 
-                            //Increment team stats
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamAssists: teamStats.teamAssists + 1,
-                            }));
+                              //Increment team stats
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamAssists: teamStats.teamAssists + 1,
+                              }));
 
-                            //Add stat to the stat log
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "A",
-                              },
-                            ]);
-                            setUndoAvailable(true);
+                              //Add stat to the stat log
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  statType: "A",
+                                },
+                              ]);
+                              setUndoAvailable(true);
+                            }
                           }}
                         >
                           <View style={styles.statBtn}>
@@ -4646,23 +4650,25 @@ export default function statGame() {
                         <TouchableOpacity
                           onPress={() => {
                             //Increment dig
-                            handleDigIncrement(player.playerNumber);
+                            if (player.digs < 200) {
+                              handleDigIncrement(player.playerNumber);
 
-                            //Increment player stats
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamDigs: teamStats.teamDigs + 1,
-                            }));
+                              //Increment player stats
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamDigs: teamStats.teamDigs + 1,
+                              }));
 
-                            //add stat to stat log
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "DIG",
-                              },
-                            ]);
-                            setUndoAvailable(true);
+                              //add stat to stat log
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  statType: "DIG",
+                                },
+                              ]);
+                              setUndoAvailable(true);
+                            }
                           }}
                         >
                           <View style={styles.statBtn}>
@@ -4909,57 +4915,59 @@ export default function statGame() {
                       <View style={styles.passingSubContainer}>
                         <TouchableOpacity
                           onPress={() => {
-                            //Increment player one pass
-                            handleOnePassIncrement(player.playerNumber);
-                            if (handPassSelected === true) {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamOnePasses: teamStats.teamOnePasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 1,
-                                teamHandPassingAttempts:
-                                  teamStats.teamHandPassingAttempts + 1,
-                                teamTotalHandPassValue:
-                                  teamStats.teamTotalHandPassValue + 1,
-                              }));
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                {
-                                  playerNumber: player.playerNumber,
-                                  statType: "1 Pass",
-                                  passType: "Hand",
-                                },
-                              ]);
-                            } else {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamOnePasses: teamStats.teamOnePasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 1,
-                                teamForearmPassingAttempts:
-                                  teamStats.teamForearmPassingAttempts + 1,
-                                teamTotalForearmPassValue:
-                                  teamStats.teamTotalForearmPassValue + 1,
-                              }));
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                {
-                                  playerNumber: player.playerNumber,
-                                  statType: "1 Pass",
-                                  passType: "Forearm",
-                                },
-                              ]);
+                            if (player.onePasses < 200) {
+                              //Increment player one pass
+                              handleOnePassIncrement(player.playerNumber);
+                              if (handPassSelected === true) {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamOnePasses: teamStats.teamOnePasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 1,
+                                  teamHandPassingAttempts:
+                                    teamStats.teamHandPassingAttempts + 1,
+                                  teamTotalHandPassValue:
+                                    teamStats.teamTotalHandPassValue + 1,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "1 Pass",
+                                    passType: "Hand",
+                                  },
+                                ]);
+                              } else {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamOnePasses: teamStats.teamOnePasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 1,
+                                  teamForearmPassingAttempts:
+                                    teamStats.teamForearmPassingAttempts + 1,
+                                  teamTotalForearmPassValue:
+                                    teamStats.teamTotalForearmPassValue + 1,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "1 Pass",
+                                    passType: "Forearm",
+                                  },
+                                ]);
+                              }
+                              //Reset passing trackers
+                              setForearmPassSelected(false);
+                              setForearmPassPlayer(null);
+                              setHandPassSelected(false);
+                              setHandPassPlayer(null);
+                              setUndoAvailable(true);
                             }
-                            //Reset passing trackers
-                            setForearmPassSelected(false);
-                            setForearmPassPlayer(null);
-                            setHandPassSelected(false);
-                            setHandPassPlayer(null);
-                            setUndoAvailable(true);
                           }}
                           disabled={
                             handPassSelected === false &&
@@ -4983,58 +4991,61 @@ export default function statGame() {
                         </TouchableOpacity>
                         <TouchableOpacity
                           onPress={() => {
-                            //Increment player three passes
-                            handleThreePassIncrement(player.playerNumber);
-                            if (handPassSelected === true) {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamThreePasses: teamStats.teamThreePasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 3,
-                                teamHandPassingAttempts:
-                                  teamStats.teamHandPassingAttempts + 1,
-                                teamTotalHandPassValue:
-                                  teamStats.teamTotalHandPassValue + 3,
-                              }));
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                {
-                                  playerNumber: player.playerNumber,
-                                  statType: "3 Pass",
-                                  passType: "Hand",
-                                },
-                              ]);
-                            } else {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamThreePasses: teamStats.teamThreePasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 3,
-                                teamForearmPassingAttempts:
-                                  teamStats.teamForearmPassingAttempts + 1,
-                                teamTotalForearmPassValue:
-                                  teamStats.teamTotalForearmPassValue + 3,
-                              }));
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                {
-                                  playerNumber: player.playerNumber,
-                                  statType: "3 Pass",
-                                  passType: "Forearm",
-                                },
-                              ]);
+                            if (player.threePasses < 200) {
+                              //Increment player three passes
+                              handleThreePassIncrement(player.playerNumber);
+                              if (handPassSelected === true) {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamThreePasses:
+                                    teamStats.teamThreePasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 3,
+                                  teamHandPassingAttempts:
+                                    teamStats.teamHandPassingAttempts + 1,
+                                  teamTotalHandPassValue:
+                                    teamStats.teamTotalHandPassValue + 3,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "3 Pass",
+                                    passType: "Hand",
+                                  },
+                                ]);
+                              } else {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamThreePasses:
+                                    teamStats.teamThreePasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 3,
+                                  teamForearmPassingAttempts:
+                                    teamStats.teamForearmPassingAttempts + 1,
+                                  teamTotalForearmPassValue:
+                                    teamStats.teamTotalForearmPassValue + 3,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "3 Pass",
+                                    passType: "Forearm",
+                                  },
+                                ]);
+                              }
+                              //Reset passing trackers
+                              setForearmPassSelected(false);
+                              setForearmPassPlayer(null);
+                              setHandPassSelected(false);
+                              setHandPassPlayer(null);
+                              setUndoAvailable(true);
                             }
-
-                            //Reset passing trackers
-                            setForearmPassSelected(false);
-                            setForearmPassPlayer(null);
-                            setHandPassSelected(false);
-                            setHandPassPlayer(null);
-                            setUndoAvailable(true);
                           }}
                           disabled={
                             handPassSelected === false &&
@@ -5060,50 +5071,52 @@ export default function statGame() {
                       <View style={styles.passingSubContainer}>
                         <TouchableOpacity
                           onPress={() => {
-                            //Increment player two pass
-                            handleTwoPassIncrement(player.playerNumber);
-                            if (handPassSelected === true) {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamTwoPasses: teamStats.teamTwoPasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 2,
-                                teamHandPassingAttempts:
-                                  teamStats.teamHandPassingAttempts + 1,
-                                teamTotalHandPassValue:
-                                  teamStats.teamTotalHandPassValue + 2,
-                              }));
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                {
-                                  playerNumber: player.playerNumber,
-                                  statType: "2 Pass",
-                                  passType: "Hand",
-                                },
-                              ]);
-                            } else {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamTwoPasses: teamStats.teamTwoPasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 2,
-                                teamForearmPassingAttempts:
-                                  teamStats.teamForearmPassingAttempts + 1,
-                                teamTotalForearmPassValue:
-                                  teamStats.teamTotalForearmPassValue + 2,
-                              }));
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                {
-                                  playerNumber: player.playerNumber,
-                                  statType: "2 Pass",
-                                  passType: "Forearm",
-                                },
-                              ]);
+                            if (player.twoPasses < 200) {
+                              //Increment player two pass
+                              handleTwoPassIncrement(player.playerNumber);
+                              if (handPassSelected === true) {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamTwoPasses: teamStats.teamTwoPasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 2,
+                                  teamHandPassingAttempts:
+                                    teamStats.teamHandPassingAttempts + 1,
+                                  teamTotalHandPassValue:
+                                    teamStats.teamTotalHandPassValue + 2,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "2 Pass",
+                                    passType: "Hand",
+                                  },
+                                ]);
+                              } else {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamTwoPasses: teamStats.teamTwoPasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 2,
+                                  teamForearmPassingAttempts:
+                                    teamStats.teamForearmPassingAttempts + 1,
+                                  teamTotalForearmPassValue:
+                                    teamStats.teamTotalForearmPassValue + 2,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "2 Pass",
+                                    passType: "Forearm",
+                                  },
+                                ]);
+                              }
                             }
 
                             //reset passing trackers
@@ -5135,50 +5148,52 @@ export default function statGame() {
                         </TouchableOpacity>
                         <TouchableOpacity
                           onPress={() => {
-                            //Increment player four passes
-                            handleFourPassIncrement(player.playerNumber);
-                            if (handPassSelected === true) {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamFourPasses: teamStats.teamFourPasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 4,
-                                teamHandPassingAttempts:
-                                  teamStats.teamHandPassingAttempts + 1,
-                                teamTotalHandPassValue:
-                                  teamStats.teamTotalHandPassValue + 4,
-                              }));
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                {
-                                  playerNumber: player.playerNumber,
-                                  statType: "4 Pass",
-                                  passType: "Hand",
-                                },
-                              ]);
-                            } else {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamFourPasses: teamStats.teamFourPasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 4,
-                                teamForearmPassingAttempts:
-                                  teamStats.teamForearmPassingAttempts + 1,
-                                teamTotalForearmPassValue:
-                                  teamStats.teamTotalForearmPassValue + 4,
-                              }));
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                {
-                                  playerNumber: player.playerNumber,
-                                  statType: "4 Pass",
-                                  passType: "Forearm",
-                                },
-                              ]);
+                            if (player.fourPasses < 200) {
+                              //Increment player four passes
+                              handleFourPassIncrement(player.playerNumber);
+                              if (handPassSelected === true) {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamFourPasses: teamStats.teamFourPasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 4,
+                                  teamHandPassingAttempts:
+                                    teamStats.teamHandPassingAttempts + 1,
+                                  teamTotalHandPassValue:
+                                    teamStats.teamTotalHandPassValue + 4,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "4 Pass",
+                                    passType: "Hand",
+                                  },
+                                ]);
+                              } else {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamFourPasses: teamStats.teamFourPasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 4,
+                                  teamForearmPassingAttempts:
+                                    teamStats.teamForearmPassingAttempts + 1,
+                                  teamTotalForearmPassValue:
+                                    teamStats.teamTotalForearmPassValue + 4,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "4 Pass",
+                                    passType: "Forearm",
+                                  },
+                                ]);
+                              }
                             }
 
                             //Reset passing trackers
