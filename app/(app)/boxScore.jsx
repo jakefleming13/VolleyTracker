@@ -16,6 +16,12 @@ import {
 import { COLORS } from "../../constants/Colors";
 import { RFValue } from "react-native-responsive-fontsize";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from "react-native-popup-menu";
 
 export default function boxScore() {
   const router = useRouter();
@@ -43,7 +49,14 @@ export default function boxScore() {
       <ScrollView>
         <View style={styles.backContainer}>
           <TouchableOpacity
-            onPress={() => router.push("gameLog")}
+            onPress={() =>
+              router.push({
+                pathname: "gameLog",
+                params: {
+                  currentLocalTeamName: teamName,
+                },
+              })
+            }
             style={styles.headerBtn}
           >
             <AntDesign
@@ -91,12 +104,16 @@ export default function boxScore() {
           ) : (
             <Text style={styles.headingText}>{location}</Text>
           )}
+          {gameType === "Game" ? (
+            <View />
+          ) : (
+            <Text style={styles.headingText}>{gameType}</Text>
+          )}
         </View>
         <View style={styles.seperator} />
         <View style={styles.bodyContainer}>
           <Text style={styles.headingText}>Player Stats</Text>
           <PlayerStatsHeader />
-          {/* TODO: map each player, excluding the ones with no sets played */}
           {rosterStats.map((player) => {
             if (player.setsPlayed > 0) {
               return (
@@ -112,27 +129,25 @@ export default function boxScore() {
                     </Text>
                   </View>
                   <View style={styles.playerStatsTitleContainer}>
-                    <Text style={styles.playerStatsTextBold}>
+                    <Text style={styles.playerStatsText}>
                       {player.setsPlayed}
                     </Text>
                   </View>
                   <View style={styles.playerStatsTitleContainer}>
-                    <Text style={styles.playerStatsTextBold}>
-                      {player.kills}
-                    </Text>
+                    <Text style={styles.playerStatsText}>{player.kills}</Text>
                   </View>
                   <View style={styles.playerStatsTitleContainer}>
-                    <Text style={styles.playerStatsTextBold}>
+                    <Text style={styles.playerStatsText}>
                       {player.attackErrors}
                     </Text>
                   </View>
                   <View style={styles.playerStatsTitleContainer}>
-                    <Text style={styles.playerStatsTextBold}>
+                    <Text style={styles.playerStatsText}>
                       {player.attempts}
                     </Text>
                   </View>
                   <View style={styles.playerStatsTitleKillPercentageContainer}>
-                    <Text style={styles.playerStatsTextBold}>
+                    <Text style={styles.playerStatsText}>
                       {isNaN(
                         (player.kills - player.attackErrors) / player.attempts
                       )
@@ -144,42 +159,38 @@ export default function boxScore() {
                     </Text>
                   </View>
                   <View style={styles.playerStatsTitleContainer}>
-                    <Text style={styles.playerStatsTextBold}>
-                      {player.assists}
-                    </Text>
+                    <Text style={styles.playerStatsText}>{player.assists}</Text>
                   </View>
                   <View style={styles.playerStatsTitleContainer}>
-                    <Text style={styles.playerStatsTextBold}>
+                    <Text style={styles.playerStatsText}>
                       {player.serviceAces}
                     </Text>
                   </View>
                   <View style={styles.playerStatsTitleContainer}>
-                    <Text style={styles.playerStatsTextBold}>
+                    <Text style={styles.playerStatsText}>
                       {player.serviceErrors}
                     </Text>
                   </View>
                   <View style={styles.playerStatsTitleContainer}>
-                    <Text style={styles.playerStatsTextBold}>
-                      {player.digs}
-                    </Text>
+                    <Text style={styles.playerStatsText}>{player.digs}</Text>
                   </View>
                   <View style={styles.playerStatsTitleContainer}>
-                    <Text style={styles.playerStatsTextBold}>
+                    <Text style={styles.playerStatsText}>
                       {player.blockSolos}
                     </Text>
                   </View>
                   <View style={styles.playerStatsTitleContainer}>
-                    <Text style={styles.playerStatsTextBold}>
+                    <Text style={styles.playerStatsText}>
                       {player.blockAssists}
                     </Text>
                   </View>
                   <View style={styles.playerStatsTitleContainer}>
-                    <Text style={styles.playerStatsTextBold}>
+                    <Text style={styles.playerStatsText}>
                       {player.blockErrors}
                     </Text>
                   </View>
                   <View style={styles.playerStatsTitleContainer}>
-                    <Text style={styles.playerStatsTextBold}>{player.pts}</Text>
+                    <Text style={styles.playerStatsText}>{player.pts}</Text>
                   </View>
                 </View>
               );
@@ -202,6 +213,75 @@ export default function boxScore() {
           <Text style={styles.headingText}>Player Passing Stats</Text>
           <PlayerPassingRow />
           {/* TODO: map each player, excluding the ones with no passing attempts */}
+          {rosterStats.map((player) => {
+            if (player.passingAttempts > 0) {
+              return (
+                <View style={styles.playerPassingRow}>
+                  <View style={styles.playerStatsTitleContainer}>
+                    <Text style={styles.playerStatsTextBold}>#</Text>
+                  </View>
+                  <View style={styles.playerStatsNameContainer}>
+                    <Text style={styles.playerStatsTextBold}>Player Name</Text>
+                  </View>
+                  <View style={styles.passingStatsContainer}>
+                    <Text style={styles.playerStatsText}>
+                      {player.passingAttempts}
+                    </Text>
+                  </View>
+                  <View style={styles.passingStatsLargeContainer}>
+                    <Text style={styles.playerStatsText}>
+                      {player.totalPassValue}
+                    </Text>
+                  </View>
+                  <View style={styles.passingStatsContainer}>
+                    <Text style={styles.playerStatsText}>
+                      {player.fourPasses}
+                    </Text>
+                  </View>
+                  <View style={styles.passingStatsContainer}>
+                    <Text style={styles.playerStatsText}>
+                      {player.threePasses}
+                    </Text>
+                  </View>
+                  <View style={styles.passingStatsContainer}>
+                    <Text style={styles.playerStatsText}>
+                      {player.twoPasses}
+                    </Text>
+                  </View>
+                  <View style={styles.passingStatsContainer}>
+                    <Text style={styles.playerStatsText}>
+                      {player.onePasses}
+                    </Text>
+                  </View>
+                  <View style={styles.passingStatsContainer}>
+                    <Text style={styles.playerStatsText}>
+                      {player.receptionErrors}
+                    </Text>
+                  </View>
+                  <View style={styles.passingStatsLargeContainer}>
+                    <Text style={styles.playerStatsText}>
+                      {player.forearmPassingAttempts}
+                    </Text>
+                  </View>
+                  <View style={styles.passingStatsLargeContainer}>
+                    <Text style={styles.playerStatsText}>
+                      {player.totalForearmPassValue}
+                    </Text>
+                  </View>
+                  <View style={styles.passingStatsLargeContainer}>
+                    <Text style={styles.playerStatsText}>
+                      {player.handPassingAttempts}
+                    </Text>
+                  </View>
+                  <View style={styles.passingStatsLargeContainer}>
+                    <Text style={styles.playerStatsText}>
+                      {player.totalHandPassValue}
+                    </Text>
+                  </View>
+                </View>
+              );
+            }
+          })}
           <TeamPassingStats
             attempts={teamStats.teamPassingAttempts}
             passingValue={teamStats.teamTotalPassValue}
@@ -216,7 +296,41 @@ export default function boxScore() {
             handValue={teamStats.teamTotalHandPassValue}
           />
           <View style={styles.heightSpacer} />
-          <Text style={styles.headingText}>Team Side Out Percentages</Text>
+          <View style={styles.secondaryTitleContainer}>
+            <Text style={styles.headingText}>Team Side Out Percentages</Text>
+            <View style={styles.popUpContainer}>
+              <Menu>
+                <MenuTrigger>
+                  <AntDesign
+                    style={styles.questionIcon}
+                    name="questioncircleo"
+                    size={hp(3.5)}
+                    color={COLORS.black}
+                  />
+                </MenuTrigger>
+                <MenuOptions>
+                  <MenuOption>
+                    <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+                      Side-Out
+                    </Text>
+                    <Text style={{ color: COLORS.primary }}>
+                      Side-Out statistics are tracked when the opposing team is
+                      serving.{" "}
+                    </Text>
+                  </MenuOption>
+                  <MenuOption>
+                    <Text style={{ color: COLORS.primary, fontWeight: "bold" }}>
+                      FBSO
+                    </Text>
+                    <Text style={{ color: COLORS.primary }}>
+                      First Ball Side Out is your first attempt to side-out in a
+                      rotation.{" "}
+                    </Text>
+                  </MenuOption>
+                </MenuOptions>
+              </Menu>
+            </View>
+          </View>
           <TeamSideOutRow />
           <TeamSideOutStats
             sideOutAttempts={teamStats.teamTotalSideOutAttempts}
@@ -455,6 +569,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: hp(6),
     width: wp(10),
+  },
+
+  //Styling for popUps
+  popUpContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 2.5,
+    marginLeft: 7.5,
+  },
+  questionIcon: {
+    borderRadius: 20,
+  },
+  secondaryTitleContainer: {
+    flexDirection: "row",
   },
 });
 
