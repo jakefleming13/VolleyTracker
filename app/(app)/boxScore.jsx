@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeView } from "../../components/SafeView";
-import { AntDesign, FontAwesome } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -20,7 +20,24 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 export default function boxScore() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  //TODO: Get params
+
+  //Get all params from gameLog
+  const {
+    teamName,
+    gameType,
+    opponent,
+    location,
+    setScores,
+    homeSetsWon,
+    opponentSetsWon,
+    gameConditions,
+    date,
+  } = params;
+
+  //JSON.parse to deal with an array that is being prop drilled
+  const rosterStats = JSON.parse(params.rosterStats);
+  const teamStats = JSON.parse(params.teamStats);
+
   return (
     <SafeView style={styles.container}>
       <ScrollView>
@@ -49,44 +66,179 @@ export default function boxScore() {
         </View>
         <View style={styles.scoreContainer}>
           <View style={styles.setScoreContainer}>
-            <Text style={styles.setScoreHeaderText}>Team Name</Text>
+            <Text style={styles.setScoreHeaderText}>{teamName}</Text>
             <View style={styles.setScore}>
-              <Text style={styles.setScoreText}>0</Text>
+              <Text style={styles.setScoreText}>{homeSetsWon}</Text>
             </View>
           </View>
           <View style={styles.widthSpacer} />
           <View style={styles.setScoreContainer}>
-            <Text style={styles.setScoreHeaderText}>Opponent</Text>
+            <Text style={styles.setScoreHeaderText}>{opponent}</Text>
             <View style={styles.setScore}>
-              <Text style={styles.setScoreText}>0</Text>
+              <Text style={styles.setScoreText}>{opponentSetsWon}</Text>
             </View>
           </View>
         </View>
         <View style={styles.titleContainer}>
-          <Text style={styles.headingText}>Set Scores</Text>
-          <Text style={styles.headingText}>Date</Text>
-          <Text style={styles.headingText}>Location</Text>
+          {setScores.length > 0 ? (
+            <Text style={styles.headingText}>{setScores}</Text>
+          ) : (
+            <View />
+          )}
+          <Text style={styles.headingText}>{date}</Text>
+          {location === "" ? (
+            <View />
+          ) : (
+            <Text style={styles.headingText}>{location}</Text>
+          )}
         </View>
         <View style={styles.seperator} />
         <View style={styles.bodyContainer}>
           <Text style={styles.headingText}>Player Stats</Text>
           <PlayerStatsHeader />
           {/* TODO: map each player, excluding the ones with no sets played */}
-          {/* TODO: Add params for TeamStatsRow from teamStats prop */}
-          <TeamStatsRow />
+          {rosterStats.map((player) => {
+            if (player.setsPlayed > 0) {
+              return (
+                <View style={styles.playerStatsRow} key={player.playerNumber}>
+                  <View style={styles.playerStatsTitleContainer}>
+                    <Text style={styles.playerStatsTextBold}>
+                      {player.playerNumber}
+                    </Text>
+                  </View>
+                  <View style={styles.playerStatsNameContainer}>
+                    <Text style={styles.playerStatsTextBold}>
+                      {player.playerName}
+                    </Text>
+                  </View>
+                  <View style={styles.playerStatsTitleContainer}>
+                    <Text style={styles.playerStatsTextBold}>
+                      {player.setsPlayed}
+                    </Text>
+                  </View>
+                  <View style={styles.playerStatsTitleContainer}>
+                    <Text style={styles.playerStatsTextBold}>
+                      {player.kills}
+                    </Text>
+                  </View>
+                  <View style={styles.playerStatsTitleContainer}>
+                    <Text style={styles.playerStatsTextBold}>
+                      {player.attackErrors}
+                    </Text>
+                  </View>
+                  <View style={styles.playerStatsTitleContainer}>
+                    <Text style={styles.playerStatsTextBold}>
+                      {player.attempts}
+                    </Text>
+                  </View>
+                  <View style={styles.playerStatsTitleKillPercentageContainer}>
+                    <Text style={styles.playerStatsTextBold}>
+                      {isNaN(
+                        (player.kills - player.attackErrors) / player.attempts
+                      )
+                        ? "0.000"
+                        : (
+                            (player.kills - player.attackErrors) /
+                            player.attempts
+                          ).toFixed(3)}
+                    </Text>
+                  </View>
+                  <View style={styles.playerStatsTitleContainer}>
+                    <Text style={styles.playerStatsTextBold}>
+                      {player.assists}
+                    </Text>
+                  </View>
+                  <View style={styles.playerStatsTitleContainer}>
+                    <Text style={styles.playerStatsTextBold}>
+                      {player.serviceAces}
+                    </Text>
+                  </View>
+                  <View style={styles.playerStatsTitleContainer}>
+                    <Text style={styles.playerStatsTextBold}>
+                      {player.serviceErrors}
+                    </Text>
+                  </View>
+                  <View style={styles.playerStatsTitleContainer}>
+                    <Text style={styles.playerStatsTextBold}>
+                      {player.digs}
+                    </Text>
+                  </View>
+                  <View style={styles.playerStatsTitleContainer}>
+                    <Text style={styles.playerStatsTextBold}>
+                      {player.blockSolos}
+                    </Text>
+                  </View>
+                  <View style={styles.playerStatsTitleContainer}>
+                    <Text style={styles.playerStatsTextBold}>
+                      {player.blockAssists}
+                    </Text>
+                  </View>
+                  <View style={styles.playerStatsTitleContainer}>
+                    <Text style={styles.playerStatsTextBold}>
+                      {player.blockErrors}
+                    </Text>
+                  </View>
+                  <View style={styles.playerStatsTitleContainer}>
+                    <Text style={styles.playerStatsTextBold}>{player.pts}</Text>
+                  </View>
+                </View>
+              );
+            }
+          })}
+          <TeamStatsRow
+            kills={teamStats.teamKills}
+            attackErrors={teamStats.teamAttackErrors}
+            attempts={teamStats.teamAttempts}
+            assists={teamStats.teamAssists}
+            serviceAces={teamStats.teamServiceAces}
+            serviceErrors={teamStats.teamServiceErrors}
+            digs={teamStats.teamDigs}
+            blockSolos={teamStats.teamBlockSolos}
+            blockAssists={teamStats.teamBlockAssists}
+            blockErrors={teamStats.teamBlockErrors}
+            points={teamStats.teamPts}
+          />
           <View style={styles.heightSpacer} />
           <Text style={styles.headingText}>Player Passing Stats</Text>
           <PlayerPassingRow />
           {/* TODO: map each player, excluding the ones with no passing attempts */}
-          {/* TODO: add params for TeamPassingStats from teamStats prop */}
-          <TeamPassingStats />
+          <TeamPassingStats
+            attempts={teamStats.teamPassingAttempts}
+            passingValue={teamStats.teamTotalPassValue}
+            fours={teamStats.teamFourPasses}
+            threes={teamStats.teamThreePasses}
+            twos={teamStats.teamTwoPasses}
+            ones={teamStats.teamOnePasses}
+            receptionErrors={teamStats.teamReceptionErrors}
+            forearmAttempts={teamStats.teamForearmPassingAttempts}
+            forearmValue={teamStats.teamTotalForearmPassValue}
+            handAttempts={teamStats.teamHandPassingAttempts}
+            handValue={teamStats.teamTotalHandPassValue}
+          />
           <View style={styles.heightSpacer} />
           <Text style={styles.headingText}>Team Side Out Percentages</Text>
           <TeamSideOutRow />
-          {/* TODO: Add params for TeamSideOutStats */}
-          <TeamSideOutStats />
+          <TeamSideOutStats
+            sideOutAttempts={teamStats.teamTotalSideOutAttempts}
+            sideOutSuccess={teamStats.teamSuccessfulSideOuts}
+            FBSOAttempts={teamStats.teamFirstBallSideOutAttempts}
+            FBSOSuccess={teamStats.teamSuccessfulFirstBallSideOuts}
+          />
           <View style={styles.heightSpacer} />
-          <TeamSideOutByRotation />
+          <TeamSideOutByRotation
+            pos1Attempts={teamStats.teamTotalSideOutAttemptsPos1}
+            pos1Success={teamStats.teamSuccessfulSideOutsPos1}
+            pos2Attempts={teamStats.teamTotalSideOutAttemptsPos2}
+            pos2Success={teamStats.teamSuccessfulSideOutsPos2}
+            pos3Attempts={teamStats.teamTotalSideOutAttemptsPos3}
+            pos3Success={teamStats.teamSuccessfulSideOutsPos3}
+            pos4Attempts={teamStats.teamTotalSideOutAttemptsPos4}
+            pos4Success={teamStats.teamSuccessfulSideOutsPos4}
+            pos5Attempts={teamStats.teamTotalSideOutAttemptsPos5}
+            pos5Success={teamStats.teamSuccessfulSideOutsPos5}
+            pos6Attempts={teamStats.teamTotalSideOutAttemptsPos6}
+            pos6Success={teamStats.teamSuccessfulSideOutsPos6}
+          />
           <View style={styles.heightSpacer} />
         </View>
       </ScrollView>
@@ -199,6 +351,7 @@ const styles = StyleSheet.create({
     width: wp(3),
   },
   playerStatsRow: {
+    paddingRight: wp(0.75),
     width: "100%",
     height: hp(6),
     flexDirection: "row",
@@ -214,6 +367,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     borderTopWidth: 1.25,
     borderBottomWidth: 0.75,
+    paddingRight: wp(0.75),
   },
   playerStatsNameContainer: {
     justifyContent: "center",
@@ -259,6 +413,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.grey,
     justifyContent: "space-between",
     borderTopWidth: 0.75,
+    paddingRight: wp(0.75),
   },
   passingStatsLargeContainer: {
     justifyContent: "center",
@@ -303,7 +458,20 @@ const styles = StyleSheet.create({
   },
 });
 
-const TeamSideOutByRotation = () => {
+const TeamSideOutByRotation = ({
+  pos1Attempts = 0,
+  pos1Success = 0,
+  pos2Attempts = 0,
+  pos2Success = 0,
+  pos3Attempts = 0,
+  pos3Success = 0,
+  pos4Attempts = 0,
+  pos4Success = 0,
+  pos5Attempts = 0,
+  pos5Success = 0,
+  pos6Attempts = 0,
+  pos6Success = 0,
+}) => {
   return (
     <View>
       <View style={styles.teamSideOutByRotationRow}>
@@ -322,10 +490,14 @@ const TeamSideOutByRotation = () => {
           <Text style={styles.playerStatsTextBold}>1</Text>
         </View>
         <View style={styles.teamSideOutByRotationContainer}>
-          <Text style={styles.playerStatsText}>0</Text>
+          <Text style={styles.playerStatsText}>{pos1Attempts}</Text>
         </View>
         <View style={styles.teamSideOutByRotationContainer}>
-          <Text style={styles.playerStatsText}>0</Text>
+          <Text style={styles.playerStatsText}>
+            {isNaN(pos1Success / pos1Attempts)
+              ? "0%"
+              : pos1Success / pos1Attempts + "%"}
+          </Text>
         </View>
       </View>
       <View style={styles.teamSideOutByRotationRow}>
@@ -333,10 +505,14 @@ const TeamSideOutByRotation = () => {
           <Text style={styles.playerStatsTextBold}>2</Text>
         </View>
         <View style={styles.teamSideOutByRotationContainer}>
-          <Text style={styles.playerStatsText}>0</Text>
+          <Text style={styles.playerStatsText}>{pos2Attempts}</Text>
         </View>
         <View style={styles.teamSideOutByRotationContainer}>
-          <Text style={styles.playerStatsText}>0</Text>
+          <Text style={styles.playerStatsText}>
+            {isNaN(pos2Success / pos2Attempts)
+              ? "0%"
+              : pos2Success / pos2Attempts + "%"}
+          </Text>
         </View>
       </View>
       <View style={styles.teamSideOutByRotationRow}>
@@ -344,10 +520,14 @@ const TeamSideOutByRotation = () => {
           <Text style={styles.playerStatsTextBold}>3</Text>
         </View>
         <View style={styles.teamSideOutByRotationContainer}>
-          <Text style={styles.playerStatsText}>0</Text>
+          <Text style={styles.playerStatsText}>{pos3Attempts}</Text>
         </View>
         <View style={styles.teamSideOutByRotationContainer}>
-          <Text style={styles.playerStatsText}>0</Text>
+          <Text style={styles.playerStatsText}>
+            {isNaN(pos3Success / pos3Attempts)
+              ? "0%"
+              : pos3Success / pos3Attempts + "%"}
+          </Text>
         </View>
       </View>
       <View style={styles.teamSideOutByRotationRow}>
@@ -355,10 +535,14 @@ const TeamSideOutByRotation = () => {
           <Text style={styles.playerStatsTextBold}>4</Text>
         </View>
         <View style={styles.teamSideOutByRotationContainer}>
-          <Text style={styles.playerStatsText}>0</Text>
+          <Text style={styles.playerStatsText}>{pos4Attempts}</Text>
         </View>
         <View style={styles.teamSideOutByRotationContainer}>
-          <Text style={styles.playerStatsText}>0</Text>
+          <Text style={styles.playerStatsText}>
+            {isNaN(pos4Success / pos4Attempts)
+              ? "0%"
+              : pos4Success / pos4Attempts + "%"}
+          </Text>
         </View>
       </View>
       <View style={styles.teamSideOutByRotationRow}>
@@ -366,10 +550,14 @@ const TeamSideOutByRotation = () => {
           <Text style={styles.playerStatsTextBold}>5</Text>
         </View>
         <View style={styles.teamSideOutByRotationContainer}>
-          <Text style={styles.playerStatsText}>0</Text>
+          <Text style={styles.playerStatsText}>{pos5Attempts}</Text>
         </View>
         <View style={styles.teamSideOutByRotationContainer}>
-          <Text style={styles.playerStatsText}>0</Text>
+          <Text style={styles.playerStatsText}>
+            {isNaN(pos5Success / pos5Attempts)
+              ? "0%"
+              : pos5Success / pos5Attempts + "%"}
+          </Text>
         </View>
       </View>
       <View style={styles.teamSideOutByRotationRow}>
@@ -377,10 +565,14 @@ const TeamSideOutByRotation = () => {
           <Text style={styles.playerStatsTextBold}>6</Text>
         </View>
         <View style={styles.teamSideOutByRotationContainer}>
-          <Text style={styles.playerStatsText}>0</Text>
+          <Text style={styles.playerStatsText}>{pos6Attempts}</Text>
         </View>
         <View style={styles.teamSideOutByRotationContainer}>
-          <Text style={styles.playerStatsText}>0</Text>
+          <Text style={styles.playerStatsText}>
+            {isNaN(pos6Success / pos6Attempts)
+              ? "0%"
+              : pos6Success / pos6Attempts + "%"}
+          </Text>
         </View>
       </View>
     </View>
@@ -422,9 +614,9 @@ const TeamSideOutStats = ({
       </View>
       <View style={styles.teamSideOutContainer}>
         <Text style={styles.playerStatsText}>
-          {isNaN(sideOutAttempts / sideOutSuccess)
-            ? "0%"
-            : sideOutAttempts / sideOutSuccess + "%"}
+          {isNaN(sideOutSuccess / sideOutAttempts)
+            ? "-"
+            : sideOutSuccess / sideOutAttempts + "%"}
         </Text>
       </View>
       <View style={styles.playerStatsTitleContainer}>
@@ -435,9 +627,9 @@ const TeamSideOutStats = ({
       </View>
       <View style={styles.teamSideOutContainer}>
         <Text style={styles.playerStatsText}>
-          {isNaN(FBSOAttempts / FBSOSuccess)
-            ? "0%"
-            : FBSOAttempts / FBSOSuccess + "%"}
+          {isNaN(FBSOSuccess / FBSOAttempts)
+            ? "-"
+            : FBSOSuccess / FBSOAttempts + "%"}
         </Text>
       </View>
     </View>
