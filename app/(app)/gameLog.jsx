@@ -181,7 +181,9 @@ export default function gameLog() {
               style={styles.featureListContainer}
             >
               <Text style={styles.featureListText}>
-                {item.opponent} - {item.date}
+                Game vs. {item.opponent}
+                {"  "}-{"  "}
+                {item.date}
               </Text>
               <AntDesign
                 style={styles.featureListIcon}

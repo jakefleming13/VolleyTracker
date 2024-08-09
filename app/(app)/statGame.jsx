@@ -23,22 +23,15 @@ import {
   MenuTrigger,
 } from "react-native-popup-menu";
 import { RadioButton } from "react-native-paper";
-import { useAuth } from "../../context/authContext";
 import firestore from "@react-native-firebase/firestore";
 
 export default function statGame() {
   //Get game settings
   const router = useRouter();
 
-  //TODO: Remove Auth hook and put witin statGamePrep
-  const { seasonID } = useAuth();
-
   //Grab all of the settings from the statGamePrep Screen
-
-  //TODO: Add team name from statGamePrep
   const params = useLocalSearchParams();
   const {
-    view,
     gameType,
     firstServe,
     location,
@@ -53,10 +46,12 @@ export default function statGame() {
     firstL,
     secondL,
     onCourtSetter,
+    seasonID,
+    teamName,
   } = params;
 
-  //Variable for which team is serving -> TODO: replace with 'firstServe' prop
-  const [serverTracker, setServerTracker] = useState("Opponent");
+  //Variable for which team is serving
+  const [serverTracker, setServerTracker] = useState(firstServe);
 
   //Keeps the state of the previous serve for undo functionality
   const [prevServerTracker, setPrevServerTracker] = useState(serverTracker);
@@ -72,43 +67,41 @@ export default function statGame() {
   //Sets being played, which is passed from statGamePrep
 
   //Structure of what the  `setsBeingPlayed` param looks like:
-  //   key: "BO3", key: "BO5", key: "1", key: "2", key: "3", key: "4", key: "5",
-  //TODO: replace with `setsBeingPlayed` param
-  const [gameConditions, setGameConditions] = useState("1");
+  const [gameConditions, setGameConditions] = useState(setsBeingPlayed);
 
   //State hook to store the current set
   const [currentSet, setCurrentSet] = useState(1);
 
-  // Get the users Lineup -> TODO: replace with respective drilled prop
-  const [positionOne, setPositionOne] = useState("5");
-  const [positionTwo, setPositionTwo] = useState("8");
-  const [positionThree, setPositionThree] = useState("10");
-  const [positionFour, setPositionFour] = useState("2");
-  const [positionFive, setPositionFive] = useState("9");
-  const [positionSix, setPositionSix] = useState("15");
-  const [firstLibero, setFirstLibero] = useState("13");
-  const [secondLibero, setSecondLibero] = useState(null);
-  const [setter, setSetter] = useState("5");
+  // Get the users Lineup
+  const [positionOne, setPositionOne] = useState(pOne);
+  const [positionTwo, setPositionTwo] = useState(pTwo);
+  const [positionThree, setPositionThree] = useState(pThree);
+  const [positionFour, setPositionFour] = useState(pFour);
+  const [positionFive, setPositionFive] = useState(pFive);
+  const [positionSix, setPositionSix] = useState(pSix);
+  const [firstLibero, setFirstLibero] = useState(firstL);
+  const [secondLibero, setSecondLibero] = useState(secondL);
+  const [setter, setSetter] = useState(onCourtSetter);
 
   //Starters and subs for each position
   const [onCourtPositionOne, setOnCourtPositionOne] = useState(positionOne);
-  const [onCourtPositionOneSub, setOnCourtPositionOneSub] = useState(null);
+  const [onCourtPositionOneSub, setOnCourtPositionOneSub] = useState("");
 
   const [onCourtPositionTwo, setOnCourtPositionTwo] = useState(positionTwo);
-  const [onCourtPositionTwoSub, setOnCourtPositionTwoSub] = useState(null);
+  const [onCourtPositionTwoSub, setOnCourtPositionTwoSub] = useState("");
 
   const [onCourtPositionThree, setOnCourtPositionThree] =
     useState(positionThree);
-  const [onCourtPositionThreeSub, setOnCourtPositionThreeSub] = useState(null);
+  const [onCourtPositionThreeSub, setOnCourtPositionThreeSub] = useState("");
 
   const [onCourtPositionFour, setOnCourtPositionFour] = useState(positionFour);
-  const [onCourtPositionFourSub, setOnCourtPositionFourSub] = useState(null);
+  const [onCourtPositionFourSub, setOnCourtPositionFourSub] = useState("");
 
   const [onCourtPositionFive, setOnCourtPositionFive] = useState(positionFive);
-  const [onCourtPositionFiveSub, setOnCourtPositionFiveSub] = useState(null);
+  const [onCourtPositionFiveSub, setOnCourtPositionFiveSub] = useState("");
 
   const [onCourtPositionSix, setOnCourtPositionSix] = useState(positionSix);
-  const [onCourtPositionSixSub, setOnCourtPositionSixSub] = useState(null);
+  const [onCourtPositionSixSub, setOnCourtPositionSixSub] = useState("");
 
   //Function that rotates the players on the court
   const handleRotation = () => {
@@ -134,344 +127,11 @@ export default function statGame() {
     setPositionTwo(temp);
   };
 
-  //TODO: Uncomment after testing
   //JSON.parse to deal with an array that is being prop drilled
-  /////////////////////////////////////
-  //When testing is done uncomment
-  //const roster = JSON.parse(params.currentLocalRoster);
-  /////////////////////////////////////
+  const roster = JSON.parse(params.currentLocalRoster);
 
-  // TODO: Remove Temp variable after testing
-  const testingRoster = [
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Ben",
-      playerNumber: "10",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Gorski",
-      playerNumber: "5",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Jace",
-      playerNumber: "2",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Watty",
-      playerNumber: "8",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Aiden",
-      playerNumber: "9",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Finn",
-      playerNumber: "15",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Chris",
-      playerNumber: "13",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Ross",
-      playerNumber: "19",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Shae",
-      playerNumber: "21",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-    },
-  ];
-
-  //TODO: REMOVE testingRoster AFTER TESTING
   //rosterStats variable contains all of the player stats for the current game
-  const [rosterStats, setRosterStats] = useState(testingRoster);
+  const [rosterStats, setRosterStats] = useState(roster);
 
   const [homeScore, setHomeScore] = useState(22);
   const [opponentScore, setOpponentScore] = useState(22);
@@ -553,20 +213,40 @@ export default function statGame() {
   const [benchDropDownValue, setBenchDropDownValue] = useState("");
 
   const handleSubstitution = () => {
-    //find the players current position
-    courtDropDownValue === positionOne
-      ? setPositionOne(benchDropDownValue)
-      : courtDropDownValue === positionTwo
-      ? setPositionTwo(benchDropDownValue)
-      : courtDropDownValue === positionThree
-      ? setPositionThree(benchDropDownValue)
-      : courtDropDownValue === positionFour
-      ? setPositionFour(benchDropDownValue)
-      : courtDropDownValue === positionFive
-      ? setPositionFive(benchDropDownValue)
-      : courtDropDownValue === positionSix
-      ? setPositionSix(benchDropDownValue)
-      : null;
+    //Handle if the setter needs to be changed
+    if (courtDropDownValue === setter) {
+      setSetter(benchDropDownValue);
+    }
+
+    //Check if the player being subbed in is currently attatched to a player
+    if (benchDropDownValue === onCourtPositionOneSub) {
+      setOnCourtPositionOneSub("");
+    } else if (benchDropDownValue === onCourtPositionTwoSub) {
+      setOnCourtPositionTwoSub("");
+    } else if (benchDropDownValue === onCourtPositionThreeSub) {
+      setOnCourtPositionThreeSub("");
+    } else if (benchDropDownValue === onCourtPositionFourSub) {
+      setOnCourtPositionFourSub("");
+    } else if (benchDropDownValue === onCourtPositionFiveSub) {
+      setOnCourtPositionFiveSub("");
+    } else if (benchDropDownValue === onCourtPositionSixSub) {
+      setOnCourtPositionSixSub("");
+    }
+
+    //find and set the players current position
+    if (courtDropDownValue === positionOne) {
+      setPositionOne(benchDropDownValue);
+    } else if (courtDropDownValue === positionTwo) {
+      setPositionTwo(benchDropDownValue);
+    } else if (courtDropDownValue === positionThree) {
+      setPositionThree(benchDropDownValue);
+    } else if (courtDropDownValue === positionFour) {
+      setPositionFour(benchDropDownValue);
+    } else if (courtDropDownValue === positionFive) {
+      setPositionFive(benchDropDownValue);
+    } else if (courtDropDownValue === positionSix) {
+      setPositionSix(benchDropDownValue);
+    }
 
     //set onCourt and sub values
     if (courtDropDownValue === onCourtPositionOne) {
@@ -617,12 +297,199 @@ export default function statGame() {
     return;
   };
 
+  //Function that handles the Revert Sub Button
+  const handleQuickSub = (playerNumber) => {
+    //Handle if the setter needs to be changed
+    if (playerNumber === onCourtPositionOne) {
+      //Find the player and set the position
+      if (playerNumber === positionOne) {
+        setPositionOne(onCourtPositionOneSub);
+      } else if (playerNumber === positionTwo) {
+        setPositionTwo(onCourtPositionOneSub);
+      } else if (playerNumber === positionThree) {
+        setPositionThree(onCourtPositionOneSub);
+      } else if (playerNumber === positionFour) {
+        setPositionFour(onCourtPositionOneSub);
+      } else if (playerNumber === positionFive) {
+        setPositionFive(onCourtPositionOneSub);
+      } else if (playerNumber === positionSix) {
+        setPositionSix(onCourtPositionOneSub);
+      }
+
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionOneSub);
+      }
+
+      //Swap onCourt and Sub values, set sub to ""
+      setOnCourtPositionOne(onCourtPositionOneSub);
+      setOnCourtPositionOneSub("");
+    } else if (playerNumber === onCourtPositionTwo) {
+      //Find the player and set the position
+      if (playerNumber === positionOne) {
+        setPositionOne(onCourtPositionTwoSub);
+      } else if (playerNumber === positionTwo) {
+        setPositionTwo(onCourtPositionTwoSub);
+      } else if (playerNumber === positionThree) {
+        setPositionThree(onCourtPositionTwoSub);
+      } else if (playerNumber === positionFour) {
+        setPositionFour(onCourtPositionTwoSub);
+      } else if (playerNumber === positionFive) {
+        setPositionFive(onCourtPositionTwoSub);
+      } else if (playerNumber === positionSix) {
+        setPositionSix(onCourtPositionTwoSub);
+      }
+
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionTwoSub);
+      }
+
+      //Swap onCourt and Sub values, set sub to ""
+      setOnCourtPositionTwo(onCourtPositionTwoSub);
+      setOnCourtPositionTwoSub("");
+    } else if (playerNumber === onCourtPositionThree) {
+      //Find the player and set the position
+      if (playerNumber === positionOne) {
+        setPositionOne(onCourtPositionThreeSub);
+      } else if (playerNumber === positionTwo) {
+        setPositionTwo(onCourtPositionThreeSub);
+      } else if (playerNumber === positionThree) {
+        setPositionThree(onCourtPositionThreeSub);
+      } else if (playerNumber === positionFour) {
+        setPositionFour(onCourtPositionThreeSub);
+      } else if (playerNumber === positionFive) {
+        setPositionFive(onCourtPositionThreeSub);
+      } else if (playerNumber === positionSix) {
+        setPositionSix(onCourtPositionThreeSub);
+      }
+
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionThreeSub);
+      }
+
+      //Swap onCourt and Sub values, set sub to ""
+      setOnCourtPositionThree(onCourtPositionThreeSub);
+      setOnCourtPositionThreeSub("");
+    } else if (playerNumber === onCourtPositionFour) {
+      //Find the player and set the position
+      if (playerNumber === positionOne) {
+        setPositionOne(onCourtPositionFourSub);
+      } else if (playerNumber === positionTwo) {
+        setPositionTwo(onCourtPositionFourSub);
+      } else if (playerNumber === positionThree) {
+        setPositionThree(onCourtPositionFourSub);
+      } else if (playerNumber === positionFour) {
+        setPositionFour(onCourtPositionFourSub);
+      } else if (playerNumber === positionFive) {
+        setPositionFive(onCourtPositionFourSub);
+      } else if (playerNumber === positionSix) {
+        setPositionSix(onCourtPositionFourSub);
+      }
+
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionFourSub);
+      }
+
+      //Swap onCourt and Sub values, set sub to ""
+      setOnCourtPositionFour(onCourtPositionFourSub);
+      setOnCourtPositionFourSub("");
+    } else if (playerNumber === onCourtPositionFive) {
+      //Find the player and set the position
+      if (playerNumber === positionOne) {
+        setPositionOne(onCourtPositionFiveSub);
+      } else if (playerNumber === positionTwo) {
+        setPositionTwo(onCourtPositionFiveSub);
+      } else if (playerNumber === positionThree) {
+        setPositionThree(onCourtPositionFiveSub);
+      } else if (playerNumber === positionFour) {
+        setPositionFour(onCourtPositionFiveSub);
+      } else if (playerNumber === positionFive) {
+        setPositionFive(onCourtPositionFiveSub);
+      } else if (playerNumber === positionSix) {
+        setPositionSix(onCourtPositionFiveSub);
+      }
+
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionFiveSub);
+      }
+
+      //Swap onCourt and Sub values, set sub to ""
+      setOnCourtPositionFive(onCourtPositionFiveSub);
+      setOnCourtPositionFiveSub("");
+    } else if (playerNumber === onCourtPositionSix) {
+      //Find the player and set the position
+      if (playerNumber === positionOne) {
+        setPositionOne(onCourtPositionSixSub);
+      } else if (playerNumber === positionTwo) {
+        setPositionTwo(onCourtPositionSixSub);
+      } else if (playerNumber === positionThree) {
+        setPositionThree(onCourtPositionSixSub);
+      } else if (playerNumber === positionFour) {
+        setPositionFour(onCourtPositionSixSub);
+      } else if (playerNumber === positionFive) {
+        setPositionFive(onCourtPositionSixSub);
+      } else if (playerNumber === positionSix) {
+        setPositionSix(onCourtPositionSixSub);
+      }
+
+      if (playerNumber === setter) {
+        setSetter(onCourtPositionSixSub);
+      }
+
+      //Swap onCourt and Sub values, set sub to ""
+      setOnCourtPositionSix(onCourtPositionSixSub);
+      setOnCourtPositionSixSub("");
+    }
+  };
+
+  //Function that will determine if the quick sub button needs to be displayed
+  const displayQuickSubBtn = (playerNumber) => {
+    if (playerNumber === onCourtPositionOne) {
+      if (onCourtPositionOneSub === "") {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (playerNumber === onCourtPositionTwo) {
+      if (onCourtPositionTwoSub === "") {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (playerNumber === onCourtPositionThree) {
+      if (onCourtPositionThreeSub === "") {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (playerNumber === onCourtPositionFour) {
+      if (onCourtPositionFourSub === "") {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (playerNumber === onCourtPositionFive) {
+      if (onCourtPositionFiveSub === "") {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (playerNumber === onCourtPositionSix) {
+      if (onCourtPositionSixSub === "") {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
+  };
+
   //Function to allow user to decrement number of home timeouts
   const HomeTimeOutsDisplay = () => {
     let display;
     if (homeTimeOuts == 2) {
       display = (
-        <View style={styles.timeouts}>
+        <View style={{ flexDirection: "row" }}>
           <MaterialCommunityIcons
             name="numeric-1-circle"
             size={RFValue(22)}
@@ -638,7 +505,7 @@ export default function statGame() {
       );
     } else if (homeTimeOuts == 1) {
       display = (
-        <View style={styles.timeouts}>
+        <View style={{ flexDirection: "row" }}>
           <MaterialCommunityIcons
             name="numeric-1-circle"
             size={RFValue(22)}
@@ -647,7 +514,7 @@ export default function statGame() {
         </View>
       );
     } else {
-      display = <View style={styles.timeouts}></View>;
+      display = <View style={{ flexDirection: "row" }}></View>;
     }
 
     return <View>{display}</View>;
@@ -658,7 +525,7 @@ export default function statGame() {
     let display;
     if (opponentTimeOuts == 2) {
       display = (
-        <View style={styles.timeouts}>
+        <View style={{ flexDirection: "row" }}>
           <MaterialCommunityIcons
             name="numeric-1-circle"
             size={RFValue(22)}
@@ -674,7 +541,7 @@ export default function statGame() {
       );
     } else if (opponentTimeOuts == 1) {
       display = (
-        <View style={styles.timeouts}>
+        <View style={{ flexDirection: "row" }}>
           <MaterialCommunityIcons
             name="numeric-1-circle"
             size={RFValue(22)}
@@ -683,7 +550,7 @@ export default function statGame() {
         </View>
       );
     } else {
-      display = <View style={styles.timeouts}></View>;
+      display = <View style={{ flexDirection: "row" }}></View>;
     }
 
     return <View>{display}</View>;
@@ -694,14 +561,13 @@ export default function statGame() {
     teamSetsWon: 0,
     teamSetsLost: 0,
     teamSetsPlayed: 0,
+    teamMatchesPlayed: 0,
     teamAttempts: 0,
     teamKills: 0,
     teamAttackErrors: 0,
     teamAssists: 0,
-    teamAssistsPerSet: 0.0,
     teamDigs: 0,
     teamDigErrors: 0,
-    teamDigsPerSet: 0,
     teamTotalBlocks: 0,
     teamBlockSolos: 0,
     teamBlockAssists: 0,
@@ -719,8 +585,8 @@ export default function statGame() {
     teamOnePasses: 0,
     teamTwoPasses: 0,
     teamThreePasses: 0,
+    teamFourPasses: 0,
     teamPts: 0,
-    teamPtsPerSet: 0.0,
     teamTotalSideOutAttempts: 0,
     teamSuccessfulSideOuts: 0,
     teamFirstBallSideOutAttempts: 0,
@@ -776,6 +642,18 @@ export default function statGame() {
     );
   };
 
+  const missingSetterAlert = () => {
+    Alert.alert(
+      "You must choose an on court setter",
+      "Each set you must select one player to be a setter.",
+      [
+        {
+          text: "Ok",
+        },
+      ]
+    );
+  };
+
   const [isLiveStatsModalVisible, setLiveStatsModalVisible] = useState(false);
 
   const toggleLiveStatsModal = () => {
@@ -796,7 +674,9 @@ export default function statGame() {
   };
 
   //Holds the state of if it's currently FBSO
-  const [isFBSO, setIsFBSO] = useState(true);
+  const [isFBSO, setIsFBSO] = useState(
+    firstServe === "Opponent" ? true : false
+  );
 
   //Holds the previous FBSO for undo functionality
   const [prevFBSO, setPrevFBSO] = useState({
@@ -1187,7 +1067,7 @@ export default function statGame() {
           setServerTracker(prevServerTracker);
           handleUndoRotation();
         }
-      } else if (lastStat.playerNumber === "Your Team") {
+      } else if (lastStat.playerNumber === "Home") {
         setHomeScore(homeScore - 1);
         //if prevServerTracker === "Opponent" -> Handle undo Side Outs
         if (prevServerTracker === "Opponent") {
@@ -1607,6 +1487,48 @@ export default function statGame() {
                     totalForearmPassValue: player.totalForearmPassValue - 3,
                   };
                 }
+
+              //Undo 3 Pass
+              case "4 Pass":
+                if (lastStat.passingType === "Hand") {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamFourPasses: prevStats.teamFourPasses - 1,
+                    teamTotalPassValue: prevStats.teamTotalPassValue - 4,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamHandPassingAttempts:
+                      prevStats.teamHandPassingAttempts - 1,
+                    teamTotalHandPassValue:
+                      prevStats.teamTotalHandPassValue - 4,
+                  }));
+                  return {
+                    ...player,
+                    fourPasses: player.fourPasses - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    handPassingAttempts: player.handPassingAttempts - 1,
+                    totalPassValue: player.totalPassValue - 4,
+                    totalHandPassValue: player.totalHandPassValue - 4,
+                  };
+                } else {
+                  setTeamStats((prevStats) => ({
+                    ...prevStats,
+                    teamFourPasses: prevStats.teamFourPasses - 1,
+                    teamTotalPassValue: prevStats.teamTotalPassValue - 4,
+                    teamPassingAttempts: prevStats.teamPassingAttempts - 1,
+                    teamForearmPassingAttempts:
+                      prevStats.teamForearmPassingAttempts - 1,
+                    teamTotalForearmPassValue:
+                      prevStats.teamTotalForearmPassValue - 4,
+                  }));
+                  return {
+                    ...player,
+                    fourPasses: player.fourPasses - 1,
+                    passingAttempts: player.passingAttempts - 1,
+                    forearmPassingAttempts: player.forearmPassingAttempts - 1,
+                    totalPassValue: player.totalPassValue - 4,
+                    totalForearmPassValue: player.totalForearmPassValue - 4,
+                  };
+                }
             }
           }
           return player;
@@ -1961,6 +1883,36 @@ export default function statGame() {
     setRosterStats(updatedRoster);
   };
 
+  const handleFourPassIncrement = (playerNumber) => {
+    const updatedRoster = rosterStats.map((player) => {
+      if (player.playerNumber === playerNumber) {
+        if (handPassSelected === true) {
+          return {
+            ...player,
+            fourPasses: player.fourPasses + 1,
+            passingAttempts: player.passingAttempts + 1,
+            totalPassValue: player.totalPassValue + 4,
+
+            handPassingAttempts: player.handPassingAttempts + 1,
+            totalHandPassValue: player.totalHandPassValue + 4,
+          };
+        } else {
+          return {
+            ...player,
+            fourPasses: player.fourPasses + 1,
+            passingAttempts: player.passingAttempts + 1,
+            totalPassValue: player.totalPassValue + 4,
+
+            forearmPassingAttempts: player.forearmPassingAttempts + 1,
+            totalForearmPassValue: player.totalForearmPassValue + 4,
+          };
+        }
+      }
+      return player;
+    });
+    setRosterStats(updatedRoster);
+  };
+
   const RotationCheckModal = () => {
     return (
       <View
@@ -2046,6 +1998,7 @@ export default function statGame() {
                     <Text style={styles.liveStatsPlayerHeader}>
                       #{"  "}Player
                     </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>SP</Text>
                     <Text style={styles.liveStatsModalSecondaryText}>K </Text>
                     <Text style={styles.liveStatsModalSecondaryText}>E</Text>
                     <Text style={styles.liveStatsModalSecondaryText}>TA</Text>
@@ -2070,99 +2023,109 @@ export default function statGame() {
                   </View>
                 </View>
                 {rosterStats.map((player) => {
-                  return (
-                    <View
-                      style={styles.liveStatsTitleRow}
-                      key={player.playerNumber}
-                    >
-                      <View style={styles.liveStatsStatHeader}>
-                        <Text style={styles.liveStatsPlayerHeader}>
-                          {/* TODO: validation for length of players name */}
-                          {player.playerNumber}
-                          {"  "}
-                          {player.playerName}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.kills.toString().length > 1
-                            ? player.kills
-                            : player.kills + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.attackErrors.toString().length > 1
-                            ? player.attackErrors
-                            : player.attackErrors + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.attempts.toString().length > 1
-                            ? player.attempts
-                            : player.attempts + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {isNaN(
-                            (player.kills - player.attackErrors) /
-                              player.attempts
-                          )
-                            ? "0.000"
-                            : (
-                                (player.kills - player.attackErrors) /
+                  if (player.setsPlayed > 0) {
+                    return (
+                      <View
+                        style={styles.liveStatsTitleRow}
+                        key={player.playerNumber}
+                      >
+                        <View style={styles.liveStatsStatHeader}>
+                          <Text style={styles.liveStatsPlayerHeader}>
+                            {player.playerNumber}
+                            {"  "}
+                            {player.playerName.length > 20
+                              ? player.playerName.substring(0, 20) + "..."
+                              : player.playerName}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.setsPlayed.toString().length > 1
+                              ? player.setsPlayed
+                              : player.setsPlayed + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.kills.toString().length > 1
+                              ? player.kills
+                              : player.kills + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.attackErrors.toString().length > 1
+                              ? player.attackErrors
+                              : player.attackErrors + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.attempts.toString().length > 1
+                              ? player.attempts
+                              : player.attempts + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {isNaN(
+                              (player.kills - player.attackErrors) /
                                 player.attempts
-                              ).toFixed(3)}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.assists.toString().length > 1
-                            ? player.assists
-                            : player.assists + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.serviceAces.toString().length > 1
-                            ? player.serviceAces
-                            : player.serviceAces + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.serviceErrors.toString().length > 1
-                            ? player.serviceErrors
-                            : player.serviceErrors + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.receptionErrors.toString().length > 1
-                            ? player.receptionErrors
-                            : player.receptionErrors + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {isNaN(player.totalPassValue / player.passingAttempts)
-                            ? "0.00"
-                            : (
-                                player.totalPassValue / player.passingAttempts
-                              ).toFixed(2)}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.digs.toString().length > 1
-                            ? player.digs
-                            : player.digs + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.blockSolos.toString().length > 1
-                            ? player.blockSolos
-                            : player.blockSolos + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.blockAssists.toString().length > 1
-                            ? player.blockAssists
-                            : player.blockAssists + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.blockErrors.toString().length > 1
-                            ? player.blockErrors
-                            : player.blockErrors + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryTextEnd2}>
-                          {player.pts.toString().length > 1
-                            ? player.pts.toFixed(1)
-                            : player.pts.toFixed(1)}
-                        </Text>
+                            )
+                              ? "0.000"
+                              : (
+                                  (player.kills - player.attackErrors) /
+                                  player.attempts
+                                ).toFixed(3)}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.assists.toString().length > 1
+                              ? player.assists
+                              : player.assists + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.serviceAces.toString().length > 1
+                              ? player.serviceAces
+                              : player.serviceAces + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.serviceErrors.toString().length > 1
+                              ? player.serviceErrors
+                              : player.serviceErrors + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.receptionErrors.toString().length > 1
+                              ? player.receptionErrors
+                              : player.receptionErrors + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {isNaN(
+                              player.totalPassValue / player.passingAttempts
+                            )
+                              ? "0.00"
+                              : (
+                                  player.totalPassValue / player.passingAttempts
+                                ).toFixed(2)}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.digs.toString().length > 1
+                              ? player.digs
+                              : player.digs + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.blockSolos.toString().length > 1
+                              ? player.blockSolos
+                              : player.blockSolos + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.blockAssists.toString().length > 1
+                              ? player.blockAssists
+                              : player.blockAssists + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.blockErrors.toString().length > 1
+                              ? player.blockErrors
+                              : player.blockErrors + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryTextEnd2}>
+                            {player.pts.toString().length > 1
+                              ? player.pts.toFixed(1)
+                              : player.pts.toFixed(1)}
+                          </Text>
+                        </View>
                       </View>
-                    </View>
-                  );
+                    );
+                  }
                 })}
                 <View style={styles.liveStatsTitleRow}>
                   <View style={styles.liveStatsStatHeader}>
@@ -2170,6 +2133,11 @@ export default function statGame() {
                       Team
                       {"  "}
                       Total
+                    </Text>
+                    <Text style={styles.liveStatsModalSecondaryText2}>
+                      {currentSet.toString().length > 1
+                        ? currentSet
+                        : currentSet + " "}
                     </Text>
                     <Text style={styles.liveStatsModalSecondaryText2}>
                       {teamStats.teamKills.toString().length > 1
@@ -2272,6 +2240,7 @@ export default function statGame() {
                     <Text style={styles.liveStatsModalSecondaryText}>
                       P. AVG
                     </Text>
+                    <Text style={styles.liveStatsModalSecondaryText}>4s</Text>
                     <Text style={styles.liveStatsModalSecondaryText}>3s</Text>
                     <Text style={styles.liveStatsModalSecondaryText}>2s</Text>
                     <Text style={styles.liveStatsModalSecondaryText}>1s</Text>
@@ -2302,10 +2271,11 @@ export default function statGame() {
                       >
                         <View style={styles.liveStatsStatHeader}>
                           <Text style={styles.liveStatsPlayerHeader}>
-                            {/* TODO: validation for length of players name */}
                             {player.playerNumber}
                             {"  "}
-                            {player.playerName}
+                            {player.playerName.length > 16
+                              ? player.playerName.substring(0, 16) + "..."
+                              : player.playerName}
                           </Text>
                           <Text style={styles.liveStatsModalSecondaryText2}>
                             {player.passingAttempts.toString().length > 1
@@ -2320,6 +2290,11 @@ export default function statGame() {
                               : (
                                   player.totalPassValue / player.passingAttempts
                                 ).toFixed(2) + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.fourPasses.toString().length > 1
+                              ? player.fourPasses
+                              : player.fourPasses + " "}
                           </Text>
                           <Text style={styles.liveStatsModalSecondaryText2}>
                             {player.threePasses.toString().length > 1
@@ -2672,7 +2647,9 @@ export default function statGame() {
   const endSet = () => {
     if (
       (homeScore > scoreLimit && homeScore - opponentScore > 1) ||
-      (opponentScore > scoreLimit && opponentScore - homeScore > 1)
+      (opponentScore > scoreLimit && opponentScore - homeScore > 1) ||
+      opponentScore > 59 ||
+      homeScore > 59
     ) {
       // Update server trackers if the set ends
       if (prevServerTracker === "Opponent") {
@@ -2728,6 +2705,7 @@ export default function statGame() {
       setSetScores((prevSetScores) => [...prevSetScores, scoreString]);
 
       //Reset Home and Opponent Scores
+      //TODO: Remove these two lines after testing is done
       setHomeScore(22);
       setOpponentScore(22);
 
@@ -2829,28 +2807,58 @@ export default function statGame() {
       if (uniquePlayers.size !== selectedPlayers.length) {
         duplicatePlayerAlert();
       } else {
-        //Success
-        setEndSetState(false);
-        handleStartersSetsPlayed();
-        setUndoAvailable(false);
+        if (
+          setter === positionOne ||
+          setter === positionTwo ||
+          setter === positionThree ||
+          setter === positionFour ||
+          setter === positionFive ||
+          setter === positionSix
+        ) {
+          //Success
+          setEndSetState(false);
+          handleStartersSetsPlayed();
+          setUndoAvailable(false);
+          handleOnCourtPlayers();
+        } else {
+          missingSetterAlert();
+        }
       }
     }
   };
 
+  const handleOnCourtPlayers = () => {
+    // Logic to handle on-court players
+    setOnCourtPositionOne(positionOne);
+    setOnCourtPositionTwo(positionTwo);
+    setOnCourtPositionThree(positionThree);
+    setOnCourtPositionFour(positionFour);
+    setOnCourtPositionFive(positionFive);
+    setOnCourtPositionSix(positionSix);
+
+    setOnCourtPositionOneSub("");
+    setOnCourtPositionTwoSub("");
+    setOnCourtPositionThreeSub("");
+    setOnCourtPositionFourSub("");
+    setOnCourtPositionFiveSub("");
+    setOnCourtPositionSixSub("");
+  };
+
   const saveGame = async () => {
+    //TODO: Add conditions that allow games to be saved as a practice or scrimmage
     try {
-      //TODO: figure out complete list of fields that need to be saved
       const newGame = {
-        opponent: "Test Opponent",
-        date: new Date().toISOString(),
-        location: "Test Location",
+        opponent: opponent,
+        date: new Date().toISOString().split("T")[0],
+        location: location,
+        gameType: gameType,
         setsPlayed: setsFinished,
         homeSetsWon: homeSetsWon,
         opponentSetsWon: opponentSetsWon,
         stats: rosterStats,
         teamStats: teamStats,
       };
-      //Add new doc to games collection, works fine if its empty
+      //Add new doc to games collection
       await firestore()
         .collection("seasons")
         .doc(seasonID)
@@ -2862,6 +2870,8 @@ export default function statGame() {
       console.error("Error saving game: ", error);
       router.push("seasonHome");
     }
+
+    //TODO Save player stats and team stats specifically
   };
 
   if (endGameState === true) {
@@ -2880,8 +2890,12 @@ export default function statGame() {
           <View style={styles.endGameBodyContainer}>
             <View style={styles.endGameScoresContainer}>
               <View style={styles.scoreContainer}>
-                {/* TODO: Inputvalidation to ensure team name is not too long */}
-                <Text style={styles.scoreTeamNameText}>Your Team</Text>
+                <Text style={styles.scoreTeamNameText}>
+                  {teamName.length > 12
+                    ? teamName.substring(0, 12) + "..."
+                    : teamName}
+                </Text>
+
                 <View style={styles.scoreAmountContainer}>
                   <Text style={styles.scoreText}>{homeSetsWon}</Text>
                 </View>
@@ -2911,6 +2925,7 @@ export default function statGame() {
                   <Text style={styles.liveStatsPlayerHeader}>
                     #{"  "}Player
                   </Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>SP</Text>
                   <Text style={styles.liveStatsModalSecondaryText}>K </Text>
                   <Text style={styles.liveStatsModalSecondaryText}>E</Text>
                   <Text style={styles.liveStatsModalSecondaryText}>TA</Text>
@@ -2931,98 +2946,107 @@ export default function statGame() {
                 </View>
               </View>
               {rosterStats.map((player) => {
-                return (
-                  <View
-                    style={styles.endGameStatsTitleRow}
-                    key={player.playerNumber}
-                  >
-                    <View style={styles.liveStatsStatHeader}>
-                      <Text style={styles.liveStatsPlayerHeader}>
-                        {/* TODO: validation for length of players name */}
-                        {player.playerNumber}
-                        {"  "}
-                        {player.playerName}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.kills.toString().length > 1
-                          ? player.kills
-                          : player.kills + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.attackErrors.toString().length > 1
-                          ? player.attackErrors
-                          : player.attackErrors + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.attempts.toString().length > 1
-                          ? player.attempts
-                          : player.attempts + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {isNaN(
-                          (player.kills - player.attackErrors) / player.attempts
-                        )
-                          ? "0.000"
-                          : (
-                              (player.kills - player.attackErrors) /
+                if (player.setsPlayed > 0) {
+                  return (
+                    <View
+                      style={styles.endGameStatsTitleRow}
+                      key={player.playerNumber}
+                    >
+                      <View style={styles.liveStatsStatHeader}>
+                        <Text style={styles.liveStatsPlayerHeader}>
+                          {player.playerNumber}
+                          {"  "}
+                          {player.playerName.length > 16
+                            ? player.playerName.substring(0, 16) + "..."
+                            : player.playerName}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.setsPlayed.toString().length > 1
+                            ? player.setsPlayed
+                            : player.setsPlayed + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.kills.toString().length > 1
+                            ? player.kills
+                            : player.kills + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.attackErrors.toString().length > 1
+                            ? player.attackErrors
+                            : player.attackErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.attempts.toString().length > 1
+                            ? player.attempts
+                            : player.attempts + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {isNaN(
+                            (player.kills - player.attackErrors) /
                               player.attempts
-                            ).toFixed(3)}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.assists.toString().length > 1
-                          ? player.assists
-                          : player.assists + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.serviceAces.toString().length > 1
-                          ? player.serviceAces
-                          : player.serviceAces + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.serviceErrors.toString().length > 1
-                          ? player.serviceErrors
-                          : player.serviceErrors + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.receptionErrors.toString().length > 1
-                          ? player.receptionErrors
-                          : player.receptionErrors + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {isNaN(player.totalPassValue / player.passingAttempts)
-                          ? "0.00"
-                          : (
-                              player.totalPassValue / player.passingAttempts
-                            ).toFixed(2)}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.digs.toString().length > 1
-                          ? player.digs
-                          : player.digs + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.blockSolos.toString().length > 1
-                          ? player.blockSolos
-                          : player.blockSolos + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.blockAssists.toString().length > 1
-                          ? player.blockAssists
-                          : player.blockAssists + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.blockErrors.toString().length > 1
-                          ? player.blockErrors
-                          : player.blockErrors + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryTextEnd2}>
-                        {player.pts.toString().length > 1
-                          ? player.pts.toFixed(1)
-                          : player.pts.toFixed(1)}
-                      </Text>
+                          )
+                            ? "0.000"
+                            : (
+                                (player.kills - player.attackErrors) /
+                                player.attempts
+                              ).toFixed(3)}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.assists.toString().length > 1
+                            ? player.assists
+                            : player.assists + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.serviceAces.toString().length > 1
+                            ? player.serviceAces
+                            : player.serviceAces + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.serviceErrors.toString().length > 1
+                            ? player.serviceErrors
+                            : player.serviceErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.receptionErrors.toString().length > 1
+                            ? player.receptionErrors
+                            : player.receptionErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {isNaN(player.totalPassValue / player.passingAttempts)
+                            ? "0.00"
+                            : (
+                                player.totalPassValue / player.passingAttempts
+                              ).toFixed(2)}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.digs.toString().length > 1
+                            ? player.digs
+                            : player.digs + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.blockSolos.toString().length > 1
+                            ? player.blockSolos
+                            : player.blockSolos + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.blockAssists.toString().length > 1
+                            ? player.blockAssists
+                            : player.blockAssists + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.blockErrors.toString().length > 1
+                            ? player.blockErrors
+                            : player.blockErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryTextEnd2}>
+                          {player.pts.toString().length > 1
+                            ? player.pts.toFixed(1)
+                            : player.pts.toFixed(1)}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                );
+                  );
+                }
               })}
               <View style={styles.endGameStatsTitleRow}>
                 <View style={styles.liveStatsStatHeader}>
@@ -3030,6 +3054,11 @@ export default function statGame() {
                     Team
                     {"  "}
                     Total
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {setsFinished.toString().length > 1
+                      ? setsFinished
+                      : setsFinished + " "}
                   </Text>
                   <Text style={styles.liveStatsModalSecondaryText2}>
                     {teamStats.teamKills.toString().length > 1
@@ -3137,38 +3166,37 @@ export default function statGame() {
     return (
       <SafeView style={styles.container}>
         <View style={styles.inBetweenHeaderContainer}>
-          <TouchableOpacity onPress={cancelAlert}>
-            <View style={styles.exitBtn}>
+          <TouchableOpacity onPress={cancelAlert} style={styles.exitBtn}>
+            <View style={{ flexDirection: "row" }}>
               <AntDesign
                 style={styles.backIcon}
                 name="left"
                 size={hp(3.7)}
                 color={COLORS.white}
               />
-              <Text style={styles.headerBtnText}>EXIT</Text>
+              <Text style={styles.exitBtnText}>EXIT</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={toggleLiveStatsModal}>
-            <View style={styles.inBetweenLiveStatsContainer}>
-              <FontAwesome6
-                name="chart-bar"
-                size={RFValue(12)}
-                color={COLORS.white}
-              />
-              <Text style={styles.inBetweenLiveStatsRotationText}>
-                Live Stats
-              </Text>
-            </View>
+          <TouchableOpacity
+            onPress={toggleLiveStatsModal}
+            style={styles.inBetweenLiveStatsContainer}
+          >
+            <FontAwesome6
+              name="chart-bar"
+              size={RFValue(12)}
+              color={COLORS.white}
+            />
+            <Text style={styles.inBetweenLiveStatsRotationText}>
+              Live Stats
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
               handleInBetweenConfirmation();
-
-              //TODOs:
-              //Reset onCourtPositionValues and subs to reaspect positions
             }}
+            style={styles.nextSetBtn}
           >
-            <View style={styles.nextSetBtn}>
+            <View style={{ flexDirection: "row" }}>
               <View style={styles.NextSetTextContainer}>
                 <Text style={styles.nextSetBtnText}>NEXT</Text>
                 <Text style={styles.nextSetBtnText}>SET</Text>
@@ -3197,12 +3225,20 @@ export default function statGame() {
             <View style={styles.radioGroup}>
               <View style={styles.radioButton}>
                 <RadioButton
-                  value="Your Team"
+                  value={
+                    teamName.length > 16
+                      ? teamName.substring(0, 16) + "..."
+                      : teamName
+                  }
                   status={serverTracker === "Home" ? "checked" : "unchecked"}
                   onPress={() => setServerTracker("Home")}
                   color={COLORS.primary}
                 />
-                <Text style={styles.radioLabel}>Your Team</Text>
+                <Text style={styles.radioLabel}>
+                  {teamName.length > 16
+                    ? teamName.substring(0, 16) + "..."
+                    : teamName}
+                </Text>
               </View>
               <View style={styles.radioButton}>
                 <RadioButton
@@ -3339,7 +3375,6 @@ export default function statGame() {
                 placeholderStyle={styles.setterPlaceHolderDropDown}
                 selectedTextStyle={styles.selectedDropDownText2}
                 itemTextStyle={styles.dropDownText2}
-                //TODO: Ensure selection is only from on court players
                 data={inBetweenSetsRosterList()}
                 search={false}
                 maxHeight={300}
@@ -3403,21 +3438,24 @@ export default function statGame() {
     return (
       <SafeView style={styles.container}>
         <View style={styles.headerContainer}>
-          <TouchableOpacity onPress={cancelAlert}>
-            <View style={styles.exitBtn}>
+          <TouchableOpacity onPress={cancelAlert} style={styles.exitBtn}>
+            <View style={{ flexDirection: "row" }}>
               <AntDesign
                 style={styles.backIcon}
                 name="left"
                 size={hp(3.7)}
                 color={COLORS.white}
               />
-              <Text style={styles.headerBtnText}>EXIT</Text>
+              <Text style={styles.exitBtnText}>EXIT</Text>
             </View>
           </TouchableOpacity>
           <View style={styles.scoreboardContainer}>
             <View style={styles.liveStatsSubContainer}>
-              <TouchableOpacity onPress={toggleLiveStatsModal}>
-                <View style={styles.liveStatsContainer}>
+              <TouchableOpacity
+                onPress={toggleLiveStatsModal}
+                style={styles.liveStatsContainer}
+              >
+                <View style={{ flexDirection: "row" }}>
                   <FontAwesome6
                     name="chart-bar"
                     size={RFValue(12)}
@@ -3427,8 +3465,11 @@ export default function statGame() {
                 </View>
               </TouchableOpacity>
               <View style={styles.subContainer}>
-                <TouchableOpacity onPress={toggleSubModal}>
-                  <View style={styles.liveStatsContainer}>
+                <TouchableOpacity
+                  onPress={toggleSubModal}
+                  style={styles.liveStatsContainer}
+                >
+                  <View style={{ flexDirection: "row" }}>
                     <MaterialIcons
                       name="swap-horizontal-circle"
                       size={RFValue(14)}
@@ -3495,12 +3536,11 @@ export default function statGame() {
                     />
                   </View>
                   <View style={styles.subConfirmContainer}>
-                    <TouchableOpacity onPress={handleSubstitution}>
-                      <View style={styles.liveStatsContainer}>
-                        <Text style={styles.liveStatsRotationText}>
-                          Confirm
-                        </Text>
-                      </View>
+                    <TouchableOpacity
+                      onPress={handleSubstitution}
+                      style={styles.liveStatsContainer}
+                    >
+                      <Text style={styles.liveStatsRotationText}>Confirm</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -3516,6 +3556,7 @@ export default function statGame() {
                   setHomeTimeOuts(homeTimeOuts - 1);
                 }}
                 disabled={homeTimeOuts < 1 ? true : false}
+                style={styles.timeouts}
               >
                 <HomeTimeOutsDisplay />
               </TouchableOpacity>
@@ -3532,8 +3573,12 @@ export default function statGame() {
               </View>
             </View>
             <View style={styles.scoreContainer}>
-              {/* TODO: Inputvalidation to ensure team name is not too long */}
-              <Text style={styles.scoreTeamNameText}>Your Team</Text>
+              <Text style={styles.scoreTeamNameText}>
+                {teamName.length > 12
+                  ? teamName.substring(0, 12) + "..."
+                  : teamName}
+              </Text>
+
               <TouchableOpacity
                 onPress={() => {
                   //Increment Server attempts
@@ -3556,14 +3601,15 @@ export default function statGame() {
                   setStatStack((oldStack) => [
                     ...oldStack,
                     {
-                      playerNumber: "Your Team",
+                      playerNumber: "Home",
                       statType: "+1",
                     },
                   ]);
                   setUndoAvailable(true);
                 }}
+                style={styles.scoreAmountContainer}
               >
-                <View style={styles.scoreAmountContainer}>
+                <View>
                   <Text style={styles.scoreText}>{homeScore}</Text>
                 </View>
               </TouchableOpacity>
@@ -3599,9 +3645,9 @@ export default function statGame() {
                   ]);
                   setUndoAvailable(true);
                 }}
-                delayPressIn={0}
+                style={styles.scoreAmountContainer}
               >
-                <View style={styles.scoreAmountContainer}>
+                <View>
                   <Text style={styles.scoreText}>{opponentScore}</Text>
                 </View>
               </TouchableOpacity>
@@ -3613,6 +3659,7 @@ export default function statGame() {
                   setOpponentTimeOuts(opponentTimeOuts - 1);
                 }}
                 disabled={opponentTimeOuts < 1 ? true : false}
+                style={styles.timeouts}
               >
                 <OpponentTimeOutsDisplay />
               </TouchableOpacity>
@@ -3629,8 +3676,11 @@ export default function statGame() {
               </View>
             </View>
             <View style={styles.widthSpacer2} />
-            <TouchableOpacity onPress={toggleRotationCheckModal}>
-              <View style={styles.rotationCheckContianer}>
+            <TouchableOpacity
+              onPress={toggleRotationCheckModal}
+              style={styles.rotationCheckContianer}
+            >
+              <View>
                 <Text style={styles.liveStatsRotationText}>Rotation Check</Text>
               </View>
             </TouchableOpacity>
@@ -3639,22 +3689,19 @@ export default function statGame() {
             <TouchableOpacity
               onPress={() => undoLastStat()}
               disabled={undoAvailable === false ? true : false}
+              style={
+                undoAvailable === false
+                  ? styles.undoBtnDisabled
+                  : styles.undoBtn
+              }
             >
-              <View
-                style={
-                  undoAvailable === false
-                    ? styles.undoBtnDisabled
-                    : styles.undoBtn
-                }
-              >
-                <View style={styles.undoIcon}>
-                  <AntDesign
-                    style={styles.backIcon}
-                    name="back"
-                    size={hp(3.7)}
-                    color={COLORS.white}
-                  />
-                </View>
+              <View style={styles.undoIcon}>
+                <AntDesign
+                  style={styles.backIcon}
+                  name="back"
+                  size={hp(3.7)}
+                  color={COLORS.white}
+                />
                 <View style={styles.undoTextContainer}>
                   <Text style={styles.undoBtnText}>UNDO</Text>
                   <Text style={styles.undoBtnText}>STAT</Text>
@@ -3940,34 +3987,54 @@ export default function statGame() {
                       <Text style={styles.playerNumberText}>
                         {player.playerNumber}
                       </Text>
-                      {/* TODO: Input validation to keep player name less that 15 chars */}
                       <Text style={styles.playerNameText}>
-                        {player.playerName}
+                        {player.playerName.length > 15
+                          ? player.playerName.substring(0, 15) + "..."
+                          : player.playerName}
                       </Text>
                     </View>
-                    <View style={styles.widthSpacer1} />
+                    <View style={styles.playerReverseSubContainer}>
+                      {displayQuickSubBtn(player.playerNumber) === true ? (
+                        <TouchableOpacity
+                          onPress={() => handleQuickSub(player.playerNumber)}
+                        >
+                          <Text style={styles.revertText}>Revert</Text>
+                          <MaterialIcons
+                            name="swap-horizontal-circle"
+                            size={RFValue(20)}
+                            color={COLORS.primary}
+                            style={styles.swapIcon}
+                          />
+                          <Text style={styles.revertSubText}>Sub</Text>
+                        </TouchableOpacity>
+                      ) : (
+                        <View></View>
+                      )}
+                    </View>
                     <View style={styles.playerOffenseContainer}>
                       <View style={styles.offenseSubContainer}>
                         <TouchableOpacity
                           onPress={() => {
-                            //Increment attempts
-                            handleAttemptIncrement(player.playerNumber);
+                            if (player.attempts < 200) {
+                              //Increment attempts
+                              handleAttemptIncrement(player.playerNumber);
 
-                            //Increment Team attempts
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamAttempts: teamStats.teamAttempts + 1,
-                            }));
+                              //Increment Team attempts
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamAttempts: teamStats.teamAttempts + 1,
+                              }));
 
-                            //Add stat to stat log
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "ATK",
-                              },
-                            ]);
-                            setUndoAvailable(true);
+                              //Add stat to stat log
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  statType: "ATK",
+                                },
+                              ]);
+                              setUndoAvailable(true);
+                            }
                           }}
                         >
                           <View style={styles.statBtn}>
@@ -4068,24 +4135,26 @@ export default function statGame() {
                         </TouchableOpacity>
                         <TouchableOpacity
                           onPress={() => {
-                            //Incrcement assists
-                            handleAssistsIncrement(player.playerNumber);
+                            if (player.assists < 200) {
+                              //Incrcement assists
+                              handleAssistsIncrement(player.playerNumber);
 
-                            //Increment team stats
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamAssists: teamStats.teamAssists + 1,
-                            }));
+                              //Increment team stats
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamAssists: teamStats.teamAssists + 1,
+                              }));
 
-                            //Add stat to the stat log
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "A",
-                              },
-                            ]);
-                            setUndoAvailable(true);
+                              //Add stat to the stat log
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  statType: "A",
+                                },
+                              ]);
+                              setUndoAvailable(true);
+                            }
                           }}
                         >
                           <View style={styles.statBtn}>
@@ -4312,23 +4381,25 @@ export default function statGame() {
                         <TouchableOpacity
                           onPress={() => {
                             //Increment dig
-                            handleDigIncrement(player.playerNumber);
+                            if (player.digs < 200) {
+                              handleDigIncrement(player.playerNumber);
 
-                            //Increment player stats
-                            setTeamStats((teamStats) => ({
-                              ...teamStats,
-                              teamDigs: teamStats.teamDigs + 1,
-                            }));
+                              //Increment player stats
+                              setTeamStats((teamStats) => ({
+                                ...teamStats,
+                                teamDigs: teamStats.teamDigs + 1,
+                              }));
 
-                            //add stat to stat log
-                            setStatStack((oldStack) => [
-                              ...oldStack,
-                              {
-                                playerNumber: player.playerNumber,
-                                statType: "DIG",
-                              },
-                            ]);
-                            setUndoAvailable(true);
+                              //add stat to stat log
+                              setStatStack((oldStack) => [
+                                ...oldStack,
+                                {
+                                  playerNumber: player.playerNumber,
+                                  statType: "DIG",
+                                },
+                              ]);
+                              setUndoAvailable(true);
+                            }
                           }}
                         >
                           <View style={styles.statBtn}>
@@ -4484,7 +4555,7 @@ export default function statGame() {
                           </View>
                         </TouchableOpacity>
                       </View>
-                      <View style={styles.defenseSubContainer}>
+                      <View style={styles.passingSubContainerSolo}>
                         <TouchableOpacity
                           onPress={() => {
                             //Increment player reception errors
@@ -4564,59 +4635,219 @@ export default function statGame() {
                                 player.playerNumber === handPassPlayer) ||
                               (forearmPassSelected &&
                                 player.playerNumber === forearmPassPlayer)
-                                ? styles.statBtnSelected
-                                : styles.statBtn
+                                ? styles.passingStatBtnSelected
+                                : styles.passingStatBtn
                             }
                           >
                             <Text style={styles.btnTextSingleLine}>0</Text>
                           </View>
                         </TouchableOpacity>
+                      </View>
+                      <View style={styles.passingSubContainer}>
                         <TouchableOpacity
                           onPress={() => {
-                            //Increment player two pass
-                            handleTwoPassIncrement(player.playerNumber);
-                            if (handPassSelected === true) {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamTwoPasses: teamStats.teamTwoPasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 2,
-                                teamHandPassingAttempts:
-                                  teamStats.teamHandPassingAttempts + 1,
-                                teamTotalHandPassValue:
-                                  teamStats.teamTotalHandPassValue + 2,
-                              }));
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                {
-                                  playerNumber: player.playerNumber,
-                                  statType: "2 Pass",
-                                  passType: "Hand",
-                                },
-                              ]);
-                            } else {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamTwoPasses: teamStats.teamTwoPasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 2,
-                                teamForearmPassingAttempts:
-                                  teamStats.teamForearmPassingAttempts + 1,
-                                teamTotalForearmPassValue:
-                                  teamStats.teamTotalForearmPassValue + 2,
-                              }));
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                {
-                                  playerNumber: player.playerNumber,
-                                  statType: "2 Pass",
-                                  passType: "Forearm",
-                                },
-                              ]);
+                            if (player.onePasses < 200) {
+                              //Increment player one pass
+                              handleOnePassIncrement(player.playerNumber);
+                              if (handPassSelected === true) {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamOnePasses: teamStats.teamOnePasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 1,
+                                  teamHandPassingAttempts:
+                                    teamStats.teamHandPassingAttempts + 1,
+                                  teamTotalHandPassValue:
+                                    teamStats.teamTotalHandPassValue + 1,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "1 Pass",
+                                    passType: "Hand",
+                                  },
+                                ]);
+                              } else {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamOnePasses: teamStats.teamOnePasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 1,
+                                  teamForearmPassingAttempts:
+                                    teamStats.teamForearmPassingAttempts + 1,
+                                  teamTotalForearmPassValue:
+                                    teamStats.teamTotalForearmPassValue + 1,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "1 Pass",
+                                    passType: "Forearm",
+                                  },
+                                ]);
+                              }
+                              //Reset passing trackers
+                              setForearmPassSelected(false);
+                              setForearmPassPlayer(null);
+                              setHandPassSelected(false);
+                              setHandPassPlayer(null);
+                              setUndoAvailable(true);
+                            }
+                          }}
+                          disabled={
+                            handPassSelected === false &&
+                            forearmPassSelected === false
+                              ? true
+                              : false
+                          }
+                        >
+                          <View
+                            style={
+                              (handPassSelected &&
+                                player.playerNumber === handPassPlayer) ||
+                              (forearmPassSelected &&
+                                player.playerNumber === forearmPassPlayer)
+                                ? styles.passingStatBtnSelected
+                                : styles.passingStatBtn
+                            }
+                          >
+                            <Text style={styles.btnTextSingleLine}>1</Text>
+                          </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => {
+                            if (player.threePasses < 200) {
+                              //Increment player three passes
+                              handleThreePassIncrement(player.playerNumber);
+                              if (handPassSelected === true) {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamThreePasses:
+                                    teamStats.teamThreePasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 3,
+                                  teamHandPassingAttempts:
+                                    teamStats.teamHandPassingAttempts + 1,
+                                  teamTotalHandPassValue:
+                                    teamStats.teamTotalHandPassValue + 3,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "3 Pass",
+                                    passType: "Hand",
+                                  },
+                                ]);
+                              } else {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamThreePasses:
+                                    teamStats.teamThreePasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 3,
+                                  teamForearmPassingAttempts:
+                                    teamStats.teamForearmPassingAttempts + 1,
+                                  teamTotalForearmPassValue:
+                                    teamStats.teamTotalForearmPassValue + 3,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "3 Pass",
+                                    passType: "Forearm",
+                                  },
+                                ]);
+                              }
+                              //Reset passing trackers
+                              setForearmPassSelected(false);
+                              setForearmPassPlayer(null);
+                              setHandPassSelected(false);
+                              setHandPassPlayer(null);
+                              setUndoAvailable(true);
+                            }
+                          }}
+                          disabled={
+                            handPassSelected === false &&
+                            forearmPassSelected === false
+                              ? true
+                              : false
+                          }
+                        >
+                          <View
+                            style={
+                              (handPassSelected &&
+                                player.playerNumber === handPassPlayer) ||
+                              (forearmPassSelected &&
+                                player.playerNumber === forearmPassPlayer)
+                                ? styles.passingStatBtnSelected
+                                : styles.passingStatBtn
+                            }
+                          >
+                            <Text style={styles.btnTextSingleLine}>3</Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.passingSubContainer}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            if (player.twoPasses < 200) {
+                              //Increment player two pass
+                              handleTwoPassIncrement(player.playerNumber);
+                              if (handPassSelected === true) {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamTwoPasses: teamStats.teamTwoPasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 2,
+                                  teamHandPassingAttempts:
+                                    teamStats.teamHandPassingAttempts + 1,
+                                  teamTotalHandPassValue:
+                                    teamStats.teamTotalHandPassValue + 2,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "2 Pass",
+                                    passType: "Hand",
+                                  },
+                                ]);
+                              } else {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamTwoPasses: teamStats.teamTwoPasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 2,
+                                  teamForearmPassingAttempts:
+                                    teamStats.teamForearmPassingAttempts + 1,
+                                  teamTotalForearmPassValue:
+                                    teamStats.teamTotalForearmPassValue + 2,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "2 Pass",
+                                    passType: "Forearm",
+                                  },
+                                ]);
+                              }
                             }
 
                             //reset passing trackers
@@ -4639,135 +4870,61 @@ export default function statGame() {
                                 player.playerNumber === handPassPlayer) ||
                               (forearmPassSelected &&
                                 player.playerNumber === forearmPassPlayer)
-                                ? styles.statBtnSelected
-                                : styles.statBtn
+                                ? styles.passingStatBtnSelected
+                                : styles.passingStatBtn
                             }
                           >
                             <Text style={styles.btnTextSingleLine}>2</Text>
                           </View>
                         </TouchableOpacity>
-                      </View>
-                      <View style={styles.defenseSubContainer}>
                         <TouchableOpacity
                           onPress={() => {
-                            //Increment player one pass
-                            handleOnePassIncrement(player.playerNumber);
-                            if (handPassSelected === true) {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamOnePasses: teamStats.teamOnePasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 1,
-                                teamHandPassingAttempts:
-                                  teamStats.teamHandPassingAttempts + 1,
-                                teamTotalHandPassValue:
-                                  teamStats.teamTotalHandPassValue + 1,
-                              }));
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                {
-                                  playerNumber: player.playerNumber,
-                                  statType: "1 Pass",
-                                  passType: "Hand",
-                                },
-                              ]);
-                            } else {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamOnePasses: teamStats.teamOnePasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 1,
-                                teamForearmPassingAttempts:
-                                  teamStats.teamForearmPassingAttempts + 1,
-                                teamTotalForearmPassValue:
-                                  teamStats.teamTotalForearmPassValue + 1,
-                              }));
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                {
-                                  playerNumber: player.playerNumber,
-                                  statType: "1 Pass",
-                                  passType: "Forearm",
-                                },
-                              ]);
-                            }
-                            //Reset passing trackers
-                            setForearmPassSelected(false);
-                            setForearmPassPlayer(null);
-                            setHandPassSelected(false);
-                            setHandPassPlayer(null);
-                            setUndoAvailable(true);
-                          }}
-                          disabled={
-                            handPassSelected === false &&
-                            forearmPassSelected === false
-                              ? true
-                              : false
-                          }
-                        >
-                          <View
-                            style={
-                              (handPassSelected &&
-                                player.playerNumber === handPassPlayer) ||
-                              (forearmPassSelected &&
-                                player.playerNumber === forearmPassPlayer)
-                                ? styles.statBtnSelected
-                                : styles.statBtn
-                            }
-                          >
-                            <Text style={styles.btnTextSingleLine}>1</Text>
-                          </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            //Increment player three passes
-                            handleThreePassIncrement(player.playerNumber);
-                            if (handPassSelected === true) {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamThreePasses: teamStats.teamThreePasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 3,
-                                teamHandPassingAttempts:
-                                  teamStats.teamHandPassingAttempts + 1,
-                                teamTotalHandPassValue:
-                                  teamStats.teamTotalHandPassValue + 3,
-                              }));
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                {
-                                  playerNumber: player.playerNumber,
-                                  statType: "3 Pass",
-                                  passType: "Hand",
-                                },
-                              ]);
-                            } else {
-                              setTeamStats((teamStats) => ({
-                                ...teamStats,
-                                teamThreePasses: teamStats.teamThreePasses + 1,
-                                teamPassingAttempts:
-                                  teamStats.teamPassingAttempts + 1,
-                                teamTotalPassValue:
-                                  teamStats.teamTotalPassValue + 3,
-                                teamForearmPassingAttempts:
-                                  teamStats.teamForearmPassingAttempts + 1,
-                                teamTotalForearmPassValue:
-                                  teamStats.teamTotalForearmPassValue + 3,
-                              }));
-                              setStatStack((oldStack) => [
-                                ...oldStack,
-                                {
-                                  playerNumber: player.playerNumber,
-                                  statType: "3 Pass",
-                                  passType: "Forearm",
-                                },
-                              ]);
+                            if (player.fourPasses < 200) {
+                              //Increment player four passes
+                              handleFourPassIncrement(player.playerNumber);
+                              if (handPassSelected === true) {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamFourPasses: teamStats.teamFourPasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 4,
+                                  teamHandPassingAttempts:
+                                    teamStats.teamHandPassingAttempts + 1,
+                                  teamTotalHandPassValue:
+                                    teamStats.teamTotalHandPassValue + 4,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "4 Pass",
+                                    passType: "Hand",
+                                  },
+                                ]);
+                              } else {
+                                setTeamStats((teamStats) => ({
+                                  ...teamStats,
+                                  teamFourPasses: teamStats.teamFourPasses + 1,
+                                  teamPassingAttempts:
+                                    teamStats.teamPassingAttempts + 1,
+                                  teamTotalPassValue:
+                                    teamStats.teamTotalPassValue + 4,
+                                  teamForearmPassingAttempts:
+                                    teamStats.teamForearmPassingAttempts + 1,
+                                  teamTotalForearmPassValue:
+                                    teamStats.teamTotalForearmPassValue + 4,
+                                }));
+                                setStatStack((oldStack) => [
+                                  ...oldStack,
+                                  {
+                                    playerNumber: player.playerNumber,
+                                    statType: "4 Pass",
+                                    passType: "Forearm",
+                                  },
+                                ]);
+                              }
                             }
 
                             //Reset passing trackers
@@ -4790,11 +4947,11 @@ export default function statGame() {
                                 player.playerNumber === handPassPlayer) ||
                               (forearmPassSelected &&
                                 player.playerNumber === forearmPassPlayer)
-                                ? styles.statBtnSelected
-                                : styles.statBtn
+                                ? styles.passingStatBtnSelected
+                                : styles.passingStatBtn
                             }
                           >
-                            <Text style={styles.btnTextSingleLine}>3</Text>
+                            <Text style={styles.btnTextSingleLine}>4</Text>
                           </View>
                         </TouchableOpacity>
                       </View>
@@ -5111,7 +5268,7 @@ const styles = StyleSheet.create({
     fontSize: RFValue(11),
   },
   selectedDropDownText2: {
-    fontSize: RFValue(11),
+    fontSize: RFValue(9.5),
     color: COLORS.black,
   },
   dropDownText2: {
@@ -5132,7 +5289,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     borderRadius: 20,
     marginHorizontal: 5,
-    marginTop: 5,
+    marginTop: 7,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
@@ -5247,6 +5404,14 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     paddingLeft: 3,
   },
+  exitBtnText: {
+    fontSize: RFValue(9),
+    paddingRight: 3,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: COLORS.white,
+    paddingTop: 3,
+  },
   headerBtnText: {
     fontSize: RFValue(9),
     paddingRight: 3,
@@ -5306,6 +5471,7 @@ const styles = StyleSheet.create({
   },
   subConfirmContainer: { justifyContent: "center", alignItems: "center" },
   undoIcon: {
+    flexDirection: "row",
     marginLeft: 4,
   },
   popUpContainer: {
@@ -5340,7 +5506,7 @@ const styles = StyleSheet.create({
     width: wp(1),
   },
   scoreTeamNameText: {
-    fontSize: RFValue(13),
+    fontSize: RFValue(11),
     fontWeight: "bold",
   },
   scoreAmountContainer: {
@@ -5400,6 +5566,14 @@ const styles = StyleSheet.create({
   },
   widthSpacer2: {
     width: wp(2.5),
+    height: hp(1),
+  },
+  playerReverseSubContainer: {
+    width: wp(4),
+    height: hp(14),
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: wp(1),
   },
   widthSpacer3: {
     width: wp(0.7),
@@ -5669,15 +5843,27 @@ const styles = StyleSheet.create({
     fontSize: RFValue(28),
   },
   playerNameText: {
-    fontSize: RFValue(9),
+    fontSize: RFValue(8.5),
     fontWeight: "bold",
+  },
+  revertText: {
+    fontSize: RFValue(8.5),
+    fontWeight: "bold",
+  },
+  revertSubText: {
+    fontSize: RFValue(8.5),
+    fontWeight: "bold",
+    paddingLeft: 6,
+  },
+  swapIcon: {
+    paddingLeft: 3,
   },
   playerOffenseContainer: {
     width: wp(14),
     height: hp(14),
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: wp(2),
+    marginLeft: wp(0.75),
   },
   offenseSubContainer: {
     flexDirection: "row",
@@ -5696,6 +5882,22 @@ const styles = StyleSheet.create({
   },
   statBtnSelected: {
     width: wp(6),
+    height: hp(6),
+    backgroundColor: COLORS.secondary,
+    borderRadius: 7.5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  passingStatBtn: {
+    width: wp(4.5),
+    height: hp(6),
+    backgroundColor: COLORS.darkGrey,
+    borderRadius: 7.5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  passingStatBtnSelected: {
+    width: wp(4.5),
     height: hp(6),
     backgroundColor: COLORS.secondary,
     borderRadius: 7.5,
@@ -5723,6 +5925,20 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     justifyContent: "center",
   },
+  passingSubContainer: {
+    width: wp(4.5),
+    height: hp(13),
+    marginBottom: 6,
+    marginHorizontal: 3,
+    justifyContent: "space-between",
+  },
+  passingSubContainerSolo: {
+    width: wp(4.5),
+    height: hp(13),
+    marginBottom: 6,
+    marginHorizontal: 3,
+    justifyContent: "center",
+  },
   playerServingContainer: {
     flexDirection: "row",
     width: wp(8),
@@ -5732,7 +5948,7 @@ const styles = StyleSheet.create({
   },
   playerPassingContainer: {
     flexDirection: "row",
-    width: wp(21),
+    width: wp(23),
     height: hp(14),
     justifyContent: "center",
     alignItems: "center",
@@ -5777,7 +5993,7 @@ const styles = StyleSheet.create({
     zIndex: 999,
     paddingHorizontal: wp(1.5),
     height: hp(6),
-    width: wp(12),
+    width: wp(18),
     justifyContent: "center",
     alignItems: "center",
   },
@@ -5786,7 +6002,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   selectedDropDownText: {
-    fontSize: RFValue(11),
+    fontSize: RFValue(9.5),
     color: COLORS.black,
   },
   dropDownText: {

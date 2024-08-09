@@ -19,12 +19,15 @@ import {
   MenuOption,
   MenuTrigger,
 } from "react-native-popup-menu";
+import { useAuth } from "../../context/authContext";
 
 export default function statGamePrep() {
   // Get props that are being drilled
   const router = useRouter();
   const params = useLocalSearchParams();
   const { currentLocalTeamName, currentLocalYear } = params;
+
+  const { seasonID } = useAuth();
 
   // JSON.parse to deal with an array that is being prop drilled
   const roster = JSON.parse(params.currentLocalRoster);
@@ -46,7 +49,7 @@ export default function statGamePrep() {
   const [positionFive, setPositionFive] = useState("");
   const [positionSix, setPositionSix] = useState("");
   const [firstLibero, setFirstLibero] = useState("");
-  const [secondLibero, setSecondLibero] = useState("");
+  const [secondLibero, setSecondLibero] = useState("1000");
   const [setter, setSetter] = useState("");
 
   // Get the roster being prop drilled and format it to match specifications of dropdown library
@@ -57,6 +60,46 @@ export default function statGamePrep() {
       value: roster[index].playerNumber + " - " + roster[index].playerName,
       playerNumber: roster[index].playerNumber,
     });
+  }
+
+  //List for the setter dropdown, updates everytime state updates on the screen
+  const setterList = [];
+  for (let index = 0; index < dropDownRosterList.length; index++) {
+    if (
+      dropDownRosterList[index].playerNumber === positionOne ||
+      dropDownRosterList[index].playerNumber === positionTwo ||
+      dropDownRosterList[index].playerNumber === positionThree ||
+      dropDownRosterList[index].playerNumber === positionFour ||
+      dropDownRosterList[index].playerNumber === positionFive ||
+      dropDownRosterList[index].playerNumber === positionSix
+    ) {
+      setterList.push({
+        key: index.toString(),
+        value: roster[index].playerNumber + " - " + roster[index].playerName,
+        playerNumber: roster[index].playerNumber,
+      });
+    }
+  }
+
+  //List for the libero dropdown, updates everytime the screen re-renders
+  const liberoList = [];
+  for (let index = 0; index < dropDownRosterList.length; index++) {
+    if (
+      dropDownRosterList[index].playerNumber === positionOne ||
+      dropDownRosterList[index].playerNumber === positionTwo ||
+      dropDownRosterList[index].playerNumber === positionThree ||
+      dropDownRosterList[index].playerNumber === positionFour ||
+      dropDownRosterList[index].playerNumber === positionFive ||
+      dropDownRosterList[index].playerNumber === positionSix
+    ) {
+      continue;
+    } else {
+      liberoList.push({
+        key: index.toString(),
+        value: roster[index].playerNumber + " - " + roster[index].playerName,
+        playerNumber: roster[index].playerNumber,
+      });
+    }
   }
 
   //Array for the set Selection DropDown
@@ -105,6 +148,7 @@ export default function statGamePrep() {
       onePasses: 0,
       twoPasses: 0,
       threePasses: 0,
+      fourPasses: 0,
       pts: 0,
       ptsPerSet: 0.0,
       firstTimeOnCourt: true,
@@ -124,6 +168,62 @@ export default function statGamePrep() {
     ]);
   };
 
+  const blankPlayerAlert = () => {
+    Alert.alert(
+      "Invalid Line-Up Detected",
+      "All Player fields need to be filled out.",
+      [
+        {
+          text: "Ok",
+        },
+      ]
+    );
+  };
+
+  const blankSetsSelectedAlert = () => {
+    Alert.alert(
+      "Invalid Game Format Detected",
+      "You must select the sets being played.",
+      [
+        {
+          text: "Ok",
+        },
+      ]
+    );
+  };
+
+  const blankSetterAlert = () => {
+    Alert.alert(
+      "Missing On Court Setter Detected",
+      "You must select which on court player will be a setter.",
+      [
+        {
+          text: "Ok",
+        },
+      ]
+    );
+  };
+
+  const blankOpponentAlert = () => {
+    Alert.alert("Missing Opponent", "You must input an opponent name.", [
+      {
+        text: "Ok",
+      },
+    ]);
+  };
+
+  const duplicatePlayerAlert = () => {
+    Alert.alert(
+      "Duplicate Players Detected",
+      "Duplicate players within the line-up is not allowed.",
+      [
+        {
+          text: "Ok",
+        },
+      ]
+    );
+  };
+
   const handleIncrementSetsPlayed = () => {
     //Find all of the starting players and then increment their sets played by 1
     for (let index = 0; index < localRoster.length; index++) {
@@ -139,6 +239,82 @@ export default function statGamePrep() {
       ) {
         localRoster[index].setsPlayed += 1;
         localRoster[index].firstTimeOnCourt = false;
+      }
+    }
+  };
+
+  const rotationInputValidation = () => {
+    // Logic to handle confirmation
+    const selectedPlayers = [
+      positionOne,
+      positionTwo,
+      positionThree,
+      positionFour,
+      positionFive,
+      positionSix,
+      firstLibero,
+      secondLibero,
+    ];
+
+    //Check for missing players
+    if (
+      positionOne === "" ||
+      positionTwo === "" ||
+      positionThree === "" ||
+      positionFour === "" ||
+      positionFive === "" ||
+      positionSix === ""
+    ) {
+      blankPlayerAlert();
+    } else {
+      //Check for duplicate players
+      const uniquePlayers = new Set(selectedPlayers);
+      if (uniquePlayers.size !== selectedPlayers.length) {
+        duplicatePlayerAlert();
+      } else {
+        //Check for selected sets
+        if (selectedSets === "") {
+          blankSetsSelectedAlert();
+        } else {
+          //Check for opponent
+          if (selectedOpponent === "") {
+            blankOpponentAlert();
+          } else {
+            //Check for an on court setter
+            if (setter === "") {
+              blankSetterAlert();
+            } else {
+              //Success -> navigate to statGame
+
+              //Increment sets played for all players on court + libs
+              handleIncrementSetsPlayed();
+
+              router.push({
+                pathname: "statGame",
+                params: {
+                  teamName: currentLocalTeamName,
+                  currentLocalRoster: JSON.stringify(localRoster),
+                  gameType: selectedGameType,
+                  firstServe: selectedFirstServe,
+                  location: selectedLocation,
+                  opponent: selectedOpponent,
+                  setsBeingPlayed: selectedSets,
+                  pOne: positionOne,
+                  pTwo: positionTwo,
+                  pThree: positionThree,
+                  pFour: positionFour,
+                  pFive: positionFive,
+                  pSix: positionSix,
+                  firstL: firstLibero,
+                  secondL: secondLibero,
+                  onCourtSetter: setter,
+                  seasonID: seasonID,
+                  teamName: currentLocalTeamName,
+                },
+              });
+            }
+          }
+        }
       }
     }
   };
@@ -365,6 +541,7 @@ export default function statGamePrep() {
               maxLength={18}
               onChangeText={(value) => setSelectedOpponent(value)}
               placeholder="Opponent... "
+              placeholderTextColor={COLORS.white}
               style={styles.inputText}
               onFocus={this.onFocus}
             />
@@ -381,7 +558,8 @@ export default function statGamePrep() {
               keyboardType="default"
               maxLength={18}
               onChangeText={(value) => setSelectedLocation(value)}
-              placeholder="Location... "
+              placeholder="Optional..."
+              placeholderTextColor={COLORS.white}
               style={styles.inputText}
               onFocus={this.onFocus}
             />
@@ -416,13 +594,9 @@ export default function statGamePrep() {
           <View style={styles.radioGroup}>
             <View style={styles.radioButton}>
               <RadioButton
-                value={currentLocalTeamName}
-                status={
-                  selectedFirstServe === currentLocalTeamName
-                    ? "checked"
-                    : "unchecked"
-                }
-                onPress={() => setSelectedFirstServe(currentLocalTeamName)}
+                value={"Home"}
+                status={selectedFirstServe === "Home" ? "checked" : "unchecked"}
+                onPress={() => setSelectedFirstServe("Home")}
                 color={COLORS.primary}
               />
               <Text style={styles.radioLabel}>{currentLocalTeamName}</Text>
@@ -592,8 +766,7 @@ export default function statGamePrep() {
               placeholderStyle={styles.setterPlaceHolderDropDown}
               selectedTextStyle={styles.selectedDropDownText}
               itemTextStyle={styles.dropDownText}
-              //TODO: Ensure selection is only from on court players
-              data={dropDownRosterList}
+              data={setterList}
               search={false}
               maxHeight={300}
               labelField="value"
@@ -641,7 +814,7 @@ export default function statGamePrep() {
               placeholderStyle={styles.placeholderDropDown}
               selectedTextStyle={styles.selectedDropDownText}
               itemTextStyle={styles.dropDownText}
-              data={dropDownRosterList}
+              data={liberoList}
               search={false}
               maxHeight={300}
               labelField="value"
@@ -659,7 +832,7 @@ export default function statGamePrep() {
               placeholderStyle={styles.placeholderDropDown}
               selectedTextStyle={styles.selectedDropDownText}
               itemTextStyle={styles.dropDownText}
-              data={dropDownRosterList}
+              data={liberoList}
               search={false}
               maxHeight={300}
               labelField="value"
@@ -675,37 +848,11 @@ export default function statGamePrep() {
         <View style={styles.confirmContainer}>
           <TouchableOpacity
             onPress={() => {
-              //TODO: Input validation
-
-              //Increment sets played for all players on court + libs
-              handleIncrementSetsPlayed();
-
-              router.push({
-                pathname: "statGame",
-                params: {
-                  currentLocalRoster: JSON.stringify(localRoster),
-                  view: selectedView,
-                  gameType: selectedGameType,
-                  firstServe: selectedFirstServe,
-                  location: selectedLocation,
-                  opponent: selectedOpponent,
-                  setsBeingPlayed: selectedSets,
-                  pOne: positionOne,
-                  pTwo: positionTwo,
-                  pThree: positionThree,
-                  pFour: positionFour,
-                  pFive: positionFive,
-                  pSix: positionSix,
-                  firstL: firstLibero,
-                  secondL: secondLibero,
-                  onCourtSetter: setter,
-                },
-              });
+              rotationInputValidation();
             }}
+            style={styles.confirmBtn}
           >
-            <View style={styles.confirmBtn}>
-              <Text style={styles.confirmBtnText}> START </Text>
-            </View>
+            <Text style={styles.confirmBtnText}> START </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -725,7 +872,7 @@ const styles = StyleSheet.create({
   },
   headerBtn: {
     flexDirection: "row",
-    width: "42%",
+    width: wp(12),
     height: hp(7),
     backgroundColor: COLORS.primary,
     borderRadius: 20,
@@ -733,6 +880,14 @@ const styles = StyleSheet.create({
     marginTop: 18,
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   headerBtnText: {
     fontSize: RFValue(9),
@@ -790,6 +945,7 @@ const styles = StyleSheet.create({
   },
   setSelectionPlaceHolderDropDown: {
     fontSize: RFValue(10),
+    color: COLORS.white,
   },
   radioContainer: {
     flex: 1,
@@ -960,6 +1116,14 @@ const styles = StyleSheet.create({
     marginTop: 18,
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   confirmBtnText: {
     fontSize: RFValue(9),
