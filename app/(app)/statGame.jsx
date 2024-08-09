@@ -23,7 +23,6 @@ import {
   MenuTrigger,
 } from "react-native-popup-menu";
 import { RadioButton } from "react-native-paper";
-import { useAuth } from "../../context/authContext";
 import firestore from "@react-native-firebase/firestore";
 
 export default function statGame() {
@@ -31,8 +30,6 @@ export default function statGame() {
   const router = useRouter();
 
   //Grab all of the settings from the statGamePrep Screen
-
-  //TODO: Add team name from statGamePrep
   const params = useLocalSearchParams();
   const {
     gameType,
@@ -53,7 +50,7 @@ export default function statGame() {
     teamName,
   } = params;
 
-  //Variable for which team is serving 
+  //Variable for which team is serving
   const [serverTracker, setServerTracker] = useState(firstServe);
 
   //Keeps the state of the previous serve for undo functionality
@@ -75,16 +72,16 @@ export default function statGame() {
   //State hook to store the current set
   const [currentSet, setCurrentSet] = useState(1);
 
-  // Get the users Lineup -> TODO: replace with respective drilled prop
-  const [positionOne, setPositionOne] = useState("5");
-  const [positionTwo, setPositionTwo] = useState("8");
-  const [positionThree, setPositionThree] = useState("10");
-  const [positionFour, setPositionFour] = useState("2");
-  const [positionFive, setPositionFive] = useState("9");
-  const [positionSix, setPositionSix] = useState("15");
-  const [firstLibero, setFirstLibero] = useState("13");
-  const [secondLibero, setSecondLibero] = useState(null);
-  const [setter, setSetter] = useState("5");
+  // Get the users Lineup
+  const [positionOne, setPositionOne] = useState(pOne);
+  const [positionTwo, setPositionTwo] = useState(pTwo);
+  const [positionThree, setPositionThree] = useState(pThree);
+  const [positionFour, setPositionFour] = useState(pFour);
+  const [positionFive, setPositionFive] = useState(pFive);
+  const [positionSix, setPositionSix] = useState(pSix);
+  const [firstLibero, setFirstLibero] = useState(firstL);
+  const [secondLibero, setSecondLibero] = useState(secondL);
+  const [setter, setSetter] = useState(onCourtSetter);
 
   //Starters and subs for each position
   const [onCourtPositionOne, setOnCourtPositionOne] = useState(positionOne);
@@ -130,353 +127,11 @@ export default function statGame() {
     setPositionTwo(temp);
   };
 
-  //TODO: Uncomment after testing
   //JSON.parse to deal with an array that is being prop drilled
-  /////////////////////////////////////
-  //When testing is done uncomment
-  //const roster = JSON.parse(params.currentLocalRoster);
-  /////////////////////////////////////
+  const roster = JSON.parse(params.currentLocalRoster);
 
-  // TODO: Remove Temp variable after testing
-  const testingRoster = [
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Benjamin Benjamin Benjamin",
-      playerNumber: "10",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-      fourPasses: 0,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Gorski",
-      playerNumber: "5",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-      fourPasses: 0,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Jace",
-      playerNumber: "2",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-      fourPasses: 0,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Watty",
-      playerNumber: "8",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-      fourPasses: 0,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Aiden",
-      playerNumber: "9",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-      fourPasses: 0,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Finn",
-      playerNumber: "15",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-      fourPasses: 0,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Chris",
-      playerNumber: "13",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-      fourPasses: 0,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Ross",
-      playerNumber: "19",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-      fourPasses: 0,
-    },
-    {
-      assists: 0,
-      assistsPerSet: 0,
-      attackErrors: 0,
-      attempts: 0,
-      blockAssists: 0,
-      blockErrors: 0,
-      blockSolos: 0,
-      digErrors: 0,
-      digs: 0,
-      digsPerSet: 0,
-      forearmPassingAttempts: 0,
-      handPassingAttempts: 0,
-      kills: 0,
-      matchesPlayed: 0,
-      onePasses: 0,
-      passingAttempts: 0,
-      playerName: "Shae",
-      playerNumber: "21",
-      pts: 0,
-      ptsPerSet: 0,
-      receptionErrors: 0,
-      serviceAces: 0,
-      serviceAttempts: 0,
-      serviceErrors: 0,
-      setsLost: 0,
-      setsPlayed: 0,
-      setsWon: 0,
-      threePasses: 0,
-      totalBlocks: 0,
-      totalForearmPassValue: 0,
-      totalHandPassValue: 0,
-      totalPassValue: 0,
-      twoPasses: 0,
-      firstTimeOnCourt: true,
-      fourPasses: 0,
-    },
-  ];
-
-  //TODO: REMOVE testingRoster AFTER TESTING
   //rosterStats variable contains all of the player stats for the current game
-  const [rosterStats, setRosterStats] = useState(testingRoster);
+  const [rosterStats, setRosterStats] = useState(roster);
 
   const [homeScore, setHomeScore] = useState(22);
   const [opponentScore, setOpponentScore] = useState(22);
@@ -2368,105 +2023,109 @@ export default function statGame() {
                   </View>
                 </View>
                 {rosterStats.map((player) => {
-                  return (
-                    <View
-                      style={styles.liveStatsTitleRow}
-                      key={player.playerNumber}
-                    >
-                      <View style={styles.liveStatsStatHeader}>
-                        <Text style={styles.liveStatsPlayerHeader}>
-                          {player.playerNumber}
-                          {"  "}
-                          {player.playerName.length > 20
-                            ? player.playerName.substring(0, 20) + "..."
-                            : player.playerName}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.setsPlayed.toString().length > 1
-                            ? player.setsPlayed
-                            : player.setsPlayed + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.kills.toString().length > 1
-                            ? player.kills
-                            : player.kills + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.attackErrors.toString().length > 1
-                            ? player.attackErrors
-                            : player.attackErrors + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.attempts.toString().length > 1
-                            ? player.attempts
-                            : player.attempts + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {isNaN(
-                            (player.kills - player.attackErrors) /
-                              player.attempts
-                          )
-                            ? "0.000"
-                            : (
-                                (player.kills - player.attackErrors) /
+                  if (player.setsPlayed > 0) {
+                    return (
+                      <View
+                        style={styles.liveStatsTitleRow}
+                        key={player.playerNumber}
+                      >
+                        <View style={styles.liveStatsStatHeader}>
+                          <Text style={styles.liveStatsPlayerHeader}>
+                            {player.playerNumber}
+                            {"  "}
+                            {player.playerName.length > 20
+                              ? player.playerName.substring(0, 20) + "..."
+                              : player.playerName}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.setsPlayed.toString().length > 1
+                              ? player.setsPlayed
+                              : player.setsPlayed + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.kills.toString().length > 1
+                              ? player.kills
+                              : player.kills + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.attackErrors.toString().length > 1
+                              ? player.attackErrors
+                              : player.attackErrors + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.attempts.toString().length > 1
+                              ? player.attempts
+                              : player.attempts + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {isNaN(
+                              (player.kills - player.attackErrors) /
                                 player.attempts
-                              ).toFixed(3)}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.assists.toString().length > 1
-                            ? player.assists
-                            : player.assists + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.serviceAces.toString().length > 1
-                            ? player.serviceAces
-                            : player.serviceAces + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.serviceErrors.toString().length > 1
-                            ? player.serviceErrors
-                            : player.serviceErrors + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.receptionErrors.toString().length > 1
-                            ? player.receptionErrors
-                            : player.receptionErrors + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {isNaN(player.totalPassValue / player.passingAttempts)
-                            ? "0.00"
-                            : (
-                                player.totalPassValue / player.passingAttempts
-                              ).toFixed(2)}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.digs.toString().length > 1
-                            ? player.digs
-                            : player.digs + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.blockSolos.toString().length > 1
-                            ? player.blockSolos
-                            : player.blockSolos + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.blockAssists.toString().length > 1
-                            ? player.blockAssists
-                            : player.blockAssists + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryText2}>
-                          {player.blockErrors.toString().length > 1
-                            ? player.blockErrors
-                            : player.blockErrors + " "}
-                        </Text>
-                        <Text style={styles.liveStatsModalSecondaryTextEnd2}>
-                          {player.pts.toString().length > 1
-                            ? player.pts.toFixed(1)
-                            : player.pts.toFixed(1)}
-                        </Text>
+                            )
+                              ? "0.000"
+                              : (
+                                  (player.kills - player.attackErrors) /
+                                  player.attempts
+                                ).toFixed(3)}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.assists.toString().length > 1
+                              ? player.assists
+                              : player.assists + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.serviceAces.toString().length > 1
+                              ? player.serviceAces
+                              : player.serviceAces + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.serviceErrors.toString().length > 1
+                              ? player.serviceErrors
+                              : player.serviceErrors + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.receptionErrors.toString().length > 1
+                              ? player.receptionErrors
+                              : player.receptionErrors + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {isNaN(
+                              player.totalPassValue / player.passingAttempts
+                            )
+                              ? "0.00"
+                              : (
+                                  player.totalPassValue / player.passingAttempts
+                                ).toFixed(2)}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.digs.toString().length > 1
+                              ? player.digs
+                              : player.digs + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.blockSolos.toString().length > 1
+                              ? player.blockSolos
+                              : player.blockSolos + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.blockAssists.toString().length > 1
+                              ? player.blockAssists
+                              : player.blockAssists + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryText2}>
+                            {player.blockErrors.toString().length > 1
+                              ? player.blockErrors
+                              : player.blockErrors + " "}
+                          </Text>
+                          <Text style={styles.liveStatsModalSecondaryTextEnd2}>
+                            {player.pts.toString().length > 1
+                              ? player.pts.toFixed(1)
+                              : player.pts.toFixed(1)}
+                          </Text>
+                        </View>
                       </View>
-                    </View>
-                  );
+                    );
+                  }
                 })}
                 <View style={styles.liveStatsTitleRow}>
                   <View style={styles.liveStatsStatHeader}>
@@ -3046,6 +2705,7 @@ export default function statGame() {
       setSetScores((prevSetScores) => [...prevSetScores, scoreString]);
 
       //Reset Home and Opponent Scores
+      //TODO: Remove these two lines after testing is done
       setHomeScore(22);
       setOpponentScore(22);
 
@@ -3210,6 +2870,8 @@ export default function statGame() {
       console.error("Error saving game: ", error);
       router.push("seasonHome");
     }
+
+    //TODO Save player stats and team stats specifically
   };
 
   if (endGameState === true) {
@@ -3263,6 +2925,7 @@ export default function statGame() {
                   <Text style={styles.liveStatsPlayerHeader}>
                     #{"  "}Player
                   </Text>
+                  <Text style={styles.liveStatsModalSecondaryText}>SP</Text>
                   <Text style={styles.liveStatsModalSecondaryText}>K </Text>
                   <Text style={styles.liveStatsModalSecondaryText}>E</Text>
                   <Text style={styles.liveStatsModalSecondaryText}>TA</Text>
@@ -3283,99 +2946,107 @@ export default function statGame() {
                 </View>
               </View>
               {rosterStats.map((player) => {
-                return (
-                  <View
-                    style={styles.endGameStatsTitleRow}
-                    key={player.playerNumber}
-                  >
-                    <View style={styles.liveStatsStatHeader}>
-                      <Text style={styles.liveStatsPlayerHeader}>
-                        {player.playerNumber}
-                        {"  "}
-                        {player.playerName.length > 16
-                          ? player.playerName.substring(0, 16) + "..."
-                          : player.playerName}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.kills.toString().length > 1
-                          ? player.kills
-                          : player.kills + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.attackErrors.toString().length > 1
-                          ? player.attackErrors
-                          : player.attackErrors + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.attempts.toString().length > 1
-                          ? player.attempts
-                          : player.attempts + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {isNaN(
-                          (player.kills - player.attackErrors) / player.attempts
-                        )
-                          ? "0.000"
-                          : (
-                              (player.kills - player.attackErrors) /
+                if (player.setsPlayed > 0) {
+                  return (
+                    <View
+                      style={styles.endGameStatsTitleRow}
+                      key={player.playerNumber}
+                    >
+                      <View style={styles.liveStatsStatHeader}>
+                        <Text style={styles.liveStatsPlayerHeader}>
+                          {player.playerNumber}
+                          {"  "}
+                          {player.playerName.length > 16
+                            ? player.playerName.substring(0, 16) + "..."
+                            : player.playerName}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.setsPlayed.toString().length > 1
+                            ? player.setsPlayed
+                            : player.setsPlayed + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.kills.toString().length > 1
+                            ? player.kills
+                            : player.kills + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.attackErrors.toString().length > 1
+                            ? player.attackErrors
+                            : player.attackErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.attempts.toString().length > 1
+                            ? player.attempts
+                            : player.attempts + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {isNaN(
+                            (player.kills - player.attackErrors) /
                               player.attempts
-                            ).toFixed(3)}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.assists.toString().length > 1
-                          ? player.assists
-                          : player.assists + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.serviceAces.toString().length > 1
-                          ? player.serviceAces
-                          : player.serviceAces + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.serviceErrors.toString().length > 1
-                          ? player.serviceErrors
-                          : player.serviceErrors + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.receptionErrors.toString().length > 1
-                          ? player.receptionErrors
-                          : player.receptionErrors + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {isNaN(player.totalPassValue / player.passingAttempts)
-                          ? "0.00"
-                          : (
-                              player.totalPassValue / player.passingAttempts
-                            ).toFixed(2)}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.digs.toString().length > 1
-                          ? player.digs
-                          : player.digs + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.blockSolos.toString().length > 1
-                          ? player.blockSolos
-                          : player.blockSolos + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.blockAssists.toString().length > 1
-                          ? player.blockAssists
-                          : player.blockAssists + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryText2}>
-                        {player.blockErrors.toString().length > 1
-                          ? player.blockErrors
-                          : player.blockErrors + " "}
-                      </Text>
-                      <Text style={styles.liveStatsModalSecondaryTextEnd2}>
-                        {player.pts.toString().length > 1
-                          ? player.pts.toFixed(1)
-                          : player.pts.toFixed(1)}
-                      </Text>
+                          )
+                            ? "0.000"
+                            : (
+                                (player.kills - player.attackErrors) /
+                                player.attempts
+                              ).toFixed(3)}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.assists.toString().length > 1
+                            ? player.assists
+                            : player.assists + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.serviceAces.toString().length > 1
+                            ? player.serviceAces
+                            : player.serviceAces + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.serviceErrors.toString().length > 1
+                            ? player.serviceErrors
+                            : player.serviceErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.receptionErrors.toString().length > 1
+                            ? player.receptionErrors
+                            : player.receptionErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {isNaN(player.totalPassValue / player.passingAttempts)
+                            ? "0.00"
+                            : (
+                                player.totalPassValue / player.passingAttempts
+                              ).toFixed(2)}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.digs.toString().length > 1
+                            ? player.digs
+                            : player.digs + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.blockSolos.toString().length > 1
+                            ? player.blockSolos
+                            : player.blockSolos + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.blockAssists.toString().length > 1
+                            ? player.blockAssists
+                            : player.blockAssists + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryText2}>
+                          {player.blockErrors.toString().length > 1
+                            ? player.blockErrors
+                            : player.blockErrors + " "}
+                        </Text>
+                        <Text style={styles.liveStatsModalSecondaryTextEnd2}>
+                          {player.pts.toString().length > 1
+                            ? player.pts.toFixed(1)
+                            : player.pts.toFixed(1)}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                );
+                  );
+                }
               })}
               <View style={styles.endGameStatsTitleRow}>
                 <View style={styles.liveStatsStatHeader}>
@@ -3383,6 +3054,11 @@ export default function statGame() {
                     Team
                     {"  "}
                     Total
+                  </Text>
+                  <Text style={styles.liveStatsModalSecondaryText2}>
+                    {setsFinished.toString().length > 1
+                      ? setsFinished
+                      : setsFinished + " "}
                   </Text>
                   <Text style={styles.liveStatsModalSecondaryText2}>
                     {teamStats.teamKills.toString().length > 1
@@ -3860,12 +3536,11 @@ export default function statGame() {
                     />
                   </View>
                   <View style={styles.subConfirmContainer}>
-                    <TouchableOpacity onPress={handleSubstitution}>
-                      <View style={styles.liveStatsContainer}>
-                        <Text style={styles.liveStatsRotationText}>
-                          Confirm
-                        </Text>
-                      </View>
+                    <TouchableOpacity
+                      onPress={handleSubstitution}
+                      style={styles.liveStatsContainer}
+                    >
+                      <Text style={styles.liveStatsRotationText}>Confirm</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
