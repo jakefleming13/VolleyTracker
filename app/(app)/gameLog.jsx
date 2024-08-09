@@ -32,7 +32,7 @@ export default function gameLog() {
   const router = useRouter();
   const params = useLocalSearchParams();
   //TODO: Ensure teamname is passed to box score
-  const { currentLocalTeamName, currentLocalYear } = params;
+  const { currentLocalTeamName } = params;
 
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
