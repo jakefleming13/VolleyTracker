@@ -1,14 +1,28 @@
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeView } from "../../components/SafeView";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 import { RFValue } from "react-native-responsive-fontsize";
 
 import firestore from "@react-native-firebase/firestore";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/authContext";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import { COLORS } from "../../constants/Colors";
-import { AntDesign, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import {
+  AntDesign,
+  FontAwesome,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import Loading from "../../components/Loading";
 
 export default function playerStats() {
@@ -27,33 +41,31 @@ export default function playerStats() {
   const [playerStats, setPlayerStats] = useState([]);
   const [loading, setLoading] = useState(true);
 
-
   useEffect(() => {
     const fetchPlayerStats = async () => {
       if (seasonID && user) {
         try {
           const playerStatsCollection = firestore()
-            .collection('seasons')
+            .collection("seasons")
             .doc(seasonID)
-            .collection('playerStats');
+            .collection("playerStats");
 
           const snapshot = await playerStatsCollection.get();
-          const stats = snapshot.docs.map(doc => ({
+          const stats = snapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
           }));
 
           setPlayerStats(stats[0]?.roster || []);
         } catch (error) {
-          console.error('Failed to fetch player stats:', error);
+          console.error("Failed to fetch player stats:", error);
         }
-        setLoading(false)
+        setLoading(false);
       }
     };
 
     fetchPlayerStats();
   }, [seasonID, user]);
-
 
   if (loading) {
     return (
@@ -63,72 +75,74 @@ export default function playerStats() {
     );
   }
 
-
-  // Render a single player element
-  const renderPlayerElement = ({ item }) => (
-    <View style={styles.playerContainer}>
-      <FontAwesome name="user-circle-o" size={hp(4)} color="black" style={styles.iconStyle} />
-      <Text style={styles.playerText}>{item.playerName} - {item.playerNumber}</Text>
-      <TouchableOpacity
-        style={styles.viewStatsBtn}
-        onPress={() =>
-          router.push({
-            pathname: "individualPlayerStats",
-            params: {
-              playerName: item.playerName,
-              playerNumber: item.playerNumber,
-              matchesPlayed: item.matchesPlayed,
-              setsPlayed: item.setsPlayed,
-              kills: item.kills,
-              attackErrors: item.attackErrors,
-              blockAssists: item.blockAssists,
-              serveAttempts: item.serveAttempts,
-              digs: item.digs,
-              totalPassingAverage: item.totalPassingAverage,
-              attempts: item.attempts,
-              assists: item.assists,
-              missedServes: item.missedServes,
-              receptionErrors: item.receptionErrors,
-              blockSolos: item.blockSolos,
-              totalBlocks: item.totalBlocks,
-              pts: item.pts,
-              currentLocalTeamName,
-              currentLocalYear
-            },
-          })
-        }
-      >
-        <Text style={styles.viewStatsText}>View Stats</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
   return (
     <SafeView style={styles.container}>
       <View style={styles.backContainer}>
-        <TouchableOpacity onPress={() => router.push("seasonHome")}>
-          <View style={styles.headerBtn}>
+        <TouchableOpacity
+          onPress={() => router.push("seasonHome")}
+          style={styles.headerBtn}
+        >
+          <View style={{ flexDirection: "row" }}>
             <AntDesign name="left" size={hp(3.7)} color={COLORS.white} />
             <Text style={styles.headerBtnText}>HOME</Text>
           </View>
         </TouchableOpacity>
       </View>
       <View style={styles.titleContainer}>
-        <Text style={styles.titleText}>{currentLocalTeamName}, {currentLocalYear}</Text>
-      </View>
-
-      <View style={styles.headerBottom}>
-      <TouchableOpacity style={styles.filterExportButton}>
-          <FontAwesome name="filter" size={hp(3)} color={COLORS.white} />
-          <Text style={styles.buttonText}>Filter</Text>
-        </TouchableOpacity>
+        <Text style={styles.titleText}>Player Stats</Text>
       </View>
 
       <FlatList
         data={playerStats}
-        renderItem={renderPlayerElement}
-        keyExtractor={item => item.playerID?.toString() || item.id}
-        contentContainerStyle={styles.listContainer}
+        keyExtractor={(item) => item.playerID?.toString() || item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "individualPlayerStats",
+                params: {
+                  playerName: item.playerName,
+                  playerNumber: item.playerNumber,
+                  matchesPlayed: item.matchesPlayed,
+                  setsPlayed: item.setsPlayed,
+                  kills: item.kills,
+                  attackErrors: item.attackErrors,
+                  blockAssists: item.blockAssists,
+                  serveAttempts: item.serveAttempts,
+                  digs: item.digs,
+                  totalPassingAverage: item.totalPassingAverage,
+                  attempts: item.attempts,
+                  assists: item.assists,
+                  missedServes: item.missedServes,
+                  receptionErrors: item.receptionErrors,
+                  blockSolos: item.blockSolos,
+                  totalBlocks: item.totalBlocks,
+                  pts: item.pts,
+                  currentLocalTeamName,
+                  currentLocalYear,
+                },
+              })
+            }
+            style={styles.featureListContainer}
+          >
+            <Text style={styles.featureListText}>
+              <FontAwesome
+                name="user-circle-o"
+                size={hp(4.5)}
+                color={COLORS.primary}
+                style={styles.iconStyle}
+              />
+              {"  "}
+              {item.playerNumber} - {item.playerName}
+            </Text>
+            <AntDesign
+              style={styles.featureListIcon}
+              name="right"
+              size={hp(3.7)}
+              color={COLORS.black}
+            />
+          </TouchableOpacity>
+        )}
       />
     </SafeView>
   );
@@ -146,13 +160,13 @@ const styles = StyleSheet.create({
   headerBottom: {
     paddingHorizontal: wp(4),
     paddingBottom: hp(2),
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
   filterExportButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: COLORS.primary,
     paddingHorizontal: wp(1.6),
     paddingVertical: hp(0.8),
@@ -172,7 +186,7 @@ const styles = StyleSheet.create({
   },
   headerBtn: {
     flexDirection: "row",
-    width: "40%",
+    width: wp(11),
     height: hp(7),
     backgroundColor: COLORS.primary,
     borderRadius: 20,
@@ -180,13 +194,22 @@ const styles = StyleSheet.create({
     marginTop: 18,
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   headerBtnText: {
     fontSize: RFValue(9),
+    paddingLeft: 3,
+    paddingTop: 3,
     fontWeight: "bold",
     textAlign: "center",
     color: COLORS.white,
-    paddingRight: 5,
   },
   titleText: {
     fontSize: RFValue(30),
@@ -196,32 +219,8 @@ const styles = StyleSheet.create({
   titleContainer: {
     alignItems: "center",
   },
-  playerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.secondary,
-    padding: 10,
-    marginVertical: 5,
-    marginHorizontal: 20,
-    borderRadius: 10,
-  },
   iconStyle: {
     marginRight: 15,
-  },
-  playerText: {
-    flex: 1,
-    fontSize: RFValue(16),
-    color: COLORS.black,
-  },
-  viewStatsBtn: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    backgroundColor: COLORS.primary,
-    borderRadius: 5,
-  },
-  viewStatsText: {
-    color: 'white',
-    fontSize: RFValue(12),
   },
   listContainer: {
     paddingBottom: 20,
@@ -232,5 +231,24 @@ const styles = StyleSheet.create({
     width: "60%",
     alignSelf: "center",
     marginBottom: 35,
+  },
+
+  //Player Card styling
+  featureListContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: COLORS.white,
+    height: hp(9),
+    alignItems: "center",
+    borderWidth: 0.5,
+    borderColor: COLORS.primary,
+  },
+  featureListText: {
+    fontSize: RFValue(17),
+    paddingLeft: 20,
+    color: COLORS.black,
+  },
+  featureListIcon: {
+    paddingRight: 20,
   },
 });
