@@ -591,16 +591,22 @@ export default function statGame() {
     teamSuccessfulSideOuts: 0,
     teamFirstBallSideOutAttempts: 0,
     teamSuccessfulFirstBallSideOuts: 0,
+
     teamTotalSideOutAttemptsPos1: 0,
     teamSuccessfulSideOutsPos1: 0,
+
     teamTotalSideOutAttemptsPos2: 0,
     teamSuccessfulSideOutsPos2: 0,
+
     teamTotalSideOutAttemptsPos3: 0,
     teamSuccessfulSideOutsPos3: 0,
+
     teamTotalSideOutAttemptsPos4: 0,
     teamSuccessfulSideOutsPos4: 0,
+
     teamTotalSideOutAttemptsPos5: 0,
     teamSuccessfulSideOutsPos5: 0,
+    
     teamTotalSideOutAttemptsPos6: 0,
     teamSuccessfulSideOutsPos6: 0,
   });
@@ -1984,8 +1990,8 @@ export default function statGame() {
               {setScores.length > 0 ? (
                 <View style={styles.liveStatsModalHeader2}>
                   <Text style={styles.liveStatsModalScoreText}>
-                    {setScores.map((score) => {
-                      return <Text> {score} </Text>;
+                    {setScores.map((score, index) => {
+                      return <Text key={index}> {score} </Text>;
                     })}
                   </Text>
                 </View>
@@ -2699,7 +2705,7 @@ export default function statGame() {
       setEndSetState(true);
 
       // Format scores as a string "homeScore-opponentScore"
-      const scoreString = `${homeScore}-${opponentScore}`;
+      const scoreString = `  ${homeScore}-${opponentScore}`;
 
       // Record the completed set's scores as a string
       setSetScores((prevSetScores) => [...prevSetScores, scoreString]);
@@ -2852,10 +2858,11 @@ export default function statGame() {
         date: new Date().toISOString().split("T")[0],
         location: location,
         gameType: gameType,
-        setsPlayed: setsFinished,
+        gameConditions: gameConditions,
         homeSetsWon: homeSetsWon,
         opponentSetsWon: opponentSetsWon,
-        stats: rosterStats,
+        setScores: setScores,
+        rosterStats: rosterStats,
         teamStats: teamStats,
       };
       //Add new doc to games collection

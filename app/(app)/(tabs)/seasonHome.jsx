@@ -78,8 +78,9 @@ const SeasonHome = () => {
             setActiveSeason(null); // Set seasonID to null
             router.push("seasons");
           }}
+          style={styles.headerBtn}
         >
-          <View style={styles.headerBtn}>
+          <View style={{ flexDirection: "row" }}>
             <AntDesign
               style={styles.backIcon}
               name="left"
@@ -126,21 +127,20 @@ const SeasonHome = () => {
               </View>
             </TouchableOpacity>
             <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "statServePass",
-              params: {
-                currentLocalTeamName: seasonData.teamName,
-                currentLocalYear: seasonData.year,
-                currentLocalRoster: JSON.stringify(seasonData.roster),
-              },
-            })
-          }
-        >
+              onPress={() =>
+                router.push({
+                  pathname: "statServePass",
+                  params: {
+                    currentLocalTeamName: seasonData.teamName,
+                    currentLocalYear: seasonData.year,
+                    currentLocalRoster: JSON.stringify(seasonData.roster),
+                  },
+                })
+              }
+            >
               <View style={styles.featureListContainer}>
                 <Text style={styles.featureListText}>
                   Stat Serving and Passing
-              
                 </Text>
                 <AntDesign
                   style={styles.featureListIcon}
@@ -154,7 +154,10 @@ const SeasonHome = () => {
               <View style={styles.featureListContainer}>
                 <Text style={styles.featureListText}>
                   Scout Opponent
-                  <Text style={styles.inDevelopmentText}>  (In Development)</Text>
+                  <Text style={styles.inDevelopmentText}>
+                    {" "}
+                    (In Development)
+                  </Text>
                 </Text>
                 <AntDesign
                   style={styles.featureListIcon}
@@ -260,7 +263,7 @@ const styles = StyleSheet.create({
   },
   headerBtn: {
     flexDirection: "row",
-    width: "42%",
+    width: wp(11),
     height: hp(7),
     backgroundColor: COLORS.primary,
     borderRadius: 20,
@@ -268,10 +271,19 @@ const styles = StyleSheet.create({
     marginTop: 18,
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   headerBtnText: {
     fontSize: RFValue(9),
     paddingRight: 3,
+    paddingTop: 3,
     fontWeight: "bold",
     textAlign: "center",
     color: COLORS.white,

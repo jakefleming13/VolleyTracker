@@ -322,8 +322,8 @@ export default function statGamePrep() {
   return (
     <SafeView style={styles.container}>
       <View style={styles.backContainer}>
-        <TouchableOpacity onPress={cancelAlert}>
-          <View style={styles.headerBtn}>
+        <TouchableOpacity onPress={cancelAlert} style={styles.headerBtn}>
+          <View style={{ flexDirection: "row" }}>
             <AntDesign
               style={styles.backIcon}
               name="left"
@@ -872,7 +872,7 @@ const styles = StyleSheet.create({
   },
   headerBtn: {
     flexDirection: "row",
-    width: wp(12),
+    width: wp(11),
     height: hp(7),
     backgroundColor: COLORS.primary,
     borderRadius: 20,
@@ -892,6 +892,7 @@ const styles = StyleSheet.create({
   headerBtnText: {
     fontSize: RFValue(9),
     paddingRight: 3,
+    paddingTop: 3,
     fontWeight: "bold",
     textAlign: "center",
     color: COLORS.white,

@@ -32,7 +32,7 @@ export default function gameLog() {
   const router = useRouter();
   const params = useLocalSearchParams();
   //TODO: Ensure teamname is passed to box score
-  const { currentLocalTeamName, currentLocalYear } = params;
+  const { currentLocalTeamName } = params;
 
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,78 +70,35 @@ export default function gameLog() {
     fetchGames();
   }, [seasonID]);
 
-  // Dummy game information for testing
-  const addDummyGame = async () => {
-    try {
-      const dummyGame = {
-        opponent: "Dummy Opponent",
-        date: new Date().toISOString(),
-        location: "Dummy Location",
-        matchesPlayed: 1,
-        set1: {
-          teamPoints: 25,
-          opponentPoints: 20,
-        },
-        setsWon: 1,
-        setsLost: 0,
-        roster: [
-          {
-            name: "Player 1",
-            number: 1,
-            matchesPlayed: 1,
-            setsPlayed: 1,
-            attempts: 10,
-            kills: 5,
-            attackErrors: 1,
-            assists: 2,
-            assistsPerSet: 2.0,
-            blockSolos: 0,
-            blockAssists: 1,
-            totalBlocks: 1,
-            digs: 5,
-            digsPerSet: 5.0,
-            digErrors: 0,
-            serveAttempts: 10,
-            aces: 1,
-            serviceErrors: 1,
-            passingAttempts: 10,
-            handPassingAttempts: 5,
-            forearmPassingAttempts: 5,
-            totalPassingAverage: 2.5,
-            handPassingAverage: 2.5,
-            forearmPassingAverage: 2.5,
-            PTS: 10,
-            PTSPerSet: 10.0,
-          },
-        ],
-      };
-      // Add to games collection, works fine if its empty
-      await firestore()
-        .collection("seasons")
-        .doc(seasonID)
-        .collection("gameLog")
-        .add(dummyGame);
+  // Game Upload template
+  // const addDummyGame = async () => {
+  //     // Add to games collection, works fine if its empty
+  //     await firestore()
+  //       .collection("seasons")
+  //       .doc(seasonID)
+  //       .collection("gameLog")
+  //       .add(dummyGame);
 
-      // Re-fetch games to update the list
-      const gamesSnapshot = await firestore()
-        .collection("seasons")
-        .doc(seasonID)
-        .collection("gameLog")
-        .get();
+  //     // Re-fetch games to update the list
+  //     const gamesSnapshot = await firestore()
+  //       .collection("seasons")
+  //       .doc(seasonID)
+  //       .collection("gameLog")
+  //       .get();
 
-      if (gamesSnapshot.empty) {
-        setGames([]);
-      } else {
-        const gamesList = gamesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setGames(gamesList);
-      }
-    } catch (error) {
-      console.error("Error adding dummy game: ", error);
-    }
-  };
+  //     if (gamesSnapshot.empty) {
+  //       setGames([]);
+  //     } else {
+  //       const gamesList = gamesSnapshot.docs.map((doc) => ({
+  //         id: doc.id,
+  //         ...doc.data(),
+  //       }));
+  //       setGames(gamesList);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error adding dummy game: ", error);
+  //   }
+  // };
 
   return (
     <SafeView style={styles.container}>
@@ -162,6 +119,7 @@ export default function gameLog() {
       <View style={styles.titleContainer}>
         <Text style={styles.titleText}>Game Log</Text>
       </View>
+
       {loading ? (
         <View style={styles.loading}>
           <Loading size={hp(10)} />
@@ -171,17 +129,33 @@ export default function gameLog() {
           <Text style={styles.featureListText}>No games found.</Text>
         </View>
       ) : (
-        // TODO: Ensure Scroll property works correctly
         <FlatList
           data={games}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() => router.push("boxScore")}
+              onPress={() =>
+                router.push({
+                  pathname: "boxScore",
+                  params: {
+                    teamName: currentLocalTeamName,
+                    gameType: item.gameType,
+                    opponent: item.opponent,
+                    location: item.location,
+                    homeSetsWon: item.homeSetsWon,
+                    setScores: item.setScores,
+                    opponentSetsWon: item.opponentSetsWon,
+                    gameConditions: item.gameConditions,
+                    rosterStats: JSON.stringify(item.rosterStats),
+                    teamStats: JSON.stringify(item.teamStats),
+                    date: item.date,
+                  },
+                })
+              }
               style={styles.featureListContainer}
             >
               <Text style={styles.featureListText}>
-                Game vs. {item.opponent}
+                {item.gameType} vs. {item.opponent}
                 {"  "}-{"  "}
                 {item.date}
               </Text>
@@ -195,11 +169,6 @@ export default function gameLog() {
           )}
         />
       )}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={addDummyGame} style={styles.addButton}>
-          <Text style={styles.addButtonText}>Add Game</Text>
-        </TouchableOpacity>
-      </View>
     </SafeView>
   );
 }
@@ -216,7 +185,7 @@ const styles = StyleSheet.create({
   },
   headerBtn: {
     flexDirection: "row",
-    width: wp(10),
+    width: wp(11),
     height: hp(7),
     backgroundColor: COLORS.primary,
     borderRadius: 20,
