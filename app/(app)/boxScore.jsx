@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
   },
   headerBtn: {
     flexDirection: "row",
-    width: wp(10),
+    width: wp(11),
     height: hp(7),
     backgroundColor: COLORS.primary,
     borderRadius: 20,
